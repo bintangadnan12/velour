@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { Cursor } from '@/components/Cursor'
+import { LenisProvider } from '@/components/LenisProvider'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -27,8 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>
-        <Cursor />
-        {children}
+        <LenisProvider>
+          <Cursor />
+          {children}
+        </LenisProvider>
       </body>
     </html>
   )

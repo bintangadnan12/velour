@@ -7,13 +7,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TOTAL        = 300
 const SCENES       = 5
-const VH_PER_SCENE = 500   // 500vh × 5 = 2500vh total
+const VH_PER_SCENE = 700   // 700vh × 5 = 3500vh total — relaxed pacing
 
 // Per scene (local 0→1):
-//   0.00–0.12  → scrub   (video advances to key frame)
-//   0.12–0.90  → freeze  (video frozen, text visible)
+//   0.00–0.10  → scrub   (video advances to key frame)
+//   0.10–0.90  → freeze  (video frozen, text visible)
 //   0.90–1.00  → fade    (text fades out)
-const SCRUB_END = 0.12
+const SCRUB_END = 0.10
 const HOLD_END  = 0.90
 
 // "Hero moment" frame for each of the 5 scenes
@@ -23,7 +23,7 @@ const START_FRAMES = [0,  46,  106, 166, 226]
 const pad = (i: number) => String(i).padStart(4, '0')
 const desktopSrc = (i: number) => `/frames/frame${pad(i)}.jpg`
 const mobileSrc  = (i: number) => `/frames-mobile/frame${pad(i)}.jpg`
-const PRELOAD_COUNT = 5
+const PRELOAD_COUNT = 1
 
 // ─── Scene content (FORMA shoe brand) ────────────────────────────────────────
 const SCENE_DATA = [
@@ -325,6 +325,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
             trigger: sectionRef.current,
             start:   'top top',
             end:     'bottom bottom',
+            scrub:   1.4,
             onUpdate: (self) => {
               const { frame, sceneIndex, inHold, alpha } = mapProgress(self.progress)
 
