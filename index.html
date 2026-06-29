@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELOUR — Premium Fashion Brand Websites</title>
+<meta name="description" content="Professional fashion brand websites starting at $100/month. Domain, hosting, custom design — all included.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300&family=DM+Sans:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;
+  --gold2:#E8CC7A;
+  --gold-dim:rgba(201,168,76,.12);
+  --black:#020202;
+  --off-black:#080807;
+  --white:#f8f6f2;
+  --muted:rgba(248,246,242,.42);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+html{font-size:16px}
+body{background:var(--black);color:var(--white);font-family:var(--sans);font-weight:300;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  opacity:.5;mix-blend-mode:screen}
+
+/* PRELOADER */
+#preloader{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s var(--ease),visibility 1s}
+#preloader.gone{opacity:0;visibility:hidden}
+.pre-logo{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:200;letter-spacing:.3em;text-transform:uppercase;color:var(--white);opacity:0;animation:fadeUp .9s var(--ease) .3s forwards}
+.pre-logo em{color:var(--gold);font-style:italic}
+.pre-bar{width:200px;height:1px;background:rgba(255,255,255,.08);margin-top:32px;overflow:hidden;opacity:0;animation:fadeUp .6s var(--ease) .7s forwards}
+.pre-bar-fill{height:100%;width:0%;background:var(--gold);transition:width .05s linear}
+.pre-count{font-size:10px;letter-spacing:.3em;color:var(--muted);margin-top:10px;opacity:0;animation:fadeUp .6s var(--ease) .7s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* CURSOR */
+.cursor{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference}
+.cursor-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(201,168,76,.45);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s var(--ease),height .35s var(--ease)}
+.cursor-ring.big{width:64px;height:64px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:26px clamp(24px,5vw,80px);display:flex;align-items:center;justify-content:space-between;transition:padding .5s var(--ease),background .5s,opacity .5s var(--ease),transform .5s var(--ease);opacity:0;transform:translateY(-12px);pointer-events:none}
+nav.visible{opacity:1;transform:none;pointer-events:all}
+nav.scrolled{padding:14px clamp(24px,5vw,80px);background:rgba(2,2,2,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.1)}
+.nav-logo{font-family:var(--serif);font-size:19px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--white)}
+.nav-logo em{color:var(--gold);font-style:italic}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);transition:color .3s;cursor:pointer}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:10px 22px;transition:all .3s;cursor:pointer;white-space:nowrap;text-decoration:none}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+
+/* HERO — CANVAS SCRUBBER */
+#hero{position:relative;height:900vh}
+.hero-sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-veil{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(2,2,2,.3) 0%,rgba(2,2,2,0) 35%,rgba(2,2,2,0) 65%,rgba(2,2,2,.85) 100%);z-index:1}
+.hero-text{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.hero-eyebrow{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;transform:translateY(14px);transition:all .9s var(--ease)}
+.hero-eyebrow.show{opacity:1;transform:none}
+.hero-title{font-family:var(--serif);font-size:clamp(60px,11vw,156px);font-weight:200;line-height:.88;letter-spacing:.02em;text-transform:uppercase}
+.hero-title .line{display:block;overflow:hidden}
+.hero-title .word{display:inline-block;transform:translateY(110%);transition:transform 1.1s var(--ease)}
+.hero-title .word.show{transform:translateY(0)}
+.hero-title .italic{font-style:italic;color:var(--gold)}
+.hero-sub{margin-top:32px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);opacity:0;transition:all 1s var(--ease) .5s}
+.hero-sub.show{opacity:1}
+.scroll-hint{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;transition:opacity .8s}
+.scroll-hint.show{opacity:1}
+.scroll-line{width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--gold));animation:pulse 1.8s ease-in-out infinite}
+.scroll-label{font-size:9px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* REEL CAPTIONS */
+.reel-cap{position:absolute;z-index:3;pointer-events:none;opacity:0;transition:opacity .55s var(--ease)}
+.reel-cap.on{opacity:1}
+.reel-cap .rc-tag{font-size:9px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.reel-cap .rc-txt{font-family:var(--serif);font-size:clamp(26px,3.5vw,52px);font-weight:200;line-height:1.1;color:var(--white)}
+.reel-cap.left{left:clamp(24px,6vw,110px);top:50%;transform:translateY(-50%)}
+.reel-cap.right{right:clamp(24px,6vw,110px);top:50%;transform:translateY(-50%);text-align:right}
+
+/* SECTION BASE */
+.section-tag{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:20px}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .95s var(--ease),transform .95s var(--ease)}
+.reveal.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.18s}.d3{transition-delay:.28s}.d4{transition-delay:.42s}.d5{transition-delay:.56s}
+
+/* ── PRICE HOOK ── */
+#price{padding:clamp(100px,14vw,180px) clamp(24px,5vw,80px);text-align:center;position:relative;overflow:hidden}
+#price::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(ellipse,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none}
+.price-badge{display:inline-flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:10px 22px;margin-bottom:44px}
+.price-badge::before,.price-badge::after{content:'';width:20px;height:1px;background:var(--gold);opacity:.5}
+.price-main{font-family:var(--serif);font-size:clamp(72px,14vw,200px);font-weight:200;line-height:.85;color:var(--white);letter-spacing:-.01em}
+.price-main em{color:var(--gold);font-style:italic}
+.price-unit{font-size:clamp(14px,2vw,22px);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:20px}
+.price-divider{width:1px;height:60px;background:linear-gradient(to bottom,transparent,rgba(201,168,76,.4),transparent);margin:48px auto}
+.price-equiv{font-family:var(--serif);font-size:clamp(22px,3.5vw,44px);font-weight:200;color:var(--white);line-height:1.2}
+.price-equiv em{color:var(--gold);font-style:italic}
+.price-note{font-size:13px;color:var(--muted);margin-top:16px;letter-spacing:.04em}
+
+/* ── PAIN POINTS ── */
+#pain{padding:clamp(80px,10vw,130px) clamp(24px,5vw,80px);max-width:1200px;margin:0 auto}
+.pain-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white);line-height:1.05;margin-bottom:clamp(40px,6vw,80px)}
+.pain-title em{font-style:italic;color:var(--gold)}
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:1px solid rgba(255,255,255,.06)}
+.pain-item{padding:32px 28px;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);transition:background .4s}
+.pain-item:hover{background:rgba(201,168,76,.04)}
+.pain-x{font-size:20px;margin-bottom:14px;opacity:.6}
+.pain-text{font-size:14px;line-height:1.7;color:var(--muted)}
+.pain-text strong{color:var(--white);font-weight:400}
+
+/* ── FEATURES ── */
+#features{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px);background:var(--off-black)}
+.features-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:clamp(44px,6vw,80px);flex-wrap:wrap;gap:20px}
+.features-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white);line-height:1.05}
+.features-title em{font-style:italic;color:var(--gold)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid rgba(255,255,255,.06)}
+.feat{padding:36px 30px;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);transition:background .4s;cursor:default}
+.feat:hover{background:rgba(201,168,76,.04)}
+.feat-num{font-family:var(--serif);font-size:12px;color:var(--gold);margin-bottom:20px;opacity:.7}
+.feat-name{font-size:15px;font-weight:400;color:var(--white);margin-bottom:10px;line-height:1.3}
+.feat-desc{font-size:13px;line-height:1.75;color:var(--muted)}
+.feat-arrow{display:inline-block;margin-top:16px;color:var(--gold);opacity:0;transform:translateX(-5px);transition:all .3s;font-size:16px}
+.feat:hover .feat-arrow{opacity:1;transform:none}
+
+/* ── PORTFOLIO ── */
+#portfolio{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px)}
+.portfolio-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:clamp(40px,5vw,64px);flex-wrap:wrap;gap:16px}
+.portfolio-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white)}
+.portfolio-title em{font-style:italic;color:var(--gold)}
+.portfolio-note{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.portfolio-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.p-card{position:relative;overflow:hidden;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);cursor:pointer}
+.p-card:nth-child(1){grid-column:span 8;aspect-ratio:16/9}
+.p-card:nth-child(2){grid-column:span 4;aspect-ratio:3/4}
+.p-card:nth-child(3){grid-column:span 4;aspect-ratio:4/5}
+.p-card:nth-child(4){grid-column:span 4;aspect-ratio:4/5}
+.p-card:nth-child(5){grid-column:span 4;aspect-ratio:4/5}
+.p-card img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform .9s var(--ease)}
+.p-card:hover img{transform:scale(1)}
+.p-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(2,2,2,.9) 0%,transparent 55%);opacity:0;transition:opacity .5s}
+.p-card:hover .p-card-overlay{opacity:1}
+.p-card-info{position:absolute;bottom:0;left:0;right:0;padding:24px;transform:translateY(10px);opacity:0;transition:all .5s var(--ease)}
+.p-card:hover .p-card-info{opacity:1;transform:none}
+.p-cat{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.p-name{font-family:var(--serif);font-size:clamp(16px,2vw,24px);font-weight:300;color:var(--white)}
+
+/* ── TESTIMONIAL ── */
+#testimonial{padding:clamp(100px,13vw,160px) clamp(24px,5vw,80px);text-align:center;position:relative;overflow:hidden}
+#testimonial::before{content:'"';position:absolute;top:-60px;left:50%;transform:translateX(-50%);font-family:var(--serif);font-size:clamp(180px,22vw,380px);font-weight:200;color:rgba(201,168,76,.04);line-height:1;pointer-events:none}
+.testi-text{font-family:var(--serif);font-size:clamp(22px,3.2vw,46px);font-weight:200;line-height:1.35;color:var(--white);max-width:840px;margin:0 auto;position:relative;z-index:1}
+.testi-text em{font-style:italic;color:var(--gold)}
+.testi-author{margin-top:44px;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.testi-author span{color:var(--gold)}
+
+/* ── VALUE PROPS ── */
+#value{padding:clamp(80px,10vw,130px) clamp(24px,5vw,80px);background:var(--off-black)}
+.value-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white);margin-bottom:clamp(44px,6vw,80px);line-height:1.05}
+.value-title em{font-style:italic;color:var(--gold)}
+.value-list{display:grid;grid-template-columns:1fr 1fr;gap:32px 64px}
+.value-item{display:flex;gap:20px;align-items:flex-start}
+.value-num{font-family:var(--serif);font-size:36px;font-weight:200;color:var(--gold);opacity:.5;line-height:1;flex-shrink:0;width:36px}
+.value-body strong{display:block;font-size:14px;font-weight:500;color:var(--white);margin-bottom:6px;letter-spacing:.02em}
+.value-body p{font-size:13px;line-height:1.7;color:var(--muted)}
+
+/* ── GUARANTEE ── */
+#garansi{padding:clamp(60px,8vw,100px) clamp(24px,5vw,80px);background:linear-gradient(135deg,rgba(201,168,76,.06) 0%,transparent 60%);border-top:1px solid rgba(201,168,76,.12);border-bottom:1px solid rgba(201,168,76,.12);text-align:center}
+.garansi-icon{font-size:48px;margin-bottom:20px}
+.garansi-title{font-family:var(--serif);font-size:clamp(28px,4vw,52px);font-weight:200;color:var(--white);margin-bottom:14px}
+.garansi-title em{color:var(--gold);font-style:italic}
+.garansi-desc{font-size:14px;color:var(--muted);max-width:560px;margin:0 auto;line-height:1.75}
+.garansi-desc strong{color:var(--white);font-weight:400}
+
+/* ── PRICING TABLE ── */
+#pricing{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px)}
+.pricing-header{text-align:center;margin-bottom:clamp(44px,6vw,72px)}
+.pricing-title{font-family:var(--serif);font-size:clamp(32px,5vw,64px);font-weight:200;color:var(--white);line-height:1.05}
+.pricing-title em{font-style:italic;color:var(--gold)}
+.pricing-sub{font-size:13px;color:var(--muted);margin-top:14px}
+.pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid rgba(255,255,255,.08);max-width:680px;margin:0 auto}
+.pc{padding:40px 32px;border-right:1px solid rgba(255,255,255,.08);position:relative;transition:background .4s}
+.pc:last-child{border-right:none}
+.pc.featured{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);margin:-1px;z-index:1}
+.pc-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:block}
+.pc.featured .pc-label{color:var(--gold)}
+.pc-badge{position:absolute;top:16px;right:16px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:var(--black);padding:4px 10px;font-weight:500}
+.pc-price{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:200;color:var(--white);line-height:1}
+.pc.dim .pc-price{color:var(--muted)}
+.pc-price sub{font-size:14px;letter-spacing:.1em;vertical-align:middle;font-family:var(--sans)}
+.pc-name{font-size:13px;font-weight:500;color:var(--white);margin:16px 0 8px;letter-spacing:.04em}
+.pc.dim .pc-name{color:var(--muted)}
+.pc-desc{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:24px}
+.pc-list{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:28px}
+.pc-list li{font-size:12px;color:var(--muted);display:flex;gap:10px;align-items:flex-start}
+.pc-list li::before{content:'✓';color:var(--gold);flex-shrink:0;font-size:11px;margin-top:1px}
+.pc-cta{display:block;text-align:center;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:13px;border:1px solid rgba(201,168,76,.3);color:var(--gold);transition:all .3s;cursor:pointer;text-decoration:none;font-family:var(--sans)}
+.pc.featured .pc-cta{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.pc.featured .pc-cta:hover{background:var(--gold2)}
+.pc-cta:hover{border-color:var(--gold);background:rgba(201,168,76,.08)}
+
+/* ── COMPARISON ── */
+#comparison{padding:clamp(80px,10vw,130px) clamp(24px,5vw,80px);background:var(--off-black)}
+.comp-title{font-family:var(--serif);font-size:clamp(30px,4.5vw,60px);font-weight:200;color:var(--white);margin-bottom:clamp(40px,5vw,64px);line-height:1.05}
+.comp-title em{font-style:italic;color:var(--gold)}
+.comp-table{width:100%;border-collapse:collapse;max-width:800px}
+.comp-table th{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);padding:14px 20px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.comp-table th:last-child{color:var(--gold)}
+.comp-table td{padding:18px 20px;font-size:13px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.04)}
+.comp-table td:first-child{color:var(--white);font-weight:400}
+.comp-table td:last-child{color:var(--gold);font-weight:500}
+.comp-table tr:hover td{background:rgba(255,255,255,.02)}
+.comp-check{color:var(--gold)}
+.comp-x{color:rgba(255,255,255,.2)}
+
+/* ── FAQ ── */
+#faq{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px)}
+.faq-title{font-family:var(--serif);font-size:clamp(32px,5vw,64px);font-weight:200;color:var(--white);margin-bottom:clamp(40px,5vw,64px);line-height:1.05}
+.faq-title em{font-style:italic;color:var(--gold)}
+.faq-list{max-width:800px;display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.06)}
+.faq-q{width:100%;background:none;border:none;padding:24px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;gap:20px}
+.faq-q-text{font-size:15px;font-weight:400;color:var(--white);line-height:1.4}
+.faq-icon{color:var(--gold);font-size:20px;flex-shrink:0;transition:transform .35s var(--ease);line-height:1}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.faq-a-inner{padding:0 0 24px;font-size:13px;line-height:1.8;color:var(--muted)}
+.faq-a-inner strong{color:var(--white);font-weight:400}
+.faq-item.open .faq-a{max-height:200px}
+
+/* ── CTA ── */
+#cta{padding:clamp(100px,14vw,180px) clamp(24px,5vw,80px);text-align:center;background:linear-gradient(to bottom,var(--black),#0e0b02)}
+.cta-price-pill{display:inline-flex;align-items:center;gap:14px;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:10px 24px;margin-bottom:40px}
+.cta-title{font-family:var(--serif);font-size:clamp(40px,8vw,110px);font-weight:200;line-height:.92;letter-spacing:.01em;text-transform:uppercase;color:var(--white);margin-bottom:16px}
+.cta-title em{font-style:italic;color:var(--gold)}
+.cta-sub{font-size:14px;color:var(--muted);margin-bottom:52px;line-height:1.6}
+.cta-sub strong{color:var(--white);font-weight:400}
+.cta-buttons{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--black);background:var(--gold);padding:18px 44px;cursor:pointer;transition:background .3s,transform .3s;text-decoration:none;font-family:var(--sans);font-weight:400}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-2px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--white);background:transparent;padding:18px 44px;cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,.18);text-decoration:none;font-family:var(--sans);font-weight:400}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+/* EMAIL FORM */
+.cta-form{display:flex;gap:0;max-width:440px;margin:0 auto 52px;flex-wrap:wrap}
+.cta-input{flex:1;min-width:220px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-right:none;color:var(--white);font-family:var(--sans);font-size:13px;padding:16px 20px;outline:none;transition:border-color .3s}
+.cta-input::placeholder{color:rgba(248,246,242,.3)}
+.cta-input:focus{border-color:rgba(201,168,76,.5)}
+.cta-submit{background:var(--gold);color:var(--black);border:none;padding:16px 28px;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .3s;white-space:nowrap}
+.cta-submit:hover{background:var(--gold2)}
+
+/* MARQUEE */
+.marquee-wrap{padding:52px 0;overflow:hidden;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.marquee-track{display:flex;gap:72px;width:max-content;animation:marquee 24s linear infinite}
+.marquee-wrap:hover .marquee-track{animation-play-state:paused}
+.m-item{font-family:var(--serif);font-size:clamp(28px,3.5vw,44px);font-weight:200;letter-spacing:.04em;color:rgba(248,246,242,.1);white-space:nowrap;flex-shrink:0;transition:color .4s}
+.m-item:hover{color:var(--gold)}
+.m-sep{color:var(--gold);opacity:.35}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* FOOTER */
+footer{padding:52px clamp(24px,5vw,80px);border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.ft-logo{font-family:var(--serif);font-size:16px;font-weight:300;letter-spacing:.26em;text-transform:uppercase}
+.ft-logo em{color:var(--gold);font-style:italic}
+.ft-copy{font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.ft-links{display:flex;gap:22px}
+.ft-links a{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);transition:color .3s;cursor:pointer;text-decoration:none}
+.ft-links a:hover{color:var(--gold)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .pain-grid,.value-list{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr 1fr}
+  .p-card:nth-child(1){grid-column:span 12}
+  .p-card:nth-child(2){grid-column:span 6}
+  .p-card:nth-child(3){grid-column:span 6}
+  .p-card:nth-child(4){grid-column:span 6}
+  .p-card:nth-child(5){grid-column:span 6}
+  .cta-input{border-right:1px solid rgba(255,255,255,.12);border-bottom:none}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr}
+  .p-card:nth-child(n){grid-column:span 12;aspect-ratio:16/9}
+  footer{flex-direction:column;text-align:center}
+  .cta-buttons{flex-direction:column}
+  .cta-form{flex-direction:column}
+  .cta-input{border-right:1px solid rgba(255,255,255,.12)}
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="pre-logo">Vel<em>our</em></div>
+  <div class="pre-bar"><div class="pre-bar-fill" id="preBar"></div></div>
+  <div class="pre-count" id="preCount">0%</div>
+</div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Vel<em>our</em></div>
+  <ul class="nav-links">
+    <li><a onclick="goTo('#features')">Features</a></li>
+    <li><a onclick="goTo('#portfolio')">Portfolio</a></li>
+    <li><a onclick="goTo('#pricing')">Pricing</a></li>
+    <li><a onclick="goTo('#faq')">FAQ</a></li>
+    <li><a onclick="goTo('#cta')">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="#cta">Get Started</a>
+</nav>
+
+<!-- HERO VIDEO SCRUBBER -->
+<section id="hero">
+  <div class="hero-sticky">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-veil"></div>
+
+    <!-- Phase captions -->
+    <div class="reel-cap left" id="cap1">
+      <div class="rc-tag">Editorial Design</div>
+      <div class="rc-txt">Your brand,<br>elevated online</div>
+    </div>
+    <div class="reel-cap right" id="cap2">
+      <div class="rc-tag">Converts Visitors</div>
+      <div class="rc-txt">Turn scrollers<br>into buyers</div>
+    </div>
+    <div class="reel-cap left" id="cap3">
+      <div class="rc-tag">Built for Fashion</div>
+      <div class="rc-txt">Launching from<br><em style="color:var(--gold);font-style:italic">$4 / day</em></div>
+    </div>
+
+    <!-- Hero text -->
+    <div class="hero-text" id="heroText">
+      <div class="hero-eyebrow" id="heroEye">Premium Websites for Fashion Brands</div>
+      <h1 class="hero-title">
+        <span class="line"><span class="word" id="w1">Vel</span><span class="word italic" id="w2">our</span></span>
+      </h1>
+      <p class="hero-sub" id="heroSub">Editorial design. Conversion-ready. $100/month.</p>
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">
+      <div class="scroll-line"></div>
+      <span class="scroll-label">Scroll</span>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="m-item">Editorial Design</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Custom Domain</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Mobile-Ready</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Product Showcase</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">US Fashion Brands</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">$100 / Month</span><span class="m-item m-sep">✦</span>
+    <!-- duplicate for loop -->
+    <span class="m-item">Editorial Design</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Custom Domain</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Mobile-Ready</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Product Showcase</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">US Fashion Brands</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">$100 / Month</span><span class="m-item m-sep">✦</span>
+  </div>
+</div>
+
+<!-- PRICE HOOK -->
+<section id="price">
+  <div class="price-badge reveal">Starting Price</div>
+  <div class="price-main reveal d1">$<em>4</em></div>
+  <div class="price-unit reveal d2">per day — less than your daily coffee</div>
+  <div class="price-divider"></div>
+  <div class="price-equiv reveal d3">Or just <em>$100</em> per month</div>
+  <div class="price-note reveal d4">Domain · Hosting · Custom Design · Maintenance · Security — everything included. No hidden fees.</div>
+</section>
+
+<!-- PAIN POINTS -->
+<section>
+  <div id="pain">
+    <h2 class="pain-title reveal">
+      Without a website,<br>your brand is <em>invisible</em><br>to buyers who matter.
+    </h2>
+    <div class="pain-grid">
+      <div class="pain-item reveal">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Buyers scroll past you</strong> — they search online for brands, and yours doesn't show up</div>
+      </div>
+      <div class="pain-item reveal d1">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>You look unestablished</strong> — without a site, wholesale buyers and press won't take you seriously</div>
+      </div>
+      <div class="pain-item reveal d2">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>No link to share</strong> — no place to send traffic from Instagram, TikTok, or email campaigns</div>
+      </div>
+      <div class="pain-item reveal d3">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Sales come only from DMs</strong> — no new channel to reach customers outside your existing followers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div style="max-width:1400px;margin:0 auto">
+    <div class="features-header">
+      <h2 class="features-title reveal">Everything your brand<br>needs, <em>already included</em></h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat reveal">
+        <div class="feat-num">01</div>
+        <div class="feat-name">Live 24/7, Always On</div>
+        <div class="feat-desc">Your brand is discoverable around the clock — not just during business hours. Even while you sleep, your site sells.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-num">02</div>
+        <div class="feat-name">Domain & Hosting Included</div>
+        <div class="feat-desc">No extra setup fees. No managing servers. We handle all the technical work — your brand just shows up online.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-num">03</div>
+        <div class="feat-name">Contact & Inquiry Form</div>
+        <div class="feat-desc">Wholesale buyers, press, and collab requests reach you directly through your site — no DMs needed.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal">
+        <div class="feat-num">04</div>
+        <div class="feat-name">Editorial Design, Mobile-First</div>
+        <div class="feat-desc">Fashion-grade visual design that looks premium on every device. Not a template — a bespoke brand experience.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-num">05</div>
+        <div class="feat-name">Product Showcase Gallery</div>
+        <div class="feat-desc">Display your collection with full-screen imagery, pricing, and product detail — styled to match your brand aesthetic.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-num">06</div>
+        <div class="feat-name">One Link for Everything</div>
+        <div class="feat-desc">Drop it in your Instagram bio, TikTok, email signature, or press kit. One URL that does it all.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal">
+        <div class="feat-num">07</div>
+        <div class="feat-name">Maintenance & Security</div>
+        <div class="feat-desc">We keep your site fast, secure, and up to date every month — so you can focus on the brand, not the tech.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-num">08</div>
+        <div class="feat-name">Brand Story Section</div>
+        <div class="feat-desc">An "About" section crafted to connect emotionally with buyers — your founding story, values, and vision.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-num">09</div>
+        <div class="feat-name">Built for Credibility</div>
+        <div class="feat-desc">A polished web presence signals that your brand is serious — and serious brands attract better buyers and press.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="portfolio-header">
+    <h2 class="portfolio-title reveal">Client <em>Work</em></h2>
+    <span class="portfolio-note reveal d1">Websites we've built for brands</span>
+  </div>
+  <div class="portfolio-grid">
+    <div class="p-card reveal">
+      <img src="images/barbes.jpg" alt="Noir Label" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Streetwear Brand</div>
+        <div class="p-name">Noir Label</div>
+      </div>
+    </div>
+    <div class="p-card reveal d1">
+      <img src="images/barbes2.jpg" alt="Sable Studio" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Luxury Menswear</div>
+        <div class="p-name">Sable Studio</div>
+      </div>
+    </div>
+    <div class="p-card reveal">
+      <img src="images/goodcute.jpg" alt="Dusk Collective" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Women's Fashion</div>
+        <div class="p-name">Dusk Collective</div>
+      </div>
+    </div>
+    <div class="p-card reveal d1">
+      <img src="images/lumina.jpg" alt="Lumina Atelier" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Bridal & Evening</div>
+        <div class="p-name">Lumina Atelier</div>
+      </div>
+    </div>
+    <div class="p-card reveal d2">
+      <img src="images/noir-planner.jpg" alt="Archive Brand" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Contemporary Label</div>
+        <div class="p-name">Archive Brand</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section id="testimonial">
+  <blockquote class="testi-text reveal">
+    "The site they built looked more editorial than agencies charging 10x the price.
+    Wholesale inquiries <em>tripled</em> within the first month of launch."
+  </blockquote>
+  <div class="testi-author reveal d1">— <span>Maya Chen</span>, Founder · Mira Label, Los Angeles</div>
+</section>
+
+<!-- VALUE PROPS -->
+<section id="value">
+  <div style="max-width:1200px;margin:0 auto">
+    <h2 class="value-title reveal">Why fashion brands<br>choose <em>Velour?</em></h2>
+    <div class="value-list">
+      <div class="value-item reveal">
+        <div class="value-num">1</div>
+        <div class="value-body">
+          <strong>Fraction of agency cost</strong>
+          <p>Top agencies charge $5,000–$20,000 upfront. We deliver the same editorial quality for $100/month — no surprise invoices.</p>
+        </div>
+      </div>
+      <div class="value-item reveal d1">
+        <div class="value-num">2</div>
+        <div class="value-body">
+          <strong>Launch in 5 days, not 5 months</strong>
+          <p>Send us your assets on Monday, your site is live by Friday. No back-and-forth briefs, no project management overhead.</p>
+        </div>
+      </div>
+      <div class="value-item reveal d2">
+        <div class="value-num">3</div>
+        <div class="value-body">
+          <strong>Designed for fashion, not generic</strong>
+          <p>Every layout decision — typography, spacing, image treatment — is made for fashion aesthetics, not a one-size-fits-all template.</p>
+        </div>
+      </div>
+      <div class="value-item reveal d3">
+        <div class="value-num">4</div>
+        <div class="value-body">
+          <strong>Built to convert, not just impress</strong>
+          <p>Beautiful is table stakes. Every section is structured to move visitors toward an inquiry, purchase, or wholesale contact.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE -->
+<section id="garansi">
+  <div class="garansi-icon reveal">🛡️</div>
+  <h2 class="garansi-title reveal d1">Not happy? <em>Full refund</em><br>within the first 7 days.</h2>
+  <p class="garansi-desc reveal d2">
+    We stand behind our work. If the website we build
+    <strong>doesn't match your expectations within 7 days</strong> — we refund 100% of your payment.
+    No questions. No hassle.
+  </p>
+</section>
+
+<!-- PRICING TABLE -->
+<section id="pricing">
+  <div style="max-width:680px;margin:0 auto">
+    <div class="pricing-header">
+      <h2 class="pricing-title reveal">Choose the plan that <em>fits your brand</em></h2>
+      <p class="pricing-sub reveal d1">All plans include domain, hosting, design, and monthly maintenance.</p>
+    </div>
+    <div class="pricing-cards reveal d1">
+      <!-- PROFESSIONAL -->
+      <div class="pc featured">
+        <span class="pc-badge">Most Popular</span>
+        <span class="pc-label">Best for emerging brands</span>
+        <div class="pc-price">$<br>100<sub>/mo</sub></div>
+        <div class="pc-name">Professional</div>
+        <div class="pc-desc">Everything a fashion brand needs to look established and convert visitors into buyers.</div>
+        <ul class="pc-list">
+          <li>Custom 1-page brand site</li>
+          <li>Domain & hosting included</li>
+          <li>Product showcase gallery</li>
+          <li>Contact & inquiry form</li>
+          <li>Mobile-first design</li>
+          <li>Brand story section</li>
+          <li>Maintenance & security</li>
+          <li>2 revision rounds / month</li>
+        </ul>
+        <a class="pc-cta" href="#cta">Get Started</a>
+      </div>
+      <!-- PREMIUM -->
+      <div class="pc">
+        <span class="pc-label">For brands ready to scale</span>
+        <div class="pc-price">$<br>150<sub>/mo</sub></div>
+        <div class="pc-name">Premium</div>
+        <div class="pc-desc">For brands that want editorial storytelling, SEO, and a priority team in their corner.</div>
+        <ul class="pc-list">
+          <li>Everything in Professional</li>
+          <li>Lookbook / editorial section</li>
+          <li>Animated scroll experience</li>
+          <li>Newsletter capture + CRM</li>
+          <li>SEO-optimized copy</li>
+          <li>Priority 24h support</li>
+          <li>Unlimited revisions</li>
+          <li>Monthly performance report</li>
+        </ul>
+        <a class="pc-cta" href="#cta">Get Premium</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section id="comparison">
+  <div style="max-width:900px;margin:0 auto">
+    <h2 class="comp-title reveal">What does it cost<br><em>without Velour?</em></h2>
+    <table class="comp-table reveal d1">
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Cost</th>
+          <th>Setup Time</th>
+          <th>Support</th>
+          <th style="text-align:right">Velour</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DIY (Squarespace / Wix)</td>
+          <td>$16–$49/mo + your time</td>
+          <td>2–6 weeks</td>
+          <td class="comp-x">Self-service</td>
+          <td style="text-align:right" class="comp-check">✓ More professional</td>
+        </tr>
+        <tr>
+          <td>Freelance designer</td>
+          <td>$1,500–$8,000 upfront</td>
+          <td>4–12 weeks</td>
+          <td class="comp-x">Not included</td>
+          <td style="text-align:right" class="comp-check">✓ No upfront cost</td>
+        </tr>
+        <tr>
+          <td>Design agency</td>
+          <td>$5,000–$25,000</td>
+          <td>8–20 weeks</td>
+          <td class="comp-x">Extra fees</td>
+          <td style="text-align:right" class="comp-check">✓ Same quality, 50× less</td>
+        </tr>
+        <tr style="background:rgba(201,168,76,.04)">
+          <td style="color:var(--gold);font-weight:500">✦ Velour</td>
+          <td style="color:var(--gold);font-weight:500">$100/month</td>
+          <td style="color:var(--gold)">3–5 business days</td>
+          <td style="color:var(--gold)">Direct & personal</td>
+          <td style="text-align:right;color:var(--gold)">🏆 Best value</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div style="max-width:800px">
+    <h2 class="faq-title reveal">Questions we<br>get <em>asked often</em></h2>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What happens if I cancel my subscription?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">Your site is paused. But <strong>all your files and design assets are held for 90 days</strong> — so if you want to reactivate, just restart your plan and you're back online immediately with no rebuild required.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d1">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I use my existing domain name?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">Yes. We connect your existing domain (GoDaddy, Namecheap, Squarespace, or any registrar) to your new site at no extra charge. If you don't have one yet, <strong>we'll help you pick and register it</strong> as part of the setup process.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I update the content myself?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">For changes like new product photos, updated prices, or contact info — <strong>just email us and it's done within 24 hours</strong>. No extra charge. It's all part of your monthly plan.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d3">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">How long does it take to launch?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner"><strong>3–5 business days</strong> after you send us your brand assets — logo, photos, and a short brand brief. Rush delivery in 48 hours is available on the Premium plan.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d4">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What payment methods do you accept?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">We accept all major US credit and debit cards (Visa, Mastercard, Amex) and PayPal, processed securely via Stripe. <strong>All billing is in USD</strong>. Cancel anytime — no lock-in contracts.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-price-pill reveal">✦ &nbsp;From $4 / day&nbsp; ✦</div>
+  <h2 class="cta-title reveal d1">
+    Ready to launch<br>your brand<br><em>today?</em>
+  </h2>
+  <p class="cta-sub reveal d2">
+    <strong>$100/month.</strong> Domain, hosting, custom design, maintenance — all included.<br>
+    Drop your email and we'll send a free mockup of your brand's site within <strong>24 hours.</strong>
+  </p>
+  <form class="cta-form reveal d3" onsubmit="handleSubmit(event)">
+    <input type="email" class="cta-input" placeholder="your@brand.com" required>
+    <button type="submit" class="cta-submit">Get Free Mockup</button>
+  </form>
+  <div class="cta-buttons reveal d4">
+    <a class="btn-ghost" href="#features">See All Features</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">Vel<em>our</em></div>
+  <div class="ft-copy">© 2025 Velour · A demo site built by <a href="#" style="color:var(--gold);text-decoration:none">Startex</a></div>
+  <div class="ft-links">
+    <a href="mailto:hello@startex.co">Email Us</a>
+    <a href="#">Instagram</a>
+    <a href="#">TikTok</a>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function lp(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(lp)})();
+document.querySelectorAll('a,button,[onclick],.feat,.p-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+
+// NAV — appears only after video scene ends
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  const heroBottom = heroSec.offsetTop + heroSec.offsetHeight;
+  const pastHero   = window.scrollY + window.innerHeight > heroBottom;
+  navEl.classList.toggle('visible', pastHero);
+  navEl.classList.toggle('scrolled', pastHero);
+},{passive:true});
+
+// HERO ENTRANCE (called after frames load)
+function startHero(){
+  document.getElementById('heroEye').classList.add('show');
+  setTimeout(()=>{ document.getElementById('w1').classList.add('show'); },80);
+  setTimeout(()=>{ document.getElementById('w2').classList.add('show'); },200);
+  setTimeout(()=>{
+    document.getElementById('heroSub').classList.add('show');
+    document.getElementById('scrollHint').classList.add('show');
+  },600);
+}
+
+// CANVAS FRAME SCRUBBER
+const canvas  = document.getElementById('heroCanvas');
+const ctx     = canvas.getContext('2d');
+const heroSec = document.getElementById('hero');
+const heroTxt = document.getElementById('heroText');
+const cap1    = document.getElementById('cap1');
+const cap2    = document.getElementById('cap2');
+const cap3    = document.getElementById('cap3');
+const hint    = document.getElementById('scrollHint');
+
+const TOTAL = 265;
+const src   = i => 'frames/frame' + String(i).padStart(4,'0') + '.jpg';
+
+const imgs = new Array(TOTAL).fill(null);
+let loaded = 0;
+let curF   = 0;
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  if(imgs[curF]) paint(curF);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function paint(idx){
+  const img = imgs[idx];
+  if(!img || !img.complete) return;
+  const cw=canvas.width, ch=canvas.height;
+  const iw=img.naturalWidth, ih=img.naturalHeight;
+  const s=Math.max(cw/iw, ch/ih);
+  ctx.drawImage(img,(cw-iw*s)/2,(ch-ih*s)/2,iw*s,ih*s);
+}
+
+// Preload first N frames, then launch — rest load silently in background
+const PRELOAD = 20;
+let launched = false;
+
+function launchSite(){
+  if(launched) return;
+  launched = true;
+  const pre = document.getElementById('preloader');
+  if(pre && !pre.classList.contains('gone')){
+    pre.classList.add('gone');
+    setTimeout(()=>{ pre.remove(); startHero(); }, 900);
+  }
+}
+
+(function loadAll(){
+  for(let i=1;i<=TOTAL;i++){
+    const img=new Image();
+    const idx=i-1;
+    img.onload=()=>{
+      loaded++;
+      const pct=Math.floor(loaded/PRELOAD*100);
+      const b=document.getElementById('preBar');
+      const c=document.getElementById('preCount');
+      if(b) b.style.width=Math.min(pct,100)+'%';
+      if(c) c.textContent=Math.min(pct,100)+'%';
+      if(idx===0) paint(0);
+      // Launch after PRELOAD frames ready
+      if(loaded===PRELOAD) launchSite();
+    };
+    img.onerror=()=>{ loaded++; if(loaded===PRELOAD) launchSite(); };
+    img.src=src(i);
+    imgs[idx]=img;
+  }
+})();
+
+// SCROLL → FRAME + CAPTIONS
+let ticking=false;
+window.addEventListener('scroll',()=>{
+  if(ticking) return;
+  ticking=true;
+  requestAnimationFrame(()=>{
+    ticking=false;
+    const scrolled=-heroSec.getBoundingClientRect().top;
+    const total=heroSec.offsetHeight-window.innerHeight;
+    const p=Math.max(0,Math.min(1,scrolled/total));
+    const idx=Math.min(Math.floor(p*TOTAL),TOTAL-1);
+    if(idx!==curF){ curF=idx; paint(curF); }
+    heroTxt.style.opacity=Math.max(0,1-p*5);
+    hint.classList.toggle('show',p<.04);
+    cap1.classList.toggle('on',p>.15&&p<.40);
+    cap2.classList.toggle('on',p>.44&&p<.67);
+    cap3.classList.toggle('on',p>.70&&p<.92);
+  });
+},{passive:true});
+
+// SMOOTH SCROLL
+function goTo(sel){document.querySelector(sel)?.scrollIntoView({behavior:'smooth'})}
+
+// FAQ TOGGLE
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el=>el.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+// INTERSECTION REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); obs.unobserve(e.target); }});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// PRICE COUNTER
+function countUp(el){
+  const raw=el.textContent.trim();
+  const num=parseInt(raw.replace(/\D/g,''));
+  if(!num) return;
+  const suf=raw.replace(/[\d.,]/g,'');
+  const t0=performance.now();
+  (function step(now){
+    const p=Math.min((now-t0)/1600,1);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(e*num)+suf;
+    if(p<1) requestAnimationFrame(step);
+  })(performance.now());
+}
+const cObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ countUp(e.target); cObs.unobserve(e.target); }});
+},{threshold:.5});
+document.querySelectorAll('.price-main').forEach(el=>cObs.observe(el));
+
+// CTA FORM
+function handleSubmit(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('.cta-submit');
+  btn.textContent = 'Sent ✓';
+  btn.style.background = '#2d6a2d';
+  setTimeout(()=>{ btn.textContent = 'Get Free Mockup'; btn.style.background = ''; },3000);
+}
+</script>
+</body>
+</html>
