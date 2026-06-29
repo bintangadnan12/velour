@@ -3,835 +3,923 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VELOUR — Premium Streetwear</title>
-<meta name="description" content="VELOUR. Elevated streetwear crafted for the modern edge. Shop the latest drops.">
+<title>VELOUR — Premium Fashion Brand Websites</title>
+<meta name="description" content="Professional fashion brand websites starting at $100/month. Domain, hosting, custom design — all included.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300&family=DM+Sans:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --black: #0a0a0a;
-    --white: #f5f3ef;
-    --cream: #ede8df;
-    --gold: #c9a84c;
-    --gold-light: #e8cc7a;
-    --gray: #6b6b6b;
-    --border: rgba(245,243,239,.1);
-    --ease: cubic-bezier(.16,1,.3,1);
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;
+  --gold2:#E8CC7A;
+  --gold-dim:rgba(201,168,76,.12);
+  --black:#020202;
+  --off-black:#080807;
+  --white:#f8f6f2;
+  --muted:rgba(248,246,242,.42);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+html{font-size:16px}
+body{background:var(--black);color:var(--white);font-family:var(--sans);font-weight:300;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; font-weight: 300; overflow-x: hidden; }
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  opacity:.5;mix-blend-mode:screen}
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 28px 48px;
-    transition: padding .5s var(--ease), background .5s, border-color .5s;
-    border-bottom: 1px solid transparent;
-  }
-  nav.scrolled {
-    padding: 16px 48px;
-    background: rgba(10,10,10,.92);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: .2em; color: var(--white); text-decoration: none; }
-  .nav-links { display: flex; gap: 36px; list-style: none; }
-  .nav-links a { color: rgba(245,243,239,.6); text-decoration: none; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; transition: color .3s; }
-  .nav-links a:hover { color: var(--white); }
-  .nav-cta { background: var(--gold); color: var(--black); padding: 10px 24px; font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: background .3s; }
-  .nav-cta:hover { background: var(--gold-light); }
+/* PRELOADER */
+#preloader{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s var(--ease),visibility 1s}
+#preloader.gone{opacity:0;visibility:hidden}
+.pre-logo{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:200;letter-spacing:.3em;text-transform:uppercase;color:var(--white);opacity:0;animation:fadeUp .9s var(--ease) .3s forwards}
+.pre-logo em{color:var(--gold);font-style:italic}
+.pre-bar{width:200px;height:1px;background:rgba(255,255,255,.08);margin-top:32px;overflow:hidden;opacity:0;animation:fadeUp .6s var(--ease) .7s forwards}
+.pre-bar-fill{height:100%;width:0%;background:var(--gold);transition:width .05s linear}
+.pre-count{font-size:10px;letter-spacing:.3em;color:var(--muted);margin-top:10px;opacity:0;animation:fadeUp .6s var(--ease) .7s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-  /* ── HERO ── */
-  #hero { position: relative; height: 100vh; display: flex; align-items: flex-end; overflow: hidden; background: #0d0b08; }
-  .hero-bg-gradient {
-    position: absolute; inset: 0; z-index: 1;
-    background: linear-gradient(to right, rgba(10,10,10,1) 35%, rgba(10,10,10,.4) 65%, rgba(10,10,10,.1) 100%),
-                linear-gradient(to bottom, rgba(10,10,10,.3) 0%, transparent 40%, rgba(10,10,10,.8) 85%, var(--black) 100%);
-  }
-  .hero-art {
-    position: absolute; right: 0; top: 0; width: 62%; height: 100%; z-index: 0; overflow: hidden;
-  }
-  .hero-art svg { width: 100%; height: 100%; display: block; }
-  .hero-content { position: relative; z-index: 2; padding: 0 48px 90px; max-width: 580px; }
-  .hero-label { font-size: .68rem; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
-  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3.2rem, 6vw, 5.5rem); line-height: .95; margin-bottom: 28px; }
-  .hero-title em { font-style: italic; color: var(--gold); }
-  .hero-sub { font-size: .95rem; line-height: 1.75; color: rgba(245,243,239,.5); max-width: 380px; margin-bottom: 40px; }
-  .hero-actions { display: flex; gap: 20px; align-items: center; }
-  .btn-primary { background: var(--gold); color: var(--black); padding: 16px 36px; font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; display: inline-block; transition: background .3s, transform .2s; }
-  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
-  .btn-ghost { color: rgba(245,243,239,.55); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid rgba(245,243,239,.2); padding-bottom: 2px; transition: color .3s, border-color .3s; }
-  .btn-ghost:hover { color: var(--white); border-color: rgba(245,243,239,.5); }
-  .hero-scroll { position: absolute; bottom: 40px; right: 48px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .hero-scroll span { font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: rgba(245,243,239,.3); writing-mode: vertical-rl; }
-  .scroll-line { width: 1px; height: 56px; background: linear-gradient(to bottom, var(--gold), transparent); animation: spulse 2s ease-in-out infinite; }
-  @keyframes spulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+/* CURSOR */
+.cursor{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference}
+.cursor-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(201,168,76,.45);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s var(--ease),height .35s var(--ease)}
+.cursor-ring.big{width:64px;height:64px}
 
-  /* ── TRUST BAR ── */
-  .trust-bar { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 18px 48px; display: flex; justify-content: center; gap: 56px; flex-wrap: wrap; }
-  .trust-item { display: flex; align-items: center; gap: 8px; color: rgba(245,243,239,.4); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
-  .trust-icon { width: 14px; height: 14px; flex-shrink: 0; }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:26px clamp(24px,5vw,80px);display:flex;align-items:center;justify-content:space-between;transition:padding .5s var(--ease),background .5s,opacity .5s var(--ease),transform .5s var(--ease);opacity:0;transform:translateY(-12px);pointer-events:none}
+nav.visible{opacity:1;transform:none;pointer-events:all}
+nav.scrolled{padding:14px clamp(24px,5vw,80px);background:rgba(2,2,2,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.1)}
+.nav-logo{font-family:var(--serif);font-size:19px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--white)}
+.nav-logo em{color:var(--gold);font-style:italic}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);transition:color .3s;cursor:pointer}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:10px 22px;transition:all .3s;cursor:pointer;white-space:nowrap;text-decoration:none}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
 
-  /* ── REVEAL ── */
-  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .85s var(--ease), transform .85s var(--ease); }
-  .reveal.visible { opacity: 1; transform: none; }
-  .d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s} .d4{transition-delay:.4s} .d5{transition-delay:.5s}
+/* HERO — CANVAS SCRUBBER */
+#hero{position:relative;height:900vh}
+.hero-sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-veil{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(2,2,2,.3) 0%,rgba(2,2,2,0) 35%,rgba(2,2,2,0) 65%,rgba(2,2,2,.85) 100%);z-index:1}
+.hero-text{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.hero-eyebrow{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;transform:translateY(14px);transition:all .9s var(--ease)}
+.hero-eyebrow.show{opacity:1;transform:none}
+.hero-title{font-family:var(--serif);font-size:clamp(60px,11vw,156px);font-weight:200;line-height:.88;letter-spacing:.02em;text-transform:uppercase}
+.hero-title .line{display:block;overflow:hidden}
+.hero-title .word{display:inline-block;transform:translateY(110%);transition:transform 1.1s var(--ease)}
+.hero-title .word.show{transform:translateY(0)}
+.hero-title .italic{font-style:italic;color:var(--gold)}
+.hero-sub{margin-top:32px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);opacity:0;transition:all 1s var(--ease) .5s}
+.hero-sub.show{opacity:1}
+.scroll-hint{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;transition:opacity .8s}
+.scroll-hint.show{opacity:1}
+.scroll-line{width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--gold));animation:pulse 1.8s ease-in-out infinite}
+.scroll-label{font-size:9px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
-  /* ── SECTION BASE ── */
-  section { padding: 96px 48px; }
-  .section-label { font-size: .66rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
-  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.9rem, 3.8vw, 3rem); line-height: 1.1; margin-bottom: 16px; }
-  .section-sub { color: rgba(245,243,239,.48); font-size: .9rem; line-height: 1.75; max-width: 460px; }
+/* REEL CAPTIONS */
+.reel-cap{position:absolute;z-index:3;pointer-events:none;opacity:0;transition:opacity .55s var(--ease)}
+.reel-cap.on{opacity:1}
+.reel-cap .rc-tag{font-size:9px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.reel-cap .rc-txt{font-family:var(--serif);font-size:clamp(26px,3.5vw,52px);font-weight:200;line-height:1.1;color:var(--white)}
+.reel-cap.left{left:clamp(24px,6vw,110px);top:50%;transform:translateY(-50%)}
+.reel-cap.right{right:clamp(24px,6vw,110px);top:50%;transform:translateY(-50%);text-align:right}
 
-  /* ── COLLECTION ── */
-  #collection { padding-top: 72px; }
-  .collection-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; }
-  .view-all { color: var(--gold); font-size: .72rem; letter-spacing: .15em; text-transform: uppercase; text-decoration: none; border-bottom: 1px solid rgba(201,168,76,.3); padding-bottom: 2px; white-space: nowrap; margin-bottom: 6px; transition: border-color .3s; }
-  .view-all:hover { border-color: var(--gold); }
+/* SECTION BASE */
+.section-tag{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:20px}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .95s var(--ease),transform .95s var(--ease)}
+.reveal.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.18s}.d3{transition-delay:.28s}.d4{transition-delay:.42s}.d5{transition-delay:.56s}
 
-  .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
-  .product-card { position: relative; overflow: hidden; cursor: pointer; background: #111; aspect-ratio: 3/4; }
-  .product-card:first-child { grid-column: span 2; aspect-ratio: 16/7; }
+/* ── PRICE HOOK ── */
+#price{padding:clamp(100px,14vw,180px) clamp(24px,5vw,80px);text-align:center;position:relative;overflow:hidden}
+#price::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(ellipse,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none}
+.price-badge{display:inline-flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:10px 22px;margin-bottom:44px}
+.price-badge::before,.price-badge::after{content:'';width:20px;height:1px;background:var(--gold);opacity:.5}
+.price-main{font-family:var(--serif);font-size:clamp(72px,14vw,200px);font-weight:200;line-height:.85;color:var(--white);letter-spacing:-.01em}
+.price-main em{color:var(--gold);font-style:italic}
+.price-unit{font-size:clamp(14px,2vw,22px);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:20px}
+.price-divider{width:1px;height:60px;background:linear-gradient(to bottom,transparent,rgba(201,168,76,.4),transparent);margin:48px auto}
+.price-equiv{font-family:var(--serif);font-size:clamp(22px,3.5vw,44px);font-weight:200;color:var(--white);line-height:1.2}
+.price-equiv em{color:var(--gold);font-style:italic}
+.price-note{font-size:13px;color:var(--muted);margin-top:16px;letter-spacing:.04em}
 
-  .product-art { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform .8s var(--ease); }
-  .product-art svg { width: 100%; height: 100%; display: block; }
-  .product-card:hover .product-art { transform: scale(1.04); }
+/* ── PAIN POINTS ── */
+#pain{padding:clamp(80px,10vw,130px) clamp(24px,5vw,80px);max-width:1200px;margin:0 auto}
+.pain-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white);line-height:1.05;margin-bottom:clamp(40px,6vw,80px)}
+.pain-title em{font-style:italic;color:var(--gold)}
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:1px solid rgba(255,255,255,.06)}
+.pain-item{padding:32px 28px;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);transition:background .4s}
+.pain-item:hover{background:rgba(201,168,76,.04)}
+.pain-x{font-size:20px;margin-bottom:14px;opacity:.6}
+.pain-text{font-size:14px;line-height:1.7;color:var(--muted)}
+.pain-text strong{color:var(--white);font-weight:400}
 
-  .product-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,.9) 0%, rgba(10,10,10,.2) 50%, transparent 100%); opacity: 0; transition: opacity .4s; }
-  .product-card:hover .product-overlay { opacity: 1; }
+/* ── FEATURES ── */
+#features{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px);background:var(--off-black)}
+.features-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:clamp(44px,6vw,80px);flex-wrap:wrap;gap:20px}
+.features-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white);line-height:1.05}
+.features-title em{font-style:italic;color:var(--gold)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid rgba(255,255,255,.06)}
+.feat{padding:36px 30px;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);transition:background .4s;cursor:default}
+.feat:hover{background:rgba(201,168,76,.04)}
+.feat-num{font-family:var(--serif);font-size:12px;color:var(--gold);margin-bottom:20px;opacity:.7}
+.feat-name{font-size:15px;font-weight:400;color:var(--white);margin-bottom:10px;line-height:1.3}
+.feat-desc{font-size:13px;line-height:1.75;color:var(--muted)}
+.feat-arrow{display:inline-block;margin-top:16px;color:var(--gold);opacity:0;transform:translateX(-5px);transition:all .3s;font-size:16px}
+.feat:hover .feat-arrow{opacity:1;transform:none}
 
-  .product-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; transform: translateY(8px); opacity: 0; transition: transform .4s var(--ease), opacity .4s; }
-  .product-card:hover .product-info { transform: none; opacity: 1; }
-  .product-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 6px; }
-  .product-meta { display: flex; justify-content: space-between; align-items: center; }
-  .product-price { color: var(--gold); font-size: .88rem; font-weight: 500; }
-  .product-tag { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,243,239,.45); }
-  .product-badge { position: absolute; top: 16px; left: 16px; background: var(--gold); color: var(--black); font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; z-index: 2; }
-  .product-badge.outline { background: transparent; border: 1px solid rgba(201,168,76,.5); color: var(--gold); }
+/* ── PORTFOLIO ── */
+#portfolio{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px)}
+.portfolio-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:clamp(40px,5vw,64px);flex-wrap:wrap;gap:16px}
+.portfolio-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white)}
+.portfolio-title em{font-style:italic;color:var(--gold)}
+.portfolio-note{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.portfolio-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.p-card{position:relative;overflow:hidden;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);cursor:pointer}
+.p-card:nth-child(1){grid-column:span 8;aspect-ratio:16/9}
+.p-card:nth-child(2){grid-column:span 4;aspect-ratio:3/4}
+.p-card:nth-child(3){grid-column:span 4;aspect-ratio:4/5}
+.p-card:nth-child(4){grid-column:span 4;aspect-ratio:4/5}
+.p-card:nth-child(5){grid-column:span 4;aspect-ratio:4/5}
+.p-card img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform .9s var(--ease)}
+.p-card:hover img{transform:scale(1)}
+.p-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(2,2,2,.9) 0%,transparent 55%);opacity:0;transition:opacity .5s}
+.p-card:hover .p-card-overlay{opacity:1}
+.p-card-info{position:absolute;bottom:0;left:0;right:0;padding:24px;transform:translateY(10px);opacity:0;transition:all .5s var(--ease)}
+.p-card:hover .p-card-info{opacity:1;transform:none}
+.p-cat{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.p-name{font-family:var(--serif);font-size:clamp(16px,2vw,24px);font-weight:300;color:var(--white)}
 
-  /* ── ABOUT ── */
-  #about { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-  .about-visual { position: relative; }
-  .about-main-art { width: 100%; aspect-ratio: 3/4; position: relative; overflow: hidden; }
-  .about-main-art svg { width: 100%; height: 100%; display: block; }
-  .about-accent-art {
-    position: absolute; bottom: -36px; right: -36px;
-    width: 52%; aspect-ratio: 1;
-    overflow: hidden; border: 4px solid var(--black); z-index: 2;
-  }
-  .about-accent-art svg { width: 100%; height: 100%; display: block; }
-  .about-text { padding: 16px 0; }
-  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 44px 0; padding: 36px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .stat-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--gold); line-height: 1; margin-bottom: 6px; }
-  .stat-label { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,243,239,.4); }
+/* ── TESTIMONIAL ── */
+#testimonial{padding:clamp(100px,13vw,160px) clamp(24px,5vw,80px);text-align:center;position:relative;overflow:hidden}
+#testimonial::before{content:'"';position:absolute;top:-60px;left:50%;transform:translateX(-50%);font-family:var(--serif);font-size:clamp(180px,22vw,380px);font-weight:200;color:rgba(201,168,76,.04);line-height:1;pointer-events:none}
+.testi-text{font-family:var(--serif);font-size:clamp(22px,3.2vw,46px);font-weight:200;line-height:1.35;color:var(--white);max-width:840px;margin:0 auto;position:relative;z-index:1}
+.testi-text em{font-style:italic;color:var(--gold)}
+.testi-author{margin-top:44px;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.testi-author span{color:var(--gold)}
 
-  /* ── LOOKBOOK ── */
-  #lookbook { padding: 80px 0; }
-  .lookbook-header { padding: 0 48px; margin-bottom: 36px; }
-  .lookbook-strip { display: flex; gap: 2px; overflow-x: auto; padding: 0 48px 0; scrollbar-width: none; }
-  .lookbook-strip::-webkit-scrollbar { display: none; }
-  .lookbook-item { flex-shrink: 0; width: 280px; height: 400px; position: relative; overflow: hidden; background: #111; }
-  .lookbook-art { position: absolute; inset: 0; transition: transform .6s var(--ease); }
-  .lookbook-art svg { width: 100%; height: 100%; display: block; }
-  .lookbook-item:hover .lookbook-art { transform: scale(1.05); }
-  .lookbook-num { position: absolute; bottom: 16px; left: 20px; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: rgba(245,243,239,.15); line-height: 1; z-index: 2; pointer-events: none; }
+/* ── VALUE PROPS ── */
+#value{padding:clamp(80px,10vw,130px) clamp(24px,5vw,80px);background:var(--off-black)}
+.value-title{font-family:var(--serif);font-size:clamp(34px,5vw,68px);font-weight:200;color:var(--white);margin-bottom:clamp(44px,6vw,80px);line-height:1.05}
+.value-title em{font-style:italic;color:var(--gold)}
+.value-list{display:grid;grid-template-columns:1fr 1fr;gap:32px 64px}
+.value-item{display:flex;gap:20px;align-items:flex-start}
+.value-num{font-family:var(--serif);font-size:36px;font-weight:200;color:var(--gold);opacity:.5;line-height:1;flex-shrink:0;width:36px}
+.value-body strong{display:block;font-size:14px;font-weight:500;color:var(--white);margin-bottom:6px;letter-spacing:.02em}
+.value-body p{font-size:13px;line-height:1.7;color:var(--muted)}
 
-  /* ── PRICING ── */
-  #pricing { text-align: center; }
-  .pricing-header { margin-bottom: 56px; }
-  .pricing-header .section-sub { margin: 0 auto; }
-  .pricing-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; max-width: 720px; margin: 0 auto; border: 1px solid var(--border); }
-  .price-card { padding: 44px 36px; text-align: left; border: 1px solid transparent; transition: border-color .3s, background .3s; position: relative; }
-  .price-card:hover { background: rgba(255,255,255,.02); }
-  .price-card.featured { background: rgba(201,168,76,.05); border: 1px solid rgba(201,168,76,.22); margin: -1px; z-index: 1; }
-  .price-badge { display: inline-block; background: var(--gold); color: var(--black); font-size: .58rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; padding: 4px 12px; margin-bottom: 26px; }
-  .price-name { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(245,243,239,.38); margin-bottom: 10px; }
-  .price-amount { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1; margin-bottom: 4px; }
-  .price-amount sup { font-family: 'Inter', sans-serif; font-size: 1.1rem; vertical-align: super; color: var(--gold); margin-right: 2px; }
-  .price-period { font-size: .72rem; color: rgba(245,243,239,.3); letter-spacing: .08em; margin-bottom: 30px; display: block; }
-  .price-features { list-style: none; margin-bottom: 32px; display: flex; flex-direction: column; gap: 11px; }
-  .price-features li { font-size: .83rem; color: rgba(245,243,239,.6); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
-  .price-features li::before {
-    content: '';
-    width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
-    background: rgba(201,168,76,.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' stroke='%23c9a84c' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/10px no-repeat;
-    border: 1px solid rgba(201,168,76,.35);
-  }
-  .price-cta { display: block; text-align: center; padding: 13px; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border: 1px solid rgba(201,168,76,.3); color: var(--gold); transition: background .3s, color .3s, border-color .3s; }
-  .price-card.featured .price-cta { background: var(--gold); color: var(--black); border-color: var(--gold); }
-  .price-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+/* ── GUARANTEE ── */
+#garansi{padding:clamp(60px,8vw,100px) clamp(24px,5vw,80px);background:linear-gradient(135deg,rgba(201,168,76,.06) 0%,transparent 60%);border-top:1px solid rgba(201,168,76,.12);border-bottom:1px solid rgba(201,168,76,.12);text-align:center}
+.garansi-icon{font-size:48px;margin-bottom:20px}
+.garansi-title{font-family:var(--serif);font-size:clamp(28px,4vw,52px);font-weight:200;color:var(--white);margin-bottom:14px}
+.garansi-title em{color:var(--gold);font-style:italic}
+.garansi-desc{font-size:14px;color:var(--muted);max-width:560px;margin:0 auto;line-height:1.75}
+.garansi-desc strong{color:var(--white);font-weight:400}
 
-  /* ── TESTIMONIALS ── */
-  #testimonials { padding: 96px 48px; }
-  .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 52px; }
-  .testi-card { padding: 36px 28px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px; }
-  .testi-stars { display: flex; gap: 3px; }
-  .star { color: var(--gold); font-size: .85rem; }
-  .testi-quote { font-family: 'Playfair Display', serif; font-size: 1rem; line-height: 1.65; color: rgba(245,243,239,.82); flex: 1; }
-  .testi-author { display: flex; align-items: center; gap: 12px; }
-  .testi-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: 1px solid rgba(201,168,76,.2); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: .95rem; color: var(--gold); flex-shrink: 0; }
-  .testi-name { font-size: .82rem; font-weight: 500; margin-bottom: 2px; }
-  .testi-role { font-size: .68rem; color: rgba(245,243,239,.38); letter-spacing: .06em; }
+/* ── PRICING TABLE ── */
+#pricing{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px)}
+.pricing-header{text-align:center;margin-bottom:clamp(44px,6vw,72px)}
+.pricing-title{font-family:var(--serif);font-size:clamp(32px,5vw,64px);font-weight:200;color:var(--white);line-height:1.05}
+.pricing-title em{font-style:italic;color:var(--gold)}
+.pricing-sub{font-size:13px;color:var(--muted);margin-top:14px}
+.pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid rgba(255,255,255,.08);max-width:680px;margin:0 auto}
+.pc{padding:40px 32px;border-right:1px solid rgba(255,255,255,.08);position:relative;transition:background .4s}
+.pc:last-child{border-right:none}
+.pc.featured{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);margin:-1px;z-index:1}
+.pc-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:block}
+.pc.featured .pc-label{color:var(--gold)}
+.pc-badge{position:absolute;top:16px;right:16px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:var(--black);padding:4px 10px;font-weight:500}
+.pc-price{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:200;color:var(--white);line-height:1}
+.pc.dim .pc-price{color:var(--muted)}
+.pc-price sub{font-size:14px;letter-spacing:.1em;vertical-align:middle;font-family:var(--sans)}
+.pc-name{font-size:13px;font-weight:500;color:var(--white);margin:16px 0 8px;letter-spacing:.04em}
+.pc.dim .pc-name{color:var(--muted)}
+.pc-desc{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:24px}
+.pc-list{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:28px}
+.pc-list li{font-size:12px;color:var(--muted);display:flex;gap:10px;align-items:flex-start}
+.pc-list li::before{content:'✓';color:var(--gold);flex-shrink:0;font-size:11px;margin-top:1px}
+.pc-cta{display:block;text-align:center;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:13px;border:1px solid rgba(201,168,76,.3);color:var(--gold);transition:all .3s;cursor:pointer;text-decoration:none;font-family:var(--sans)}
+.pc.featured .pc-cta{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.pc.featured .pc-cta:hover{background:var(--gold2)}
+.pc-cta:hover{border-color:var(--gold);background:rgba(201,168,76,.08)}
 
-  /* ── FAQ ── */
-  #faq { padding: 96px 48px; background: rgba(255,255,255,.012); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .faq-inner { text-align: center; margin-bottom: 52px; }
-  .faq-wrap { max-width: 700px; margin: 0 auto; }
-  .faq-item { border-bottom: 1px solid var(--border); }
-  .faq-q { width: 100%; background: none; border: none; color: var(--white); font-family: inherit; font-size: .93rem; font-weight: 400; text-align: left; padding: 22px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 24px; transition: color .3s; }
-  .faq-q:hover { color: var(--gold); }
-  .faq-icon { width: 20px; height: 20px; border: 1px solid rgba(201,168,76,.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color .3s, transform .4s var(--ease); }
-  .faq-item.open .faq-icon { border-color: var(--gold); transform: rotate(180deg); }
-  .faq-a { max-height: 0; overflow: hidden; transition: max-height .5s var(--ease); }
-  .faq-item.open .faq-a { max-height: 260px; }
-  .faq-a p { padding-bottom: 22px; color: rgba(245,243,239,.48); font-size: .88rem; line-height: 1.8; }
+/* ── COMPARISON ── */
+#comparison{padding:clamp(80px,10vw,130px) clamp(24px,5vw,80px);background:var(--off-black)}
+.comp-title{font-family:var(--serif);font-size:clamp(30px,4.5vw,60px);font-weight:200;color:var(--white);margin-bottom:clamp(40px,5vw,64px);line-height:1.05}
+.comp-title em{font-style:italic;color:var(--gold)}
+.comp-table{width:100%;border-collapse:collapse;max-width:800px}
+.comp-table th{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);padding:14px 20px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.comp-table th:last-child{color:var(--gold)}
+.comp-table td{padding:18px 20px;font-size:13px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.04)}
+.comp-table td:first-child{color:var(--white);font-weight:400}
+.comp-table td:last-child{color:var(--gold);font-weight:500}
+.comp-table tr:hover td{background:rgba(255,255,255,.02)}
+.comp-check{color:var(--gold)}
+.comp-x{color:rgba(255,255,255,.2)}
 
-  /* ── CTA BANNER ── */
-  #cta-banner { padding: 100px 48px; text-align: center; border-top: 1px solid var(--border); position: relative; overflow: hidden; }
-  .cta-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(201,168,76,.07) 0%, transparent 70%); pointer-events: none; }
-  #cta-banner .section-title { max-width: 560px; margin: 0 auto 20px; }
-  #cta-banner .section-sub { margin: 0 auto 44px; text-align: center; }
-  .cta-form { display: flex; max-width: 420px; margin: 0 auto; }
-  .cta-input { flex: 1; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-right: none; color: var(--white); font-family: inherit; font-size: .84rem; padding: 14px 20px; outline: none; transition: border-color .3s; }
-  .cta-input::placeholder { color: rgba(245,243,239,.28); }
-  .cta-input:focus { border-color: rgba(201,168,76,.45); }
-  .cta-submit { background: var(--gold); color: var(--black); border: none; padding: 14px 26px; font-family: inherit; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .3s; white-space: nowrap; }
-  .cta-submit:hover { background: var(--gold-light); }
-  .cta-note { margin-top: 14px; font-size: .7rem; color: rgba(245,243,239,.28); letter-spacing: .08em; }
+/* ── FAQ ── */
+#faq{padding:clamp(80px,10vw,140px) clamp(24px,5vw,80px)}
+.faq-title{font-family:var(--serif);font-size:clamp(32px,5vw,64px);font-weight:200;color:var(--white);margin-bottom:clamp(40px,5vw,64px);line-height:1.05}
+.faq-title em{font-style:italic;color:var(--gold)}
+.faq-list{max-width:800px;display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.06)}
+.faq-q{width:100%;background:none;border:none;padding:24px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;gap:20px}
+.faq-q-text{font-size:15px;font-weight:400;color:var(--white);line-height:1.4}
+.faq-icon{color:var(--gold);font-size:20px;flex-shrink:0;transition:transform .35s var(--ease);line-height:1}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.faq-a-inner{padding:0 0 24px;font-size:13px;line-height:1.8;color:var(--muted)}
+.faq-a-inner strong{color:var(--white);font-weight:400}
+.faq-item.open .faq-a{max-height:200px}
 
-  /* ── FOOTER ── */
-  footer { padding: 56px 48px 36px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
-  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.35rem; letter-spacing: .2em; color: var(--white); margin-bottom: 10px; }
-  .footer-tagline { font-size: .75rem; color: rgba(245,243,239,.32); letter-spacing: .08em; max-width: 260px; line-height: 1.65; margin-bottom: 24px; }
-  .footer-links { display: flex; gap: 24px; }
-  .footer-links a { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,243,239,.32); text-decoration: none; transition: color .3s; }
-  .footer-links a:hover { color: var(--gold); }
-  .footer-right { text-align: right; }
-  .footer-copy { font-size: .68rem; color: rgba(245,243,239,.2); letter-spacing: .06em; line-height: 1.8; }
-  .footer-copy a { color: var(--gold); text-decoration: none; }
+/* ── CTA ── */
+#cta{padding:clamp(100px,14vw,180px) clamp(24px,5vw,80px);text-align:center;background:linear-gradient(to bottom,var(--black),#0e0b02)}
+.cta-price-pill{display:inline-flex;align-items:center;gap:14px;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:10px 24px;margin-bottom:40px}
+.cta-title{font-family:var(--serif);font-size:clamp(40px,8vw,110px);font-weight:200;line-height:.92;letter-spacing:.01em;text-transform:uppercase;color:var(--white);margin-bottom:16px}
+.cta-title em{font-style:italic;color:var(--gold)}
+.cta-sub{font-size:14px;color:var(--muted);margin-bottom:52px;line-height:1.6}
+.cta-sub strong{color:var(--white);font-weight:400}
+.cta-buttons{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--black);background:var(--gold);padding:18px 44px;cursor:pointer;transition:background .3s,transform .3s;text-decoration:none;font-family:var(--sans);font-weight:400}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-2px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--white);background:transparent;padding:18px 44px;cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,.18);text-decoration:none;font-family:var(--sans);font-weight:400}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
 
-  /* ── MOBILE ── */
-  @media (max-width: 768px) {
-    nav { padding: 18px 24px; }
-    nav.scrolled { padding: 13px 24px; }
-    .nav-links { display: none; }
-    section { padding: 60px 24px; }
-    .hero-content { padding: 0 24px 56px; }
-    .hero-scroll { display: none; }
-    .hero-art { width: 100%; opacity: .35; }
-    .trust-bar { padding: 14px 24px; gap: 18px; justify-content: flex-start; overflow-x: auto; }
-    #collection { padding-top: 56px; }
-    .product-grid { grid-template-columns: 1fr; }
-    .product-card:first-child { grid-column: span 1; aspect-ratio: 4/3; }
-    .product-card { aspect-ratio: 4/3; }
-    #about { grid-template-columns: 1fr; gap: 40px; }
-    .about-accent-art { display: none; }
-    .lookbook-item { width: 220px; height: 320px; }
-    .pricing-grid { grid-template-columns: 1fr; max-width: 380px; }
-    .testi-grid { grid-template-columns: 1fr; }
-    footer { grid-template-columns: 1fr; }
-    .footer-right { text-align: left; }
-    .cta-form { flex-direction: column; }
-    .cta-input { border-right: 1px solid rgba(255,255,255,.1); border-bottom: none; }
-  }
+/* EMAIL FORM */
+.cta-form{display:flex;gap:0;max-width:440px;margin:0 auto 52px;flex-wrap:wrap}
+.cta-input{flex:1;min-width:220px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-right:none;color:var(--white);font-family:var(--sans);font-size:13px;padding:16px 20px;outline:none;transition:border-color .3s}
+.cta-input::placeholder{color:rgba(248,246,242,.3)}
+.cta-input:focus{border-color:rgba(201,168,76,.5)}
+.cta-submit{background:var(--gold);color:var(--black);border:none;padding:16px 28px;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .3s;white-space:nowrap}
+.cta-submit:hover{background:var(--gold2)}
+
+/* MARQUEE */
+.marquee-wrap{padding:52px 0;overflow:hidden;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.marquee-track{display:flex;gap:72px;width:max-content;animation:marquee 24s linear infinite}
+.marquee-wrap:hover .marquee-track{animation-play-state:paused}
+.m-item{font-family:var(--serif);font-size:clamp(28px,3.5vw,44px);font-weight:200;letter-spacing:.04em;color:rgba(248,246,242,.1);white-space:nowrap;flex-shrink:0;transition:color .4s}
+.m-item:hover{color:var(--gold)}
+.m-sep{color:var(--gold);opacity:.35}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* FOOTER */
+footer{padding:52px clamp(24px,5vw,80px);border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.ft-logo{font-family:var(--serif);font-size:16px;font-weight:300;letter-spacing:.26em;text-transform:uppercase}
+.ft-logo em{color:var(--gold);font-style:italic}
+.ft-copy{font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.ft-links{display:flex;gap:22px}
+.ft-links a{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);transition:color .3s;cursor:pointer;text-decoration:none}
+.ft-links a:hover{color:var(--gold)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .pain-grid,.value-list{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr 1fr}
+  .p-card:nth-child(1){grid-column:span 12}
+  .p-card:nth-child(2){grid-column:span 6}
+  .p-card:nth-child(3){grid-column:span 6}
+  .p-card:nth-child(4){grid-column:span 6}
+  .p-card:nth-child(5){grid-column:span 6}
+  .cta-input{border-right:1px solid rgba(255,255,255,.12);border-bottom:none}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr}
+  .p-card:nth-child(n){grid-column:span 12;aspect-ratio:16/9}
+  footer{flex-direction:column;text-align:center}
+  .cta-buttons{flex-direction:column}
+  .cta-form{flex-direction:column}
+  .cta-input{border-right:1px solid rgba(255,255,255,.12)}
+}
 </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="pre-logo">Vel<em>our</em></div>
+  <div class="pre-bar"><div class="pre-bar-fill" id="preBar"></div></div>
+  <div class="pre-count" id="preCount">0%</div>
+</div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
 <nav id="nav">
-  <a href="#" class="nav-logo">VELOUR</a>
+  <div class="nav-logo">Vel<em>our</em></div>
   <ul class="nav-links">
-    <li><a href="#collection">Collection</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#lookbook">Lookbook</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#faq">FAQ</a></li>
+    <li><a onclick="goTo('#features')">Features</a></li>
+    <li><a onclick="goTo('#portfolio')">Portfolio</a></li>
+    <li><a onclick="goTo('#pricing')">Pricing</a></li>
+    <li><a onclick="goTo('#faq')">FAQ</a></li>
+    <li><a onclick="goTo('#cta')">Contact</a></li>
   </ul>
-  <a href="#cta-banner" class="nav-cta">Get a Site</a>
+  <a class="nav-cta" href="#cta">Get Started</a>
 </nav>
 
-<!-- ── HERO ── -->
+<!-- HERO VIDEO SCRUBBER -->
 <section id="hero">
-  <div class="hero-bg-gradient"></div>
-  <div class="hero-art">
-    <svg viewBox="0 0 700 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="hbg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#201608"/>
-          <stop offset="100%" stop-color="#0a0a0a"/>
-        </linearGradient>
-        <radialGradient id="hglow" cx="60%" cy="35%" r="55%">
-          <stop offset="0%" stop-color="#2a1c08" stop-opacity=".9"/>
-          <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <rect width="700" height="900" fill="url(#hbg)"/>
-      <rect width="700" height="900" fill="url(#hglow)"/>
+  <div class="hero-sticky">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-veil"></div>
 
-      <!-- Background texture lines -->
-      <line x1="100" y1="0" x2="100" y2="900" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".05"/>
-      <line x1="600" y1="0" x2="600" y2="900" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".04"/>
-      <line x1="0" y1="500" x2="700" y2="500" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".04"/>
-
-      <!-- Head -->
-      <ellipse cx="380" cy="145" rx="58" ry="68" fill="#1c1208" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".25"/>
-
-      <!-- Oversized coat body -->
-      <path d="M260 205 Q275 198 300 202 L308 218 Q315 300 312 500 L448 500 Q445 300 452 218 L460 202 Q485 198 500 205 L520 230 Q540 265 542 320 L526 500 Q490 530 380 535 Q270 530 234 500 L218 320 Q220 265 240 230 Z"
-            fill="#1c1408" stroke="#c9a84c" stroke-width=".7" stroke-opacity=".22"/>
-
-      <!-- Lapels -->
-      <path d="M308 218 Q330 240 348 235 Q355 244 380 238 Q405 244 412 235 Q430 240 452 218 L446 213 Q424 226 405 220 Q395 228 380 224 Q365 228 355 220 Q336 226 314 213 Z"
-            fill="#c9a84c" fill-opacity=".14"/>
-
-      <!-- Coat vertical texture -->
-      <line x1="335" y1="228" x2="333" y2="488" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-      <line x1="380" y1="238" x2="380" y2="495" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-      <line x1="425" y1="228" x2="427" y2="488" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-
-      <!-- Belt -->
-      <rect x="308" y="390" width="144" height="9" rx="2" fill="#c9a84c" fill-opacity=".2"/>
-      <rect x="374" y="387" width="12" height="15" rx="1.5" fill="#c9a84c" fill-opacity=".35"/>
-
-      <!-- Left sleeve -->
-      <path d="M262 228 Q228 275 215 355 Q212 388 226 400 L248 320 Q260 265 278 232 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".18"/>
-      <!-- Right sleeve -->
-      <path d="M498 228 Q532 275 545 355 Q548 388 534 400 L512 320 Q500 265 482 232 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".18"/>
-
-      <!-- Wide-leg trousers -->
-      <path d="M314 498 Q302 525 285 590 Q268 665 262 790 L326 792 Q330 668 338 596 Q348 530 380 520 Q412 530 422 596 Q430 668 434 792 L498 790 Q492 665 475 590 Q458 525 446 498 Z"
-            fill="#141008" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
-
-      <!-- Shoes -->
-      <ellipse cx="290" cy="800" rx="36" ry="11" fill="#0d0b06" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".12"/>
-      <ellipse cx="470" cy="800" rx="36" ry="11" fill="#0d0b06" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".12"/>
-
-      <!-- Gold top gradient -->
-      <rect width="700" height="180" fill="url(#hglow)" opacity=".4"/>
-    </svg>
-  </div>
-
-  <div class="hero-content">
-    <p class="hero-label">New Drop — SS 2025</p>
-    <h1 class="hero-title">Wear the<br><em>Edge.</em></h1>
-    <p class="hero-sub">Premium streetwear for those who move between worlds. Crafted in limited runs, built to last.</p>
-    <div class="hero-actions">
-      <a href="#collection" class="btn-primary">Shop Collection</a>
-      <a href="#lookbook" class="btn-ghost">View Lookbook</a>
+    <!-- Phase captions -->
+    <div class="reel-cap left" id="cap1">
+      <div class="rc-tag">Editorial Design</div>
+      <div class="rc-txt">Your brand,<br>elevated online</div>
     </div>
-  </div>
+    <div class="reel-cap right" id="cap2">
+      <div class="rc-tag">Converts Visitors</div>
+      <div class="rc-txt">Turn scrollers<br>into buyers</div>
+    </div>
+    <div class="reel-cap left" id="cap3">
+      <div class="rc-tag">Built for Fashion</div>
+      <div class="rc-txt">Launching from<br><em style="color:var(--gold);font-style:italic">$4 / day</em></div>
+    </div>
 
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
+    <!-- Hero text -->
+    <div class="hero-text" id="heroText">
+      <div class="hero-eyebrow" id="heroEye">Premium Websites for Fashion Brands</div>
+      <h1 class="hero-title">
+        <span class="line"><span class="word" id="w1">Vel</span><span class="word italic" id="w2">our</span></span>
+      </h1>
+      <p class="hero-sub" id="heroSub">Editorial design. Conversion-ready. $100/month.</p>
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">
+      <div class="scroll-line"></div>
+      <span class="scroll-label">Scroll</span>
+    </div>
   </div>
 </section>
 
-<!-- ── TRUST BAR ── -->
-<div class="trust-bar">
-  <div class="trust-item">
-    <svg class="trust-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 1l1.8 3.7L14 5.3l-3 2.9.7 4.1L8 10.4l-3.7 1.9.7-4.1-3-2.9 4.2-.7L8 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
-    </svg>
-    Free shipping over $150
-  </div>
-  <div class="trust-item">
-    <svg class="trust-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 8a6 6 0 1012 0A6 6 0 002 8z" stroke="currentColor" stroke-width="1.1"/>
-      <path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
-    </svg>
-    30-day free returns
-  </div>
-  <div class="trust-item">
-    <svg class="trust-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 2L3 5v4c0 3 2.5 4.8 5 5.8 2.5-1 5-2.8 5-5.8V5L8 2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
-    </svg>
-    Sustainable materials
-  </div>
-  <div class="trust-item">
-    <svg class="trust-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 8.5l3.5 3 6.5-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    4.9 ★ — 2,400+ reviews
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="m-item">Editorial Design</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Custom Domain</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Mobile-Ready</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Product Showcase</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">US Fashion Brands</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">$100 / Month</span><span class="m-item m-sep">✦</span>
+    <!-- duplicate for loop -->
+    <span class="m-item">Editorial Design</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Custom Domain</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Mobile-Ready</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">Product Showcase</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">US Fashion Brands</span><span class="m-item m-sep">✦</span>
+    <span class="m-item">$100 / Month</span><span class="m-item m-sep">✦</span>
   </div>
 </div>
 
-<!-- ── COLLECTION ── -->
-<section id="collection">
-  <div class="collection-header reveal">
-    <div>
-      <p class="section-label">Featured Drop</p>
-      <h2 class="section-title">The Archive<br>Collection</h2>
-    </div>
-    <a href="#" class="view-all">View All →</a>
-  </div>
+<!-- PRICE HOOK -->
+<section id="price">
+  <div class="price-badge reveal">Starting Price</div>
+  <div class="price-main reveal d1">$<em>4</em></div>
+  <div class="price-unit reveal d2">per day — less than your daily coffee</div>
+  <div class="price-divider"></div>
+  <div class="price-equiv reveal d3">Or just <em>$100</em> per month</div>
+  <div class="price-note reveal d4">Domain · Hosting · Custom Design · Maintenance · Security — everything included. No hidden fees.</div>
+</section>
 
-  <div class="product-grid">
-
-    <!-- CARD 1 — wide banner -->
-    <div class="product-card reveal d1">
-      <span class="product-badge">New</span>
-      <div class="product-art">
-        <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <linearGradient id="p1bg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#201508"/>
-              <stop offset="100%" stop-color="#0a0a0a"/>
-            </linearGradient>
-          </defs>
-          <rect width="900" height="400" fill="url(#p1bg)"/>
-          <!-- Two oversized coats side by side -->
-          <!-- Left figure -->
-          <ellipse cx="290" cy="60" rx="42" ry="50" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".25"/>
-          <path d="M215 108 Q228 103 248 106 L254 116 Q260 175 258 310 L322 310 Q320 175 326 116 L332 106 Q352 103 365 108 L376 125 Q385 148 386 185 L374 310 Q348 325 290 328 Q232 325 206 310 L194 185 Q195 148 204 125 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".2"/>
-          <line x1="272" y1="118" x2="272" y2="298" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <line x1="290" y1="122" x2="290" y2="302" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <line x1="308" y1="118" x2="308" y2="298" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <rect x="252" y="225" width="76" height="6" rx="1.5" fill="#c9a84c" fill-opacity=".22"/>
-          <!-- Right figure -->
-          <ellipse cx="610" cy="60" rx="42" ry="50" fill="#161208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".25"/>
-          <path d="M535 108 Q548 103 568 106 L574 116 Q580 175 578 310 L642 310 Q640 175 646 116 L652 106 Q672 103 685 108 L696 125 Q705 148 706 185 L694 310 Q668 325 610 328 Q552 325 526 310 L514 185 Q515 148 524 125 Z" fill="#161208" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".2"/>
-          <line x1="592" y1="118" x2="592" y2="298" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <line x1="610" y1="122" x2="610" y2="302" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <line x1="628" y1="118" x2="628" y2="298" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <rect x="572" y="225" width="76" height="6" rx="1.5" fill="#c9a84c" fill-opacity=".18"/>
-          <!-- Center brand mark -->
-          <text x="450" y="230" text-anchor="middle" font-family="serif" font-size="180" fill="#c9a84c" fill-opacity=".04" font-style="italic">V</text>
-          <text x="450" y="320" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#c9a84c" fill-opacity=".2" letter-spacing="8">VELOUR ARCHIVE</text>
-        </svg>
+<!-- PAIN POINTS -->
+<section>
+  <div id="pain">
+    <h2 class="pain-title reveal">
+      Without a website,<br>your brand is <em>invisible</em><br>to buyers who matter.
+    </h2>
+    <div class="pain-grid">
+      <div class="pain-item reveal">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Buyers scroll past you</strong> — they search online for brands, and yours doesn't show up</div>
       </div>
-      <div class="product-overlay"></div>
-      <div class="product-info">
-        <div class="product-name">The Oversized Coat</div>
-        <div class="product-meta">
-          <span class="product-price">$285</span>
-          <span class="product-tag">Wool Blend · 3 Colors</span>
-        </div>
+      <div class="pain-item reveal d1">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>You look unestablished</strong> — without a site, wholesale buyers and press won't take you seriously</div>
+      </div>
+      <div class="pain-item reveal d2">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>No link to share</strong> — no place to send traffic from Instagram, TikTok, or email campaigns</div>
+      </div>
+      <div class="pain-item reveal d3">
+        <div class="pain-x">✗</div>
+        <div class="pain-text"><strong>Sales come only from DMs</strong> — no new channel to reach customers outside your existing followers</div>
       </div>
     </div>
-
-    <!-- CARD 2 -->
-    <div class="product-card reveal d2">
-      <div class="product-art">
-        <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="500" fill="#0f0e0c"/>
-          <!-- Wide-leg trousers -->
-          <path d="M110 60 L110 270 Q108 310 96 375 L126 377 Q132 316 140 278 Q152 228 200 220 Q248 228 260 278 Q268 316 274 377 L304 375 Q292 310 290 270 L290 60 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".22"/>
-          <rect x="108" y="52" width="184" height="14" rx="3" fill="#c9a84c" fill-opacity=".18"/>
-          <line x1="200" y1="66" x2="194" y2="374" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".18"/>
-          <line x1="200" y1="66" x2="206" y2="374" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".18"/>
-          <!-- Pocket stitching -->
-          <path d="M116 92 Q124 89 145 89 L145 118 Q132 121 116 118 Z" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".18"/>
-          <text x="200" y="460" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#c9a84c" fill-opacity=".18" letter-spacing="5">LINEN · COTTON</text>
-        </svg>
-      </div>
-      <div class="product-overlay"></div>
-      <div class="product-info">
-        <div class="product-name">Wide-Leg Trousers</div>
-        <div class="product-meta">
-          <span class="product-price">$145</span>
-          <span class="product-tag">Linen · Cotton</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 3 -->
-    <div class="product-card reveal d3">
-      <span class="product-badge outline">Limited</span>
-      <div class="product-art">
-        <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="500" fill="#0e1008"/>
-          <!-- Bomber jacket -->
-          <path d="M118 72 Q136 66 158 70 L167 82 Q174 148 172 298 L228 298 Q226 148 233 82 L242 70 Q264 66 282 72 L295 90 Q308 112 309 148 L296 298 Q262 316 200 319 Q138 316 104 298 L91 148 Q92 112 105 90 Z" fill="#0a1a0a" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".25"/>
-          <!-- Ribbed collar -->
-          <path d="M158 70 Q178 86 200 82 Q222 86 242 70 L236 66 Q218 78 200 74 Q182 78 164 66 Z" fill="#c9a84c" fill-opacity=".16"/>
-          <!-- Zipper -->
-          <line x1="200" y1="82" x2="200" y2="292" stroke="#c9a84c" stroke-width=".9" stroke-opacity=".22"/>
-          <circle cx="200" cy="158" r="5" fill="#c9a84c" fill-opacity=".28"/>
-          <!-- Chest pocket -->
-          <rect x="152" y="108" width="36" height="26" rx="2" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
-          <!-- Ribbed hem -->
-          <path d="M104 292 Q200 305 296 292 L296 310 Q200 325 104 310 Z" fill="#c9a84c" fill-opacity=".07"/>
-          <text x="200" y="460" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#c9a84c" fill-opacity=".18" letter-spacing="5">NYLON · SATIN</text>
-        </svg>
-      </div>
-      <div class="product-overlay"></div>
-      <div class="product-info">
-        <div class="product-name">Flight Jacket</div>
-        <div class="product-meta">
-          <span class="product-price">$320</span>
-          <span class="product-tag">Nylon · Satin</span>
-        </div>
-      </div>
-    </div>
-
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
-<section id="about">
-  <div class="about-visual reveal">
-    <div class="about-main-art">
-      <svg viewBox="0 0 480 640" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <linearGradient id="abg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#201508"/>
-            <stop offset="100%" stop-color="#0a0a0a"/>
-          </linearGradient>
-        </defs>
-        <rect width="480" height="640" fill="url(#abg)"/>
-        <!-- Dress form -->
-        <ellipse cx="240" cy="96" rx="28" ry="34" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
-        <rect x="224" y="98" width="32" height="40" rx="6" fill="#1a1208" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".18"/>
-        <path d="M170 135 Q185 128 210 132 L215 145 Q220 210 218 380 L262 380 Q260 210 265 145 L270 132 Q295 128 310 135 L322 155 Q332 175 333 215 L320 380 Q290 398 240 402 Q190 398 160 380 L147 215 Q148 175 158 155 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".22"/>
-        <rect x="208" y="375" width="64" height="10" rx="3" fill="#c9a84c" fill-opacity=".15"/>
-        <rect x="222" y="385" width="36" height="100" rx="3" fill="#1a1208" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".14"/>
-        <ellipse cx="240" cy="490" rx="60" ry="12" fill="#c9a84c" fill-opacity=".07"/>
-        <!-- Pin details -->
-        <circle cx="240" cy="160" r="3" fill="#c9a84c" fill-opacity=".35"/>
-        <circle cx="218" cy="240" r="2" fill="#c9a84c" fill-opacity=".28"/>
-        <circle cx="262" cy="290" r="2" fill="#c9a84c" fill-opacity=".28"/>
-        <!-- Frame -->
-        <rect x="30" y="30" width="420" height="580" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".06"/>
-        <text x="240" y="560" text-anchor="middle" font-family="serif" font-size="160" fill="#c9a84c" fill-opacity=".03" font-style="italic">V</text>
-      </svg>
+<!-- FEATURES -->
+<section id="features">
+  <div style="max-width:1400px;margin:0 auto">
+    <div class="features-header">
+      <h2 class="features-title reveal">Everything your brand<br>needs, <em>already included</em></h2>
     </div>
-    <div class="about-accent-art">
-      <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-        <rect width="240" height="240" fill="#14100a"/>
-        <circle cx="120" cy="120" r="80" fill="none" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".14"/>
-        <circle cx="120" cy="120" r="52" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-        <text x="120" y="138" text-anchor="middle" font-family="serif" font-size="72" fill="#c9a84c" fill-opacity=".1" font-style="italic">V</text>
-        <text x="120" y="172" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#c9a84c" fill-opacity=".25" letter-spacing="5">VELOUR</text>
-      </svg>
+    <div class="features-grid">
+      <div class="feat reveal">
+        <div class="feat-num">01</div>
+        <div class="feat-name">Live 24/7, Always On</div>
+        <div class="feat-desc">Your brand is discoverable around the clock — not just during business hours. Even while you sleep, your site sells.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-num">02</div>
+        <div class="feat-name">Domain & Hosting Included</div>
+        <div class="feat-desc">No extra setup fees. No managing servers. We handle all the technical work — your brand just shows up online.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-num">03</div>
+        <div class="feat-name">Contact & Inquiry Form</div>
+        <div class="feat-desc">Wholesale buyers, press, and collab requests reach you directly through your site — no DMs needed.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal">
+        <div class="feat-num">04</div>
+        <div class="feat-name">Editorial Design, Mobile-First</div>
+        <div class="feat-desc">Fashion-grade visual design that looks premium on every device. Not a template — a bespoke brand experience.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-num">05</div>
+        <div class="feat-name">Product Showcase Gallery</div>
+        <div class="feat-desc">Display your collection with full-screen imagery, pricing, and product detail — styled to match your brand aesthetic.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-num">06</div>
+        <div class="feat-name">One Link for Everything</div>
+        <div class="feat-desc">Drop it in your Instagram bio, TikTok, email signature, or press kit. One URL that does it all.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal">
+        <div class="feat-num">07</div>
+        <div class="feat-name">Maintenance & Security</div>
+        <div class="feat-desc">We keep your site fast, secure, and up to date every month — so you can focus on the brand, not the tech.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-num">08</div>
+        <div class="feat-name">Brand Story Section</div>
+        <div class="feat-desc">An "About" section crafted to connect emotionally with buyers — your founding story, values, and vision.</div>
+        <div class="feat-arrow">→</div>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-num">09</div>
+        <div class="feat-name">Built for Credibility</div>
+        <div class="feat-desc">A polished web presence signals that your brand is serious — and serious brands attract better buyers and press.</div>
+        <div class="feat-arrow">→</div>
+      </div>
     </div>
-  </div>
-
-  <div class="about-text">
-    <p class="section-label reveal">Our Story</p>
-    <h2 class="section-title reveal d1">Crafted at the<br>intersection of<br><em style="font-style:italic;color:var(--gold)">art &amp; utility.</em></h2>
-    <p class="section-sub reveal d2" style="margin-top:18px;">VELOUR was born in 2021 from a single belief: that streetwear could hold the tension between raw energy and refined craft. Every piece is designed in Los Angeles and produced in small runs — so what you wear stays rare.</p>
-
-    <div class="about-stats reveal d3">
-      <div>
-        <div class="stat-num">2,400+</div>
-        <div class="stat-label">Five-star reviews</div>
-      </div>
-      <div>
-        <div class="stat-num">42</div>
-        <div class="stat-label">Limited drops / year</div>
-      </div>
-      <div>
-        <div class="stat-num">100%</div>
-        <div class="stat-label">Sustainable sourcing</div>
-      </div>
-      <div>
-        <div class="stat-num">18</div>
-        <div class="stat-label">Countries shipped to</div>
-      </div>
-    </div>
-
-    <a href="#collection" class="btn-primary reveal d4">Explore the Collection</a>
   </div>
 </section>
 
-<!-- ── LOOKBOOK ── -->
-<section id="lookbook" style="padding-left:0;padding-right:0;">
-  <div class="lookbook-header">
-    <p class="section-label reveal">Lookbook</p>
-    <h2 class="section-title reveal d1">SS 2025 Editorial</h2>
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="portfolio-header">
+    <h2 class="portfolio-title reveal">Client <em>Work</em></h2>
+    <span class="portfolio-note reveal d1">Websites we've built for brands</span>
   </div>
-  <div class="lookbook-strip">
-
-    <div class="lookbook-item reveal">
-      <div class="lookbook-art">
-        <svg viewBox="0 0 280 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="280" height="400" fill="#12100a"/>
-          <line x1="0" y1="133" x2="280" y2="267" stroke="#c9a84c" stroke-width="36" stroke-opacity=".04"/>
-          <ellipse cx="140" cy="88" rx="32" ry="38" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".22"/>
-          <path d="M88 124 Q100 119 118 122 L123 132 Q128 185 126 310 L154 310 Q152 185 157 132 L162 122 Q180 119 192 124 L200 142 L188 310 Q165 322 140 325 Q115 322 92 310 L80 142 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".18"/>
-        </svg>
+  <div class="portfolio-grid">
+    <div class="p-card reveal">
+      <img src="images/barbes.jpg" alt="Noir Label" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Streetwear Brand</div>
+        <div class="p-name">Noir Label</div>
       </div>
-      <div class="lookbook-num">01</div>
     </div>
-
-    <div class="lookbook-item reveal d1">
-      <div class="lookbook-art">
-        <svg viewBox="0 0 280 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="280" height="400" fill="#0c100c"/>
-          <circle cx="140" cy="200" r="110" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".08"/>
-          <circle cx="140" cy="200" r="72" fill="none" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".06"/>
-          <text x="140" y="225" text-anchor="middle" font-family="serif" font-size="90" fill="#c9a84c" fill-opacity=".06" font-style="italic">V</text>
-          <path d="M102 72 L178 72 L188 188 Q162 206 140 202 Q118 206 92 188 Z" fill="#1a1a12" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
-          <path d="M120 72 Q140 88 160 72" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
-        </svg>
+    <div class="p-card reveal d1">
+      <img src="images/barbes2.jpg" alt="Sable Studio" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Luxury Menswear</div>
+        <div class="p-name">Sable Studio</div>
       </div>
-      <div class="lookbook-num">02</div>
     </div>
-
-    <div class="lookbook-item reveal d2">
-      <div class="lookbook-art">
-        <svg viewBox="0 0 280 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="280" height="400" fill="#10100a"/>
-          <rect x="36" y="36" width="208" height="328" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".08"/>
-          <!-- Bag silhouette -->
-          <path d="M90 142 Q90 122 140 120 Q190 122 190 142 L200 265 Q186 278 140 280 Q94 278 80 265 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".22"/>
-          <path d="M115 140 Q115 108 140 106 Q165 108 165 140" fill="none" stroke="#c9a84c" stroke-width=".8" stroke-opacity=".22"/>
-          <line x1="80" y1="192" x2="200" y2="192" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".14"/>
-          <text x="140" y="350" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#c9a84c" fill-opacity=".2" letter-spacing="5">ARCHIVE BAG</text>
-        </svg>
+    <div class="p-card reveal">
+      <img src="images/goodcute.jpg" alt="Dusk Collective" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Women's Fashion</div>
+        <div class="p-name">Dusk Collective</div>
       </div>
-      <div class="lookbook-num">03</div>
     </div>
-
-    <div class="lookbook-item reveal d3">
-      <div class="lookbook-art">
-        <svg viewBox="0 0 280 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="280" height="400" fill="#0a0a12"/>
-          <!-- Shoe -->
-          <path d="M50 265 Q72 218 140 208 Q208 218 230 265 Q248 295 238 316 L42 316 Q32 295 50 265 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
-          <path d="M70 265 Q104 248 140 246 Q176 248 210 265" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".18"/>
-          <path d="M112 256 Q126 250 140 252 Q154 250 168 256" fill="none" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".28"/>
-          <line x1="140" y1="208" x2="140" y2="116" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".14"/>
-          <ellipse cx="140" cy="100" rx="38" ry="20" fill="#1c1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
-        </svg>
+    <div class="p-card reveal d1">
+      <img src="images/lumina.jpg" alt="Lumina Atelier" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Bridal & Evening</div>
+        <div class="p-name">Lumina Atelier</div>
       </div>
-      <div class="lookbook-num">04</div>
     </div>
-
-    <div class="lookbook-item reveal d4">
-      <div class="lookbook-art">
-        <svg viewBox="0 0 280 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="280" height="400" fill="#14100a"/>
-          <polygon points="140,32 252,148 252,332 140,400 28,332 28,148" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
-          <polygon points="140,72 218,162 218,298 140,352 62,298 62,162" fill="none" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".07"/>
-          <text x="140" y="234" text-anchor="middle" font-family="serif" font-size="110" fill="#c9a84c" fill-opacity=".05" font-style="italic">V</text>
-          <text x="140" y="290" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#c9a84c" fill-opacity=".2" letter-spacing="6">ARCHIVE</text>
-        </svg>
+    <div class="p-card reveal d2">
+      <img src="images/noir-planner.jpg" alt="Archive Brand" loading="lazy">
+      <div class="p-card-overlay"></div>
+      <div class="p-card-info">
+        <div class="p-cat">Contemporary Label</div>
+        <div class="p-name">Archive Brand</div>
       </div>
-      <div class="lookbook-num">05</div>
     </div>
-
   </div>
 </section>
 
-<!-- ── PRICING ── -->
+<!-- TESTIMONIAL -->
+<section id="testimonial">
+  <blockquote class="testi-text reveal">
+    "The site they built looked more editorial than agencies charging 10x the price.
+    Wholesale inquiries <em>tripled</em> within the first month of launch."
+  </blockquote>
+  <div class="testi-author reveal d1">— <span>Maya Chen</span>, Founder · Mira Label, Los Angeles</div>
+</section>
+
+<!-- VALUE PROPS -->
+<section id="value">
+  <div style="max-width:1200px;margin:0 auto">
+    <h2 class="value-title reveal">Why fashion brands<br>choose <em>Velour?</em></h2>
+    <div class="value-list">
+      <div class="value-item reveal">
+        <div class="value-num">1</div>
+        <div class="value-body">
+          <strong>Fraction of agency cost</strong>
+          <p>Top agencies charge $5,000–$20,000 upfront. We deliver the same editorial quality for $100/month — no surprise invoices.</p>
+        </div>
+      </div>
+      <div class="value-item reveal d1">
+        <div class="value-num">2</div>
+        <div class="value-body">
+          <strong>Launch in 5 days, not 5 months</strong>
+          <p>Send us your assets on Monday, your site is live by Friday. No back-and-forth briefs, no project management overhead.</p>
+        </div>
+      </div>
+      <div class="value-item reveal d2">
+        <div class="value-num">3</div>
+        <div class="value-body">
+          <strong>Designed for fashion, not generic</strong>
+          <p>Every layout decision — typography, spacing, image treatment — is made for fashion aesthetics, not a one-size-fits-all template.</p>
+        </div>
+      </div>
+      <div class="value-item reveal d3">
+        <div class="value-num">4</div>
+        <div class="value-body">
+          <strong>Built to convert, not just impress</strong>
+          <p>Beautiful is table stakes. Every section is structured to move visitors toward an inquiry, purchase, or wholesale contact.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE -->
+<section id="garansi">
+  <div class="garansi-icon reveal">🛡️</div>
+  <h2 class="garansi-title reveal d1">Not happy? <em>Full refund</em><br>within the first 7 days.</h2>
+  <p class="garansi-desc reveal d2">
+    We stand behind our work. If the website we build
+    <strong>doesn't match your expectations within 7 days</strong> — we refund 100% of your payment.
+    No questions. No hassle.
+  </p>
+</section>
+
+<!-- PRICING TABLE -->
 <section id="pricing">
-  <div class="pricing-header">
-    <p class="section-label reveal">Web Packages</p>
-    <h2 class="section-title reveal d1">Get a Site Like This<br>for Your Brand</h2>
-    <p class="section-sub reveal d2">One-page, conversion-focused websites for fashion brands — designed, hosted, and maintained monthly.</p>
-  </div>
-
-  <div class="pricing-grid reveal d2">
-    <!-- PROFESSIONAL -->
-    <div class="price-card featured">
-      <span class="price-badge">Most Popular</span>
-      <div class="price-name">Professional</div>
-      <div class="price-amount"><sup>$</sup>100</div>
-      <span class="price-period">/ month · cancel anytime</span>
-      <ul class="price-features">
-        <li>Custom 1-page brand website</li>
-        <li>Mobile-optimized design</li>
-        <li>Product showcase section</li>
-        <li>Contact &amp; inquiry form</li>
-        <li>Hosting + SSL included</li>
-        <li>Free custom domain setup</li>
-        <li>2 revision rounds / month</li>
-        <li>48h support response</li>
-      </ul>
-      <a href="#cta-banner" class="price-cta">Get Started</a>
+  <div style="max-width:680px;margin:0 auto">
+    <div class="pricing-header">
+      <h2 class="pricing-title reveal">Choose the plan that <em>fits your brand</em></h2>
+      <p class="pricing-sub reveal d1">All plans include domain, hosting, design, and monthly maintenance.</p>
     </div>
-
-    <!-- PREMIUM -->
-    <div class="price-card">
-      <div class="price-name">Premium</div>
-      <div class="price-amount"><sup>$</sup>150</div>
-      <span class="price-period">/ month · cancel anytime</span>
-      <ul class="price-features">
-        <li>Everything in Professional</li>
-        <li>Lookbook / editorial gallery</li>
-        <li>Animated scroll experience</li>
-        <li>Newsletter capture + CRM</li>
-        <li>SEO-optimized copy</li>
-        <li>Priority 24h support</li>
-        <li>Unlimited revision rounds</li>
-        <li>Monthly performance report</li>
-      </ul>
-      <a href="#cta-banner" class="price-cta">Get Started</a>
-    </div>
-  </div>
-</section>
-
-<!-- ── TESTIMONIALS ── -->
-<section id="testimonials">
-  <p class="section-label reveal">What They Say</p>
-  <h2 class="section-title reveal d1">Loved by fashion<br>brands worldwide.</h2>
-
-  <div class="testi-grid">
-    <div class="testi-card reveal d1">
-      <div class="testi-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
-      <p class="testi-quote">"The website they built for our label looks more editorial than sites from agencies charging 10x the price. Our DMs went up 3x the week it launched."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">M</div>
-        <div>
-          <div class="testi-name">Maya Chen</div>
-          <div class="testi-role">Founder, Mira Label — Los Angeles</div>
-        </div>
+    <div class="pricing-cards reveal d1">
+      <!-- PROFESSIONAL -->
+      <div class="pc featured">
+        <span class="pc-badge">Most Popular</span>
+        <span class="pc-label">Best for emerging brands</span>
+        <div class="pc-price">$<br>100<sub>/mo</sub></div>
+        <div class="pc-name">Professional</div>
+        <div class="pc-desc">Everything a fashion brand needs to look established and convert visitors into buyers.</div>
+        <ul class="pc-list">
+          <li>Custom 1-page brand site</li>
+          <li>Domain & hosting included</li>
+          <li>Product showcase gallery</li>
+          <li>Contact & inquiry form</li>
+          <li>Mobile-first design</li>
+          <li>Brand story section</li>
+          <li>Maintenance & security</li>
+          <li>2 revision rounds / month</li>
+        </ul>
+        <a class="pc-cta" href="#cta">Get Started</a>
       </div>
-    </div>
-
-    <div class="testi-card reveal d2">
-      <div class="testi-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
-      <p class="testi-quote">"We needed something fast before our pop-up weekend. They delivered in 4 days. Customers literally asked us who built the site during the event."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">J</div>
-        <div>
-          <div class="testi-name">Jordan Pierce</div>
-          <div class="testi-role">Creative Director, Sable Threads — NYC</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="testi-card reveal d3">
-      <div class="testi-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
-      <p class="testi-quote">"$100/month for this quality is almost offensive to other agencies. We converted our first wholesale inquiry through the site within 2 weeks of launch."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">A</div>
-        <div>
-          <div class="testi-name">Aaliya Rossen</div>
-          <div class="testi-role">CEO, Dusk Collective — Miami</div>
-        </div>
+      <!-- PREMIUM -->
+      <div class="pc">
+        <span class="pc-label">For brands ready to scale</span>
+        <div class="pc-price">$<br>150<sub>/mo</sub></div>
+        <div class="pc-name">Premium</div>
+        <div class="pc-desc">For brands that want editorial storytelling, SEO, and a priority team in their corner.</div>
+        <ul class="pc-list">
+          <li>Everything in Professional</li>
+          <li>Lookbook / editorial section</li>
+          <li>Animated scroll experience</li>
+          <li>Newsletter capture + CRM</li>
+          <li>SEO-optimized copy</li>
+          <li>Priority 24h support</li>
+          <li>Unlimited revisions</li>
+          <li>Monthly performance report</li>
+        </ul>
+        <a class="pc-cta" href="#cta">Get Premium</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── FAQ ── -->
+<!-- COMPARISON -->
+<section id="comparison">
+  <div style="max-width:900px;margin:0 auto">
+    <h2 class="comp-title reveal">What does it cost<br><em>without Velour?</em></h2>
+    <table class="comp-table reveal d1">
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Cost</th>
+          <th>Setup Time</th>
+          <th>Support</th>
+          <th style="text-align:right">Velour</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DIY (Squarespace / Wix)</td>
+          <td>$16–$49/mo + your time</td>
+          <td>2–6 weeks</td>
+          <td class="comp-x">Self-service</td>
+          <td style="text-align:right" class="comp-check">✓ More professional</td>
+        </tr>
+        <tr>
+          <td>Freelance designer</td>
+          <td>$1,500–$8,000 upfront</td>
+          <td>4–12 weeks</td>
+          <td class="comp-x">Not included</td>
+          <td style="text-align:right" class="comp-check">✓ No upfront cost</td>
+        </tr>
+        <tr>
+          <td>Design agency</td>
+          <td>$5,000–$25,000</td>
+          <td>8–20 weeks</td>
+          <td class="comp-x">Extra fees</td>
+          <td style="text-align:right" class="comp-check">✓ Same quality, 50× less</td>
+        </tr>
+        <tr style="background:rgba(201,168,76,.04)">
+          <td style="color:var(--gold);font-weight:500">✦ Velour</td>
+          <td style="color:var(--gold);font-weight:500">$100/month</td>
+          <td style="color:var(--gold)">3–5 business days</td>
+          <td style="color:var(--gold)">Direct & personal</td>
+          <td style="text-align:right;color:var(--gold)">🏆 Best value</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
 <section id="faq">
-  <div class="faq-inner">
-    <p class="section-label reveal">FAQ</p>
-    <h2 class="section-title reveal d1">Common Questions</h2>
-  </div>
-  <div class="faq-wrap">
-
-    <div class="faq-item reveal d1">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        What exactly do I get with a VELOUR-style website?
-        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5l3 3 3-3" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </button>
-      <div class="faq-a"><p>A fully custom, one-page brand website built for your fashion label. It includes a hero section, product showcase, brand story, and contact form — all designed to look editorial and convert visitors into buyers or wholesale inquiries.</p></div>
+  <div style="max-width:800px">
+    <h2 class="faq-title reveal">Questions we<br>get <em>asked often</em></h2>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What happens if I cancel my subscription?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">Your site is paused. But <strong>all your files and design assets are held for 90 days</strong> — so if you want to reactivate, just restart your plan and you're back online immediately with no rebuild required.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d1">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I use my existing domain name?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">Yes. We connect your existing domain (GoDaddy, Namecheap, Squarespace, or any registrar) to your new site at no extra charge. If you don't have one yet, <strong>we'll help you pick and register it</strong> as part of the setup process.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Can I update the content myself?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">For changes like new product photos, updated prices, or contact info — <strong>just email us and it's done within 24 hours</strong>. No extra charge. It's all part of your monthly plan.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d3">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">How long does it take to launch?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner"><strong>3–5 business days</strong> after you send us your brand assets — logo, photos, and a short brand brief. Rush delivery in 48 hours is available on the Premium plan.</div>
+        </div>
+      </div>
+      <div class="faq-item reveal d4">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-q-text">What payment methods do you accept?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">We accept all major US credit and debit cards (Visa, Mastercard, Amex) and PayPal, processed securely via Stripe. <strong>All billing is in USD</strong>. Cancel anytime — no lock-in contracts.</div>
+        </div>
+      </div>
     </div>
-
-    <div class="faq-item reveal d2">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Can I use my existing domain name?
-        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5l3 3 3-3" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </button>
-      <div class="faq-a"><p>Yes. We connect your existing domain (from GoDaddy, Namecheap, Squarespace, or any registrar) to your new site at no extra charge. If you don't have one yet, we'll help you pick and register it as part of setup.</p></div>
-    </div>
-
-    <div class="faq-item reveal d3">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        How long does it take to launch?
-        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5l3 3 3-3" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </button>
-      <div class="faq-a"><p>Most sites go live within 5–7 business days after we receive your brand assets (logo, photos, copy). Rush delivery in 48–72 hours is available on the Premium plan.</p></div>
-    </div>
-
-    <div class="faq-item reveal d4">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Do you sell clothing, or just build websites?
-        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5l3 3 3-3" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </button>
-      <div class="faq-a"><p>This site is a live demo. VELOUR is a fictional brand we designed to show you exactly what your label's website could look like. We build websites for fashion brands — not clothing.</p></div>
-    </div>
-
-    <div class="faq-item reveal d5">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        What payment methods do you accept?
-        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5l3 3 3-3" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </button>
-      <div class="faq-a"><p>We accept all major credit cards (Visa, Mastercard, Amex) and PayPal via Stripe. All payments are in USD. Cancel anytime — no lock-in contracts.</p></div>
-    </div>
-
-    <div class="faq-item reveal">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        Can I cancel anytime?
-        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5l3 3 3-3" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </button>
-      <div class="faq-a"><p>Yes, always. Cancel with 7 days notice before your next billing cycle — no fees. We hand off all your site files so you own everything you paid for.</p></div>
-    </div>
-
   </div>
 </section>
 
-<!-- ── CTA BANNER ── -->
-<section id="cta-banner">
-  <div class="cta-glow"></div>
-  <p class="section-label reveal">Ready to Launch?</p>
-  <h2 class="section-title reveal d1">Your brand deserves<br>a website this good.</h2>
-  <p class="section-sub reveal d2">Drop your email and we'll send you a free mockup of your brand's site within 24 hours — no commitment required.</p>
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-price-pill reveal">✦ &nbsp;From $4 / day&nbsp; ✦</div>
+  <h2 class="cta-title reveal d1">
+    Ready to launch<br>your brand<br><em>today?</em>
+  </h2>
+  <p class="cta-sub reveal d2">
+    <strong>$100/month.</strong> Domain, hosting, custom design, maintenance — all included.<br>
+    Drop your email and we'll send a free mockup of your brand's site within <strong>24 hours.</strong>
+  </p>
   <form class="cta-form reveal d3" onsubmit="handleSubmit(event)">
     <input type="email" class="cta-input" placeholder="your@brand.com" required>
     <button type="submit" class="cta-submit">Get Free Mockup</button>
   </form>
-  <p class="cta-note reveal d4">No spam. No contracts. Just your mockup.</p>
+  <div class="cta-buttons reveal d4">
+    <a class="btn-ghost" href="#features">See All Features</a>
+  </div>
 </section>
 
-<!-- ── FOOTER ── -->
+<!-- FOOTER -->
 <footer>
-  <div>
-    <div class="footer-logo">VELOUR</div>
-    <p class="footer-tagline">Premium fashion brand websites — built for labels that take their image seriously.</p>
-    <div class="footer-links">
-      <a href="#collection">Collection</a>
-      <a href="#about">About</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
-    </div>
-  </div>
-  <div class="footer-right">
-    <p class="footer-copy">© 2025 VELOUR · A Startex Demo<br>Built by <a href="#">Startex</a></p>
+  <div class="ft-logo">Vel<em>our</em></div>
+  <div class="ft-copy">© 2025 Velour · A demo site built by <a href="#" style="color:var(--gold);text-decoration:none">Startex</a></div>
+  <div class="ft-links">
+    <a href="mailto:hello@startex.co">Email Us</a>
+    <a href="#">Instagram</a>
+    <a href="#">TikTok</a>
   </div>
 </footer>
 
 <script>
-  // Nav scroll
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  }, { passive: true });
+// CURSOR
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function lp(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(lp)})();
+document.querySelectorAll('a,button,[onclick],.feat,.p-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
 
-  // Reveal on scroll
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-    });
-  }, { threshold: .1 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+// NAV — appears only after video scene ends
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  const heroBottom = heroSec.offsetTop + heroSec.offsetHeight;
+  const pastHero   = window.scrollY + window.innerHeight > heroBottom;
+  navEl.classList.toggle('visible', pastHero);
+  navEl.classList.toggle('scrolled', pastHero);
+},{passive:true});
 
-  // FAQ
-  function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
+// HERO ENTRANCE (called after frames load)
+function startHero(){
+  document.getElementById('heroEye').classList.add('show');
+  setTimeout(()=>{ document.getElementById('w1').classList.add('show'); },80);
+  setTimeout(()=>{ document.getElementById('w2').classList.add('show'); },200);
+  setTimeout(()=>{
+    document.getElementById('heroSub').classList.add('show');
+    document.getElementById('scrollHint').classList.add('show');
+  },600);
+}
+
+// CANVAS FRAME SCRUBBER
+const canvas  = document.getElementById('heroCanvas');
+const ctx     = canvas.getContext('2d');
+const heroSec = document.getElementById('hero');
+const heroTxt = document.getElementById('heroText');
+const cap1    = document.getElementById('cap1');
+const cap2    = document.getElementById('cap2');
+const cap3    = document.getElementById('cap3');
+const hint    = document.getElementById('scrollHint');
+
+const TOTAL = 265;
+const src   = i => 'frames/frame' + String(i).padStart(4,'0') + '.jpg';
+
+const imgs = new Array(TOTAL).fill(null);
+let loaded = 0;
+let curF   = 0;
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  if(imgs[curF]) paint(curF);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function paint(idx){
+  const img = imgs[idx];
+  if(!img || !img.complete) return;
+  const cw=canvas.width, ch=canvas.height;
+  const iw=img.naturalWidth, ih=img.naturalHeight;
+  const s=Math.max(cw/iw, ch/ih);
+  ctx.drawImage(img,(cw-iw*s)/2,(ch-ih*s)/2,iw*s,ih*s);
+}
+
+(function loadAll(){
+  for(let i=1;i<=TOTAL;i++){
+    const img=new Image();
+    const idx=i-1;
+    img.onload=()=>{
+      loaded++;
+      const pct=Math.floor(loaded/TOTAL*100);
+      const b=document.getElementById('preBar');
+      const c=document.getElementById('preCount');
+      if(b) b.style.width=pct+'%';
+      if(c) c.textContent=pct+'%';
+      if(idx===0) paint(0);
+      if(loaded===TOTAL){
+        const pre=document.getElementById('preloader');
+        if(pre && !pre.classList.contains('gone')){
+          pre.classList.add('gone');
+          setTimeout(()=>{ pre.remove(); startHero(); },900);
+        }
+      }
+    };
+    img.src=src(i);
+    imgs[idx]=img;
   }
+})();
 
-  // CTA form
-  function handleSubmit(e) {
-    e.preventDefault();
-    const btn = e.target.querySelector('.cta-submit');
-    btn.textContent = 'Sent ✓';
-    btn.style.background = '#2d6a2d';
-    setTimeout(() => { btn.textContent = 'Get Free Mockup'; btn.style.background = ''; }, 3000);
-  }
+// SCROLL → FRAME + CAPTIONS
+let ticking=false;
+window.addEventListener('scroll',()=>{
+  if(ticking) return;
+  ticking=true;
+  requestAnimationFrame(()=>{
+    ticking=false;
+    const scrolled=-heroSec.getBoundingClientRect().top;
+    const total=heroSec.offsetHeight-window.innerHeight;
+    const p=Math.max(0,Math.min(1,scrolled/total));
+    const idx=Math.min(Math.floor(p*TOTAL),TOTAL-1);
+    if(idx!==curF){ curF=idx; paint(curF); }
+    heroTxt.style.opacity=Math.max(0,1-p*5);
+    hint.classList.toggle('show',p<.04);
+    cap1.classList.toggle('on',p>.15&&p<.40);
+    cap2.classList.toggle('on',p>.44&&p<.67);
+    cap3.classList.toggle('on',p>.70&&p<.92);
+  });
+},{passive:true});
+
+// SMOOTH SCROLL
+function goTo(sel){document.querySelector(sel)?.scrollIntoView({behavior:'smooth'})}
+
+// FAQ TOGGLE
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el=>el.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+// INTERSECTION REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); obs.unobserve(e.target); }});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// PRICE COUNTER
+function countUp(el){
+  const raw=el.textContent.trim();
+  const num=parseInt(raw.replace(/\D/g,''));
+  if(!num) return;
+  const suf=raw.replace(/[\d.,]/g,'');
+  const t0=performance.now();
+  (function step(now){
+    const p=Math.min((now-t0)/1600,1);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(e*num)+suf;
+    if(p<1) requestAnimationFrame(step);
+  })(performance.now());
+}
+const cObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ countUp(e.target); cObs.unobserve(e.target); }});
+},{threshold:.5});
+document.querySelectorAll('.price-main').forEach(el=>cObs.observe(el));
+
+// CTA FORM
+function handleSubmit(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('.cta-submit');
+  btn.textContent = 'Sent ✓';
+  btn.style.background = '#2d6a2d';
+  setTimeout(()=>{ btn.textContent = 'Get Free Mockup'; btn.style.background = ''; },3000);
+}
 </script>
 </body>
 </html>
