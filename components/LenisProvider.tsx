@@ -1,10 +1,9 @@
 'use client'
 import { useEffect, createContext, useContext, useRef } from 'react'
-import Lenis from 'lenis'
+import Lenis from '@studio-freight/lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-// Single Lenis instance for the whole app — shared via context
 const LenisContext = createContext<Lenis | null>(null)
 
 export function useLenisInstance() {
@@ -18,15 +17,12 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     gsap.registerPlugin(ScrollTrigger)
 
     const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: 0.075,
       smoothWheel: true,
-      touchMultiplier: 1.5,
+      syncTouch: false,
     })
 
     lenisRef.current = lenis
-
-    // Connect Lenis to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update)
 
     const tickerFn = (time: number) => lenis.raf(time * 1000)
