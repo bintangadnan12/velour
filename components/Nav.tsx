@@ -18,12 +18,17 @@ export function Nav() {
     window.scrollTo({ top: totalScroll * pct, behavior: 'smooth' })
   }
 
-  const links: [string, number][] = [
-    ['Services', 0.21],
-    ['Why Us', 0.41],
-    ['Reviews', 0.61],
-    ['Contact', 0.81],
+  const links: [string, number | string][] = [
+    ['Collection', 0.21],
+    ['Craft', 0.41],
+    ['Shop', 'products'],
+    ['About', 'about'],
   ]
+
+  const goToId = (id: string) => {
+    setMenuOpen(false)
+    setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 50)
+  }
 
   return (
     <>
@@ -44,14 +49,14 @@ export function Nav() {
           style={{ color: 'var(--white)' }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          LUNARE
+          FORMA
         </div>
 
         <ul className="hidden md:flex gap-9 list-none">
-          {links.map(([label, pct]) => (
+          {links.map(([label, target]) => (
             <li key={label}>
               <button
-                onClick={() => scrollToSection(pct as number)}
+                onClick={() => typeof target === 'number' ? scrollToSection(target) : goToId(target as string)}
                 className="text-[10px] tracking-[0.22em] uppercase transition-colors duration-300 hover:text-white"
                 style={{ color: 'rgba(248,246,242,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}
               >
@@ -90,10 +95,10 @@ export function Nav() {
         style={{ background: 'rgba(2,2,2,0.97)', backdropFilter: 'blur(24px)', opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? 'all' : 'none' }}
       >
         <ul className="flex flex-col items-center gap-8 list-none mb-14">
-          {links.map(([label, pct], i) => (
+          {links.map(([label, target], i) => (
             <li key={label}>
               <button
-                onClick={() => scrollToSection(pct as number)}
+                onClick={() => typeof target === 'number' ? scrollToSection(target) : goToId(target as string)}
                 className="font-serif font-extralight uppercase tracking-[0.14em]"
                 style={{
                   fontSize: 'clamp(28px,7vw,44px)',

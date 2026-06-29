@@ -1,91 +1,98 @@
+'use client'
+import { motion } from 'framer-motion'
+
+const ease3d = [0.16, 1, 0.3, 1] as const
+
 export function Footer() {
   return (
-    <footer id="footer" style={{ padding: 'clamp(48px,6vw,80px) clamp(24px,5vw,80px)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+    <footer
+      id="footer"
+      style={{
+        background: '#050403',
+        borderTop: '1px solid rgba(248,246,242,0.05)',
+        padding: 'clamp(60px,8vw,100px) clamp(24px,5vw,80px) clamp(32px,4vw,56px)',
+      }}
+    >
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div className="flex items-start justify-between flex-wrap gap-10 mb-14">
-          {/* Brand */}
-          <div style={{ maxWidth: 220 }}>
-            <div className="font-serif text-[15px] font-light tracking-[0.26em] uppercase mb-3" style={{ color: 'var(--white)' }}>
-              LUNARE
+        {/* Top: brand + links */}
+        <div className="flex items-start justify-between flex-wrap gap-12 mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.9, ease: ease3d }}
+            style={{ maxWidth: 240 }}
+          >
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 200, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--white)', marginBottom: 14 }}>
+              FORMA
             </div>
-            <p className="text-[12px] leading-relaxed mb-5" style={{ color: 'rgba(248,246,242,0.35)' }}>
-              Wear the quiet luxury.<br />
-              Founded 2021, New York.
+            <p style={{ fontSize: 12, lineHeight: 1.8, color: 'rgba(248,246,242,0.3)', marginBottom: 22 }}>
+              Walk with intent.<br />Founded 2022, New York.
             </p>
-            <div className="flex gap-5">
+            <div style={{ display: 'flex', gap: 20 }}>
               {['Instagram', 'Pinterest', 'TikTok'].map(s => (
-                <a
-                  key={s}
-                  href="#"
-                  className="text-[9px] tracking-[0.2em] uppercase transition-colors duration-300 hover:text-white"
-                  style={{ color: 'rgba(248,246,242,0.28)', textDecoration: 'none' }}
+                <a key={s} href="#"
+                  style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.25)', textDecoration: 'none', transition: 'color 0.3s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(248,246,242,0.7)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(248,246,242,0.25)' }}
                 >
                   {s}
                 </a>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Links */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-x-14 gap-y-8">
             {[
-              { heading: 'Shop', links: ['New Arrivals', 'Best Sellers', 'Outerwear', 'Knitwear', 'Tailoring'] },
-              { heading: 'Brand', links: ['Our Story', 'Sustainability', 'Size Guide', 'Care Guide'] },
-              { heading: 'Support', links: ['Shipping & Returns', 'FAQ', 'Contact Us', 'Track Order'] },
-            ].map(col => (
-              <div key={col.heading}>
-                <div className="text-[9px] tracking-[0.28em] uppercase mb-4" style={{ color: 'rgba(248,246,242,0.3)' }}>
+              { heading: 'Shop',    links: ['New Arrivals', 'Best Sellers', 'FORMA Drift', 'FORMA Bone', 'FORMA Noir'] },
+              { heading: 'Brand',   links: ['Our Story', 'Sustainability', 'Size Guide', 'Care Guide'] },
+              { heading: 'Support', links: ['Shipping & Returns', 'FAQ', 'Contact', 'Track Order'] },
+            ].map((col, ci) => (
+              <motion.div
+                key={col.heading}
+                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.8, ease: ease3d, delay: ci * 0.08 }}
+              >
+                <div style={{ fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.28)', marginBottom: 16 }}>
                   {col.heading}
                 </div>
-                <ul className="flex flex-col gap-2.5 list-none">
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {col.links.map(link => (
                     <li key={link}>
-                      <a
-                        href="#"
-                        className="text-[11px] tracking-[0.08em] transition-colors duration-300 hover:text-white"
-                        style={{ color: 'rgba(248,246,242,0.35)', textDecoration: 'none' }}
+                      <a href="#"
+                        style={{ fontSize: 11, letterSpacing: '0.06em', color: 'rgba(248,246,242,0.32)', textDecoration: 'none', transition: 'color 0.3s' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(248,246,242,0.75)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(248,246,242,0.32)' }}
                       >
                         {link}
                       </a>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
 
         {/* Trust bar */}
-        <div
-          className="flex flex-wrap gap-4 items-center justify-center mb-8 py-5 text-center"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-        >
-          {[
-            'Free shipping over $150',
-            'Free 30-day returns',
-            'Secure checkout',
-            'GOTS certified materials',
-            'Carbon-neutral shipping',
-          ].map((item, i) => (
-            <span key={i} className="flex items-center gap-2 text-[10px] tracking-[0.1em]" style={{ color: 'rgba(248,246,242,0.2)' }}>
-              {i > 0 && <span className="hidden sm:inline" style={{ opacity: 0.3 }}>·</span>}
+        <div style={{ borderTop: '1px solid rgba(248,246,242,0.04)', borderBottom: '1px solid rgba(248,246,242,0.04)', padding: '18px 0', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px 0', marginBottom: 28 }}>
+          {['Free shipping over $200', 'Free 30-day returns', 'Secure checkout', 'GOTS certified', 'Carbon-neutral shipping', 'Lifetime repair'].map((item, i) => (
+            <span key={item} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 9, letterSpacing: '0.12em', color: 'rgba(248,246,242,0.18)', textTransform: 'uppercase' }}>
+              {i > 0 && <span style={{ opacity: 0.25 }}>·</span>}
               {item}
             </span>
           ))}
         </div>
 
-        {/* Bottom bar */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="text-[10px] tracking-[0.12em]" style={{ color: 'rgba(248,246,242,0.2)' }}>
-            © 2026 LUNARE. All rights reserved.
+        {/* Bottom */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ fontSize: 10, letterSpacing: '0.12em', color: 'rgba(248,246,242,0.18)' }}>
+            © 2026 FORMA. All rights reserved.
           </div>
-          <div className="flex gap-5">
+          <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy Policy', 'Terms of Use', 'Accessibility'].map(link => (
-              <a
-                key={link}
-                href="#"
-                className="text-[10px] tracking-[0.1em] transition-colors duration-300 hover:text-white"
-                style={{ color: 'rgba(248,246,242,0.2)', textDecoration: 'none' }}
+              <a key={link} href="#"
+                style={{ fontSize: 10, letterSpacing: '0.1em', color: 'rgba(248,246,242,0.18)', textDecoration: 'none', transition: 'color 0.3s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(248,246,242,0.55)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(248,246,242,0.18)' }}
               >
                 {link}
               </a>

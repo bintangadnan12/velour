@@ -1,62 +1,126 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface PreloaderProps {
   onComplete: () => void
   progress: number
 }
 
+const LETTERS = ['F', 'O', 'R', 'M', 'A']
+const ease3d = [0.16, 1, 0.3, 1] as const
+
 export function Preloader({ onComplete, progress }: PreloaderProps) {
-  const [visible, setVisible] = useState(true)
+  const [exiting, setExiting] = useState(false)
+  const [visible, setVisible]  = useState(true)
 
   useEffect(() => {
-    if (progress >= 100) {
-      const t = setTimeout(() => {
+    if (progress >= 100 && !exiting) {
+      const t1 = setTimeout(() => setExiting(true), 500)
+      const t2 = setTimeout(() => {
         setVisible(false)
-        setTimeout(onComplete, 900)
-      }, 400)
-      return () => clearTimeout(t)
+        onComplete()
+      }, 1600)
+      return () => { clearTimeout(t1); clearTimeout(t2) }
     }
-  }, [progress, onComplete])
-
-  if (!visible) return null
+  }, [progress, exiting, onComplete])
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-1000"
-      style={{
-        background: 'var(--black)',
-        opacity: progress >= 100 ? 0 : 1,
-        pointerEvents: progress >= 100 ? 'none' : 'all',
-      }}
-    >
-      <div
-        className="font-serif text-[clamp(36px,5vw,60px)] font-extralight tracking-[0.3em] uppercase"
-        style={{ color: 'var(--white)', animation: 'fadeUp 0.9s var(--ease) 0.3s both' }}
-      >
-        LUN<em style={{ color: 'var(--gold)', fontStyle: 'italic' }}>ARE</em>
-      </div>
-      <div
-        className="w-[200px] h-px mt-8 overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.08)', animation: 'fadeUp 0.6s var(--ease) 0.7s both' }}
-      >
-        <div
-          className="h-full transition-all duration-75 linear"
-          style={{ width: `${progress}%`, background: 'var(--gold)' }}
-        />
-      </div>
-      <div
-        className="text-[10px] tracking-[0.3em] mt-2.5"
-        style={{ color: 'var(--muted)', animation: 'fadeUp 0.6s var(--ease) 0.7s both' }}
-      >
-        {progress}%
-      </div>
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="preloader"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.9, ease: 'easeInOut' }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'var(--black)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 0,
+          }}
+        >
+          {/* Animated FORMA letters */}
+          <div style={{ display: 'flex', gap: 'clamp(6px,1.2vw,14px)', overflow: 'hidden', marginBottom: 32 }}>
+            {LETTERS.map((letter, i) => (
+              <div key={letter} style={{ overflow: 'hidden' }}>
+                <motion.span
+                  initial={{ y: '110%', opacity: 0 }}
+                  animate={exiting
+                    ? { y: '-110%', opacity: 0 }
+                    : { y: 0, opacity: 1 }
+                  }
+                  transition={
+                    exiting
+                      ? { duration: 0.6, ease: ease3d, delay: i * 0.06 }
+                      : { duration: 1.1, ease: ease3d, delay: 0.2 + i * 0.08 }
+                  }
+                  style={{
+                    display: 'block',
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 'clamp(40px,6vw,80px)',
+                    fontWeight: 200,
+                    letterSpacing: '0.24em',
+                    color: 'var(--white)',
+                    lineHeight: 1,
+                  }}
+                >
+                  {letter}
+                </motion.span>
+              </div>
+            ))}
+          </div>
+
+          {/* Tagline */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: exiting ? 0 : 1 }}
+            transition={{ duration: 0.8, delay: exiting ? 0 : 0.9 }}
+            style={{
+              fontSize: 9,
+              letterSpacing: '0.36em',
+              textTransform: 'uppercase',
+              color: 'rgba(248,246,242,0.25)',
+              marginBottom: 40,
+            }}
+          >
+            Walk with intent.
+          </motion.div>
+
+          {/* Progress bar */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: exiting ? 0 : 1, scaleX: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            style={{ width: 180, height: 1, background: 'rgba(248,246,242,0.08)', position: 'relative', transformOrigin: 'left' }}
+          >
+            <motion.div
+              style={{
+                position: 'absolute', top: 0, left: 0, height: '100%',
+                background: 'rgba(248,246,242,0.5)',
+                width: `${progress}%`,
+                transition: 'width 0.08s linear',
+              }}
+            />
+          </motion.div>
+
+          {/* Progress number */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: exiting ? 0 : 0.4 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            style={{
+              marginTop: 10, fontSize: 10,
+              letterSpacing: '0.22em',
+              color: 'var(--white)',
+              fontFamily: 'var(--font-serif)',
+            }}
+          >
+            {String(progress).padStart(3, ' ')}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
