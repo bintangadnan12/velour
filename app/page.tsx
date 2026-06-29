@@ -3,10 +3,8 @@ import { useState, useCallback } from 'react'
 import { Preloader } from '@/components/Preloader'
 import { Nav } from '@/components/Nav'
 import { HeroCanvas } from '@/components/HeroCanvas'
-import { Marquee } from '@/components/Marquee'
-import { BrandIntro } from '@/components/BrandIntro'
-import { Features } from '@/components/Features'
-import { TheEdit } from '@/components/TheEdit'
+import { Manifesto } from '@/components/Manifesto'
+import { ProductReel } from '@/components/ProductReel'
 import { BrandStory } from '@/components/BrandStory'
 import { Testimonials } from '@/components/Testimonials'
 import { Newsletter } from '@/components/Newsletter'
@@ -16,22 +14,29 @@ export default function Home() {
   const [progress, setProgress] = useState(0)
 
   const handleLoad = useCallback((pct: number) => setProgress(pct), [])
-  const handleReady = useCallback(() => {
-    setProgress(100)
-  }, [])
+  const handleReady = useCallback(() => setProgress(100), [])
 
   return (
     <>
       <Preloader progress={progress} onComplete={() => {}} />
       <Nav />
       <main>
+        {/* 01 — Cinematic video scrubber */}
         <HeroCanvas onLoad={handleLoad} onReady={handleReady} />
-        <Marquee />
-        <BrandIntro />
-        <Features />
-        <TheEdit />
+
+        {/* 02 — Brand manifesto, line-by-line Framer Motion reveal */}
+        <Manifesto />
+
+        {/* 03 — Scroll-driven product reel, full-screen per product */}
+        <ProductReel />
+
+        {/* 04 — Origin story */}
         <BrandStory />
+
+        {/* 05 — Social proof */}
         <Testimonials />
+
+        {/* 06 — Newsletter, quiet */}
         <Newsletter />
       </main>
       <Footer />

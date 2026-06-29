@@ -180,28 +180,29 @@ export function HeroCanvas({ onLoad, onReady }: HeroCanvasProps) {
       {/* Caption 3 */}
       <div ref={cap3Ref} className="absolute z-[3] pointer-events-none transition-opacity duration-500"
         style={{ left: 'clamp(24px,6vw,110px)', top: '50%', transform: 'translateY(-50%)', opacity: 0 }}>
-        <div className="text-[9px] tracking-[0.32em] uppercase mb-2.5" style={{ color: 'var(--gold)' }}>Autumn Drop 2025</div>
+        <div className="text-[9px] tracking-[0.32em] uppercase mb-2.5" style={{ color: 'rgba(248,246,242,0.45)' }}>AW26 Collection</div>
         <div className="font-serif text-[clamp(26px,3.5vw,52px)] font-extralight leading-tight" style={{ color: 'var(--white)' }}>
-          New season.<br /><em style={{ color: 'var(--gold)', fontStyle: 'italic' }}>Now available.</em>
+          New season.<br /><em style={{ color: 'rgba(248,246,242,0.6)', fontStyle: 'italic' }}>Now available.</em>
         </div>
       </div>
 
       {/* Hero text */}
       <div id="hero-text" className="absolute inset-0 z-[2] flex flex-col items-center justify-center text-center pointer-events-none">
-        <div ref={eyeRef} className="text-[10px] tracking-[0.36em] uppercase mb-7 transition-all duration-700"
-          style={{ color: 'var(--gold)', opacity: 0, transform: 'translateY(14px)' }}>
-          Minimalist Contemporary Fashion
-        </div>
-        <h1 className="font-serif uppercase leading-none tracking-wide" style={{ fontSize: 'clamp(60px,11vw,156px)', fontWeight: 200, lineHeight: 0.88 }}>
+        <h1 className="font-serif uppercase leading-none" style={{ fontSize: 'clamp(64px,12vw,160px)', fontWeight: 200, lineHeight: 0.88, letterSpacing: '-0.01em' }}>
           <span style={{ display: 'block', overflow: 'hidden' }}>
-            <span ref={w1Ref} style={{ display: 'inline-block', transform: 'translateY(110%)', transition: 'transform 1.1s var(--ease)' }}>LUN</span>
-            <span ref={w2Ref} style={{ display: 'inline-block', transform: 'translateY(110%)', transition: 'transform 1.1s var(--ease) 0.12s', color: 'var(--gold)', fontStyle: 'italic' }}>ARE</span>
+            <span ref={w1Ref} style={{ display: 'inline-block', transform: 'translateY(110%)', transition: 'transform 1.1s var(--ease)', color: 'var(--white)' }}>LUN</span>
+            <span ref={w2Ref} style={{ display: 'inline-block', transform: 'translateY(110%)', transition: 'transform 1.1s var(--ease) 0.12s', color: 'rgba(248,246,242,0.55)', fontStyle: 'italic' }}>ARE</span>
           </span>
         </h1>
-        <p ref={subRef} className="mt-8 text-[13px] tracking-[0.18em] uppercase transition-all duration-700 delay-500"
-          style={{ color: 'var(--muted)', opacity: 0 }}>
+        <div style={{ width: 32, height: 1, background: 'rgba(248,246,242,0.18)', margin: '22px auto 18px' }} />
+        <p ref={subRef} className="text-[12px] tracking-[0.22em] uppercase transition-all duration-700"
+          style={{ color: 'rgba(248,246,242,0.45)', opacity: 0, letterSpacing: '0.22em' }}>
           Wear the quiet luxury.
         </p>
+        <div ref={eyeRef} className="text-[9px] tracking-[0.32em] uppercase mt-3 transition-all duration-700"
+          style={{ color: 'rgba(248,246,242,0.22)', opacity: 0, transform: 'translateY(10px)' }}>
+          New York · AW26
+        </div>
       </div>
 
       {/* Scroll hint */}
