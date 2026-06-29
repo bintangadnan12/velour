@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELOUR — Premium Streetwear</title>
+<meta name="description" content="VELOUR. Elevated streetwear crafted for the modern edge. Shop the latest drops.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f3ef;
+    --cream: #ede8df;
+    --gold: #c9a84c;
+    --gold-light: #e8cc7a;
+    --gray: #6b6b6b;
+    --border: rgba(245,243,239,.1);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 48px;
+    transition: padding .5s var(--ease), background .5s, border-color .5s;
+    border-bottom: 1px solid transparent;
+  }
+  nav.scrolled {
+    padding: 16px 48px;
+    background: rgba(10,10,10,.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    letter-spacing: .2em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(245,243,239,.6);
+    text-decoration: none;
+    font-size: .8rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    transition: color .3s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--gold);
+    color: var(--black);
+    padding: 10px 24px;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background .3s, transform .2s;
+  }
+  .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, transparent 40%, rgba(10,10,10,.7) 80%, var(--black) 100%),
+      linear-gradient(135deg, #1a1410 0%, #0d0b08 50%, #0a0a0a 100%);
+  }
+  .hero-visual {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0;
+  }
+  .hero-model {
+    height: 100%;
+    width: 55%;
+    object-fit: cover;
+    object-position: center top;
+    filter: grayscale(20%) contrast(1.05);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.3) 15%, black 40%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.3) 15%, black 40%);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 48px 80px;
+    max-width: 620px;
+  }
+  .hero-label {
+    font-size: .7rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: .95;
+    margin-bottom: 28px;
+    color: var(--white);
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(245,243,239,.55);
+    max-width: 400px;
+    margin-bottom: 40px;
+  }
+  .hero-actions { display: flex; gap: 16px; align-items: center; }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--black);
+    padding: 16px 36px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+    transition: background .3s, transform .2s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-ghost {
+    color: rgba(245,243,239,.6);
+    font-size: .8rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(245,243,239,.2);
+    padding-bottom: 2px;
+    transition: color .3s, border-color .3s;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: var(--white); }
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    right: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 2;
+  }
+  .hero-scroll span {
+    font-size: .65rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgba(245,243,239,.35);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollpulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollpulse {
+    0%, 100% { opacity: .3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+
+  /* ── TRUST BAR ── */
+  .trust-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 48px;
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    overflow: hidden;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    color: rgba(245,243,239,.45);
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .trust-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ── SECTION BASE ── */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-size: .68rem;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    color: rgba(245,243,239,.5);
+    font-size: .95rem;
+    line-height: 1.7;
+    max-width: 480px;
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity .9s var(--ease), transform .9s var(--ease);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .d1 { transition-delay: .1s; }
+  .d2 { transition-delay: .2s; }
+  .d3 { transition-delay: .3s; }
+  .d4 { transition-delay: .4s; }
+  .d5 { transition-delay: .5s; }
+
+  /* ── COLLECTIONS / PRODUCTS ── */
+  #collection { padding-top: 80px; }
+  .collection-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 56px;
+  }
+  .collection-header .view-all {
+    color: var(--gold);
+    font-size: .75rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201,168,76,.3);
+    padding-bottom: 2px;
+    transition: border-color .3s;
+    white-space: nowrap;
+    margin-bottom: 8px;
+  }
+  .collection-header .view-all:hover { border-color: var(--gold); }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .product-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background: #111;
+  }
+  .product-card:first-child {
+    grid-row: span 2;
+  }
+  .product-img {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    object-fit: cover;
+    transition: transform .8s var(--ease), filter .5s;
+    filter: grayscale(15%);
+    display: block;
+  }
+  .product-card:first-child .product-img { min-height: 722px; }
+  .product-card:hover .product-img { transform: scale(1.04); filter: grayscale(0%); }
+  .product-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,.85) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity .4s;
+  }
+  .product-card:hover .product-overlay { opacity: 1; }
+  .product-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    transform: translateY(8px);
+    opacity: 0;
+    transition: transform .4s var(--ease), opacity .4s;
+  }
+  .product-card:hover .product-info { transform: none; opacity: 1; }
+  .product-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+  }
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .product-price {
+    color: var(--gold);
+    font-size: .9rem;
+    font-weight: 500;
+  }
+  .product-tag {
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: rgba(245,243,239,.5);
+  }
+  .product-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--gold);
+    color: var(--black);
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+  }
+
+  /* Placeholder art for product images */
+  .product-art {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform .8s var(--ease);
+  }
+  .product-card:first-child .product-art { min-height: 722px; }
+  .product-card:hover .product-art { transform: scale(1.04); }
+
+  /* ── ABOUT / BRAND STORY ── */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-visual {
+    position: relative;
+  }
+  .about-img-main {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    display: block;
+  }
+  .about-img-accent {
+    position: absolute;
+    bottom: -40px;
+    right: -40px;
+    width: 55%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 4px solid var(--black);
+  }
+  .about-art {
+    width: 100%;
+    aspect-ratio: 3/4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-art-accent {
+    position: absolute;
+    bottom: -40px;
+    right: -40px;
+    width: 55%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--black);
+    z-index: 2;
+  }
+  .about-text { padding: 20px 0; }
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin: 48px 0;
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(245,243,239,.45);
+  }
+
+  /* ── LOOKBOOK / EDITORIAL ── */
+  #lookbook { padding: 80px 0; }
+  .lookbook-header { padding: 0 48px; margin-bottom: 40px; }
+  .lookbook-strip {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    padding: 0 48px;
+    scrollbar-width: none;
+  }
+  .lookbook-strip::-webkit-scrollbar { display: none; }
+  .lookbook-item {
+    flex-shrink: 0;
+    width: 300px;
+    height: 420px;
+    position: relative;
+    overflow: hidden;
+    background: #111;
+  }
+  .lookbook-art {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .6s var(--ease);
+    position: relative;
+    overflow: hidden;
+  }
+  .lookbook-item:hover .lookbook-art { transform: scale(1.05); }
+  .lookbook-num {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: rgba(245,243,239,.15);
+    line-height: 1;
+  }
+
+  /* ── PRICING ── */
+  #pricing {
+    text-align: center;
+  }
+  .pricing-header { margin-bottom: 64px; }
+  .pricing-header .section-sub { margin: 0 auto; }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    max-width: 760px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+  }
+  .price-card {
+    padding: 48px 36px;
+    text-align: left;
+    border: 1px solid transparent;
+    transition: border-color .3s, background .3s;
+    position: relative;
+  }
+  .price-card:hover { background: rgba(255,255,255,.02); }
+  .price-card.featured {
+    background: rgba(201,168,76,.05);
+    border-color: rgba(201,168,76,.25);
+    margin: -1px;
+    z-index: 1;
+  }
+  .price-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    margin-bottom: 28px;
+  }
+  .price-name {
+    font-size: .75rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgba(245,243,239,.4);
+    margin-bottom: 12px;
+  }
+  .price-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .price-amount sup {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.2rem;
+    vertical-align: super;
+    margin-right: 2px;
+    color: var(--gold);
+  }
+  .price-period {
+    font-size: .75rem;
+    color: rgba(245,243,239,.35);
+    letter-spacing: .1em;
+    margin-bottom: 32px;
+    display: block;
+  }
+  .price-features {
+    list-style: none;
+    margin-bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .price-features li {
+    font-size: .85rem;
+    color: rgba(245,243,239,.65);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .price-features li::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(201,168,76,.15);
+    border: 1px solid rgba(201,168,76,.4);
+    flex-shrink: 0;
+    margin-top: 2px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5 6.5-7' stroke='%23c9a84c' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .price-cta {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background .3s, color .3s;
+    border: 1px solid rgba(201,168,76,.3);
+    color: var(--gold);
+  }
+  .price-card.featured .price-cta {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+  }
+  .price-cta:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+  /* ── TESTIMONIALS ── */
+  #testimonials { padding: 100px 48px; }
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 56px;
+  }
+  .testi-card {
+    padding: 40px 32px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .testi-stars {
+    display: flex;
+    gap: 4px;
+  }
+  .star { color: var(--gold); font-size: .9rem; }
+  .testi-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(245,243,239,.85);
+    flex: 1;
+  }
+  .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .testi-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    flex-shrink: 0;
+    border: 1px solid rgba(201,168,76,.2);
+  }
+  .testi-name {
+    font-size: .85rem;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .testi-role {
+    font-size: .72rem;
+    color: rgba(245,243,239,.4);
+    letter-spacing: .08em;
+  }
+
+  /* ── FAQ ── */
+  #faq { padding: 100px 48px; }
+  .faq-wrap {
+    max-width: 720px;
+    margin: 56px auto 0;
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+  .faq-q {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: 400;
+    text-align: left;
+    padding: 24px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    transition: color .3s;
+  }
+  .faq-q:hover { color: var(--gold); }
+  .faq-icon {
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(201,168,76,.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform .4s var(--ease), border-color .3s;
+  }
+  .faq-icon svg { width: 10px; height: 10px; transition: transform .4s var(--ease); }
+  .faq-item.open .faq-icon { border-color: var(--gold); transform: rotate(180deg); }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .5s var(--ease);
+  }
+  .faq-item.open .faq-a { max-height: 240px; }
+  .faq-a p {
+    padding-bottom: 24px;
+    color: rgba(245,243,239,.5);
+    font-size: .9rem;
+    line-height: 1.75;
+  }
+
+  /* ── CTA BANNER ── */
+  #cta-banner {
+    padding: 100px 48px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(201,168,76,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #cta-banner .section-title { max-width: 600px; margin: 0 auto 24px; }
+  #cta-banner .section-sub { margin: 0 auto 48px; text-align: center; }
+  .cta-form {
+    display: flex;
+    gap: 0;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .cta-input {
+    flex: 1;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.12);
+    border-right: none;
+    color: var(--white);
+    font-family: inherit;
+    font-size: .85rem;
+    padding: 14px 20px;
+    outline: none;
+    transition: border-color .3s;
+  }
+  .cta-input::placeholder { color: rgba(245,243,239,.3); }
+  .cta-input:focus { border-color: rgba(201,168,76,.5); }
+  .cta-submit {
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 14px 28px;
+    font-family: inherit;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .3s;
+    white-space: nowrap;
+  }
+  .cta-submit:hover { background: var(--gold-light); }
+  .cta-note {
+    margin-top: 16px;
+    font-size: .72rem;
+    color: rgba(245,243,239,.3);
+    letter-spacing: .08em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 60px 48px 40px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: start;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    letter-spacing: .2em;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .footer-tagline {
+    font-size: .78rem;
+    color: rgba(245,243,239,.35);
+    letter-spacing: .1em;
+    max-width: 280px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .footer-links {
+    display: flex;
+    gap: 28px;
+  }
+  .footer-links a {
+    font-size: .72rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(245,243,239,.35);
+    text-decoration: none;
+    transition: color .3s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-right { text-align: right; }
+  .footer-copy {
+    font-size: .7rem;
+    color: rgba(245,243,239,.2);
+    letter-spacing: .08em;
+  }
+
+  /* ── SVG FASHION ART HELPERS ── */
+  .fashion-svg { width: 100%; height: 100%; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { display: none; }
+    section { padding: 64px 24px; }
+    .hero-content { padding: 0 24px 60px; }
+    .hero-scroll { display: none; }
+    .trust-bar { padding: 16px 24px; gap: 24px; overflow-x: auto; }
+    .product-grid { grid-template-columns: 1fr 1fr; }
+    .product-card:first-child { grid-row: span 1; }
+    .product-card:first-child .product-art { min-height: 360px; }
+    #about { grid-template-columns: 1fr; gap: 48px; }
+    .about-art-accent { display: none; }
+    .lookbook-item { width: 240px; height: 340px; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+    .testi-grid { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr; }
+    .footer-right { text-align: left; }
+    .cta-form { flex-direction: column; }
+    .cta-input { border-right: 1px solid rgba(255,255,255,.12); border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">VELOUR</a>
+  <ul class="nav-links">
+    <li><a href="#collection">Collection</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#lookbook">Lookbook</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#cta-banner" class="nav-cta">Shop Now</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-visual">
+    <!-- Editorial fashion illustration -->
+    <svg class="hero-model" viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="hg1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#1a1208"/>
+          <stop offset="100%" stop-color="#0d0b08"/>
+        </linearGradient>
+        <linearGradient id="hg2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#c9a84c" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="hg3" cx="50%" cy="30%" r="50%">
+          <stop offset="0%" stop-color="#2a1f0a" stop-opacity=".8"/>
+          <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="600" height="900" fill="url(#hg1)"/>
+      <rect width="600" height="900" fill="url(#hg3)"/>
+      <!-- Abstract figure silhouette -->
+      <ellipse cx="300" cy="140" rx="55" ry="65" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".3"/>
+      <!-- Torso / coat -->
+      <path d="M200 200 Q210 195 230 198 L240 210 Q250 300 245 480 L355 480 Q350 300 360 210 L370 198 Q390 195 400 200 L420 230 Q440 250 445 300 L430 480 Q380 520 300 525 Q220 520 170 480 L155 300 Q160 250 180 230 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+      <!-- Collar detail -->
+      <path d="M255 200 Q280 220 300 215 Q320 220 345 200 L335 195 Q318 205 300 202 Q282 205 265 195 Z" fill="#c9a84c" fill-opacity=".15"/>
+      <!-- Wide-leg trousers -->
+      <path d="M245 478 Q235 500 215 560 Q200 630 195 750 L255 752 Q258 640 265 570 Q275 510 300 500 Q325 510 335 570 Q342 640 345 752 L405 750 Q400 630 385 560 Q365 500 355 478 Z" fill="#141008" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".15"/>
+      <!-- Belt -->
+      <rect x="245" y="472" width="110" height="10" rx="2" fill="#c9a84c" fill-opacity=".25"/>
+      <rect x="296" y="469" width="8" height="16" rx="1" fill="#c9a84c" fill-opacity=".4"/>
+      <!-- Shoes -->
+      <ellipse cx="220" cy="760" rx="32" ry="10" fill="#0d0b06"/>
+      <ellipse cx="380" cy="760" rx="32" ry="10" fill="#0d0b06"/>
+      <!-- Arms -->
+      <path d="M200 220 Q170 270 160 340 Q158 370 170 380 L185 310 Q195 260 210 225 Z" fill="#1c1408"/>
+      <path d="M400 220 Q430 270 440 340 Q442 370 430 380 L415 310 Q405 260 390 225 Z" fill="#1c1408"/>
+      <!-- Subtle texture lines on coat -->
+      <line x1="260" y1="230" x2="258" y2="460" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".1"/>
+      <line x1="300" y1="215" x2="300" y2="470" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".1"/>
+      <line x1="340" y1="230" x2="342" y2="460" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".1"/>
+      <!-- Gold gradient overlay at top -->
+      <rect width="600" height="300" fill="url(#hg2)"/>
+      <!-- Geometric accent lines -->
+      <line x1="80" y1="100" x2="80" y2="800" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".08"/>
+      <line x1="520" y1="100" x2="520" y2="800" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".08"/>
+      <line x1="0" y1="450" x2="600" y2="450" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".06"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <p class="hero-label">New Drop — SS 2025</p>
+    <h1 class="hero-title">Wear the<br><em>Edge.</em></h1>
+    <p class="hero-sub">Premium streetwear for those who move between worlds. Crafted in limited runs, built to last.</p>
+    <div class="hero-actions">
+      <a href="#collection" class="btn-primary">Shop Collection</a>
+      <a href="#lookbook" class="btn-ghost">View Lookbook</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1l1.8 3.6L14 5.3l-3 2.9.7 4.1L8 10.4l-3.7 1.9.7-4.1-3-2.9 4.2-.7L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    Free shipping over $150
+  </div>
+  <div class="trust-item">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8a6 6 0 1012 0A6 6 0 002 8z" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    30-day free returns
+  </div>
+  <div class="trust-item">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2L3 5v4c0 3 2.5 4.8 5 5.8 2.5-1 5-2.8 5-5.8V5L8 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    Sustainable materials
+  </div>
+  <div class="trust-item">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8.5l3.5 3 6.5-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    4.9 ★ — 2,400+ reviews
+  </div>
+</div>
+
+<!-- COLLECTION -->
+<section id="collection">
+  <div class="collection-header reveal">
+    <div>
+      <p class="section-label">Featured Drop</p>
+      <h2 class="section-title">The Archive<br>Collection</h2>
+    </div>
+    <a href="#" class="view-all">View All →</a>
+  </div>
+
+  <div class="product-grid">
+    <!-- Card 1 — tall featured -->
+    <div class="product-card reveal d1">
+      <div class="product-art" style="background:linear-gradient(135deg,#1a1208,#0d0b06);">
+        <svg viewBox="0 0 320 640" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <defs>
+            <linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a1f0a"/><stop offset="100%" stop-color="#0a0a0a"/></linearGradient>
+          </defs>
+          <rect width="320" height="640" fill="url(#pg1)"/>
+          <!-- Coat silhouette -->
+          <path d="M110 120 Q120 115 135 118 L142 128 Q148 200 145 380 L175 380 L175 128 Q182 115 185 118 Q195 115 210 120 L220 140 Q230 160 232 200 L220 380 Q195 400 160 405 Q125 400 100 380 L88 200 Q90 160 100 140 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".3"/>
+          <!-- Lapels -->
+          <path d="M142 128 Q155 145 160 140 Q165 145 178 128 L173 124 Q164 132 160 130 Q156 132 147 124 Z" fill="#c9a84c" fill-opacity=".2"/>
+          <!-- Belt -->
+          <rect x="143" y="265" width="34" height="6" rx="1" fill="#c9a84c" fill-opacity=".35"/>
+          <!-- Trousers -->
+          <path d="M145 378 Q138 400 130 450 Q122 510 120 580 L148 581 Q150 515 153 455 Q157 415 160 408 Q163 415 167 455 Q170 515 172 581 L200 580 Q198 510 190 450 Q182 400 175 378 Z" fill="#141008"/>
+          <!-- Vertical lines -->
+          <line x1="150" y1="135" x2="149" y2="365" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <line x1="160" y1="140" x2="160" y2="375" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <line x1="170" y1="135" x2="171" y2="365" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <!-- Geometric frame -->
+          <rect x="20" y="20" width="280" height="600" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".08"/>
+          <line x1="20" y1="320" x2="300" y2="320" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".06"/>
+        </svg>
+      </div>
+      <div class="product-overlay"></div>
+      <div class="product-badge">New</div>
+      <div class="product-info">
+        <div class="product-name">The Oversized Coat</div>
+        <div class="product-meta">
+          <span class="product-price">$285</span>
+          <span class="product-tag">Wool Blend</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="product-card reveal d2">
+      <div class="product-art" style="background:linear-gradient(160deg,#0f0e0c,#1a1510);">
+        <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="320" height="360" fill="#111009"/>
+          <!-- Wide-leg pants view -->
+          <path d="M90 40 L90 220 Q88 260 80 310 L105 312 Q110 265 118 225 Q128 185 160 178 Q192 185 202 225 Q210 265 215 312 L240 310 Q232 260 230 220 L230 40 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+          <!-- Waistband -->
+          <rect x="88" y="34" width="144" height="12" rx="2" fill="#c9a84c" fill-opacity=".2"/>
+          <!-- Center crease -->
+          <line x1="160" y1="46" x2="155" y2="310" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+          <line x1="160" y1="46" x2="165" y2="310" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+          <!-- Pocket detail -->
+          <path d="M95 70 Q100 68 115 68 L115 90 Q107 92 95 90 Z" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+        </svg>
+      </div>
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <div class="product-name">Wide-Leg Trousers</div>
+        <div class="product-meta">
+          <span class="product-price">$145</span>
+          <span class="product-tag">Linen · Cotton</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="product-card reveal d3">
+      <div class="product-art" style="background:linear-gradient(135deg,#0e1008,#151a0a);">
+        <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="320" height="360" fill="#0e1008"/>
+          <!-- Bomber jacket -->
+          <path d="M95 60 Q110 55 130 58 L138 68 Q145 120 143 250 L177 250 Q175 120 182 68 L190 58 Q210 55 225 60 L235 75 Q245 90 246 120 L238 250 Q210 265 160 268 Q110 265 82 250 L74 120 Q75 90 85 75 Z" fill="#0a1a0a" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".25"/>
+          <!-- Ribbed collar -->
+          <path d="M130 58 Q145 72 160 68 Q175 72 190 58 L185 55 Q172 64 160 61 Q148 64 135 55 Z" fill="#c9a84c" fill-opacity=".15"/>
+          <!-- Zipper -->
+          <line x1="160" y1="68" x2="160" y2="245" stroke="#c9a84c" stroke-width=".8" stroke-opacity=".25"/>
+          <circle cx="160" cy="130" r="4" fill="#c9a84c" fill-opacity=".3"/>
+          <!-- Chest pocket -->
+          <rect x="125" y="90" width="30" height="22" rx="2" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+          <!-- Ribbed hem -->
+          <path d="M86 245 Q160 255 234 245 L234 260 Q160 272 86 260 Z" fill="#c9a84c" fill-opacity=".08"/>
+        </svg>
+      </div>
+      <div class="product-overlay"></div>
+      <div class="product-badge" style="background:transparent;border:1px solid rgba(201,168,76,.4);color:var(--gold)">Limited</div>
+      <div class="product-info">
+        <div class="product-name">Flight Jacket</div>
+        <div class="product-meta">
+          <span class="product-price">$320</span>
+          <span class="product-tag">Nylon · Satin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="product-card reveal d4">
+      <div class="product-art" style="background:linear-gradient(160deg,#140e08,#1a1a0a);">
+        <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="320" height="360" fill="#120e08"/>
+          <!-- Turtleneck -->
+          <path d="M115 40 L115 260 Q160 270 205 260 L205 40 Q185 35 160 36 Q135 35 115 40 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+          <!-- Turtleneck collar -->
+          <path d="M130 40 L130 65 Q160 68 190 65 L190 40 Q175 36 160 37 Q145 36 130 40 Z" fill="#221a0c" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+          <!-- Ribbing lines on collar -->
+          <line x1="130" y1="44" x2="190" y2="44" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <line x1="130" y1="50" x2="190" y2="50" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <line x1="130" y1="56" x2="190" y2="56" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <line x1="130" y1="62" x2="190" y2="62" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".12"/>
+          <!-- Sleeve seam -->
+          <line x1="115" y1="80" x2="72" y2="100" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+          <path d="M72 100 L60 200 L90 205 L105 120 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+          <line x1="205" y1="80" x2="248" y2="100" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+          <path d="M248 100 L260 200 L230 205 L215 120 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+        </svg>
+      </div>
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <div class="product-name">Structured Turtleneck</div>
+        <div class="product-meta">
+          <span class="product-price">$95</span>
+          <span class="product-tag">Merino Wool</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-visual reveal">
+    <div class="about-art" style="background:linear-gradient(135deg,#1a1208,#0d0b06);">
+      <svg viewBox="0 0 440 580" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+        <defs>
+          <linearGradient id="ag1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a1f0a"/><stop offset="100%" stop-color="#0a0a0a"/></linearGradient>
+        </defs>
+        <rect width="440" height="580" fill="url(#ag1)"/>
+        <!-- Atelier / workspace abstract -->
+        <rect x="60" y="80" width="320" height="2" fill="#c9a84c" fill-opacity=".1"/>
+        <rect x="60" y="498" width="320" height="1" fill="#c9a84c" fill-opacity=".08"/>
+        <!-- Dress form silhouette -->
+        <path d="M175 120 Q180 110 220 108 Q260 110 265 120 L270 145 Q280 165 285 200 Q290 240 285 280 L275 280 Q270 320 268 360 L172 360 Q170 320 165 280 L155 280 Q150 240 155 200 Q160 165 170 145 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".25"/>
+        <!-- Neck -->
+        <rect x="208" y="90" width="24" height="32" rx="4" fill="#1a1208" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+        <!-- Stand -->
+        <rect x="198" y="358" width="44" height="8" rx="2" fill="#c9a84c" fill-opacity=".15"/>
+        <rect x="208" y="366" width="24" height="80" rx="2" fill="#1a1208" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".15"/>
+        <ellipse cx="220" cy="452" rx="50" ry="10" fill="#c9a84c" fill-opacity=".08"/>
+        <!-- Measuring tape detail -->
+        <path d="M140 200 Q160 195 175 200 Q180 215 175 230 Q160 235 140 230 Q135 215 140 200 Z" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+        <!-- Small ruler / pin details -->
+        <line x1="310" y1="160" x2="310" y2="300" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".12"/>
+        <circle cx="310" cy="180" r="2" fill="#c9a84c" fill-opacity=".3"/>
+        <circle cx="310" cy="220" r="2" fill="#c9a84c" fill-opacity=".3"/>
+        <circle cx="310" cy="260" r="2" fill="#c9a84c" fill-opacity=".3"/>
+        <!-- V/text watermark -->
+        <text x="220" y="340" text-anchor="middle" font-family="serif" font-size="120" fill="#c9a84c" fill-opacity=".04" font-style="italic">V</text>
+      </svg>
+    </div>
+    <div class="about-art-accent" style="background:linear-gradient(135deg,#1a1510,#111008);">
+      <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+        <rect width="220" height="220" fill="#14100a"/>
+        <!-- Thread / needle close-up -->
+        <circle cx="110" cy="110" r="60" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".15"/>
+        <circle cx="110" cy="110" r="40" fill="none" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".1"/>
+        <path d="M110 50 L110 170 M50 110 L170 110" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+        <text x="110" y="118" text-anchor="middle" font-family="serif" font-size="42" fill="#c9a84c" fill-opacity=".12" font-style="italic">V</text>
+        <text x="110" y="155" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#c9a84c" fill-opacity=".25" letter-spacing="4">VELOUR</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="about-text">
+    <p class="section-label reveal">Our Story</p>
+    <h2 class="section-title reveal d1">Crafted at the<br>intersection of<br><em style="font-style:italic;color:var(--gold)">art & utility.</em></h2>
+    <p class="section-sub reveal d2" style="margin-top:20px;">
+      VELOUR was born in 2021 from a single belief: that streetwear could hold the tension between raw energy and refined craft. Every piece is designed in Los Angeles and produced in small runs — so what you wear stays rare.
+    </p>
+
+    <div class="about-stats reveal d3">
+      <div>
+        <div class="stat-num">2,400+</div>
+        <div class="stat-label">Five-star reviews</div>
+      </div>
+      <div>
+        <div class="stat-num">42</div>
+        <div class="stat-label">Limited drops per year</div>
+      </div>
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Sustainable sourcing</div>
+      </div>
+      <div>
+        <div class="stat-num">18</div>
+        <div class="stat-label">Countries shipped to</div>
+      </div>
+    </div>
+
+    <a href="#collection" class="btn-primary reveal d4">Explore the Collection</a>
+  </div>
+</section>
+
+<!-- LOOKBOOK -->
+<section id="lookbook" style="padding-left:0;padding-right:0;">
+  <div class="lookbook-header">
+    <p class="section-label reveal">Lookbook</p>
+    <h2 class="section-title reveal d1">SS 2025 Editorial</h2>
+  </div>
+  <div class="lookbook-strip">
+    <div class="lookbook-item reveal">
+      <div class="lookbook-art" style="background:linear-gradient(160deg,#1a1208,#0a0a0a);">
+        <svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="300" height="420" fill="#12100a"/>
+          <!-- Diagonal composition -->
+          <line x1="0" y1="140" x2="300" y2="280" stroke="#c9a84c" stroke-width="40" stroke-opacity=".04"/>
+          <!-- Minimal figure -->
+          <ellipse cx="150" cy="100" rx="35" ry="42" fill="#1a1208" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+          <path d="M95 135 Q110 130 130 133 L135 145 Q140 200 138 330 L162 330 Q160 200 165 145 L170 133 Q190 130 205 135 L215 155 L200 330 Q175 345 150 347 Q125 345 100 330 L85 155 Z" fill="#1c1408" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+          <div class="lookbook-num">01</div>
+        </svg>
+        <div class="lookbook-num">01</div>
+      </div>
+    </div>
+    <div class="lookbook-item reveal d1">
+      <div class="lookbook-art" style="background:linear-gradient(160deg,#0a0f0a,#1a1510);">
+        <svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="300" height="420" fill="#0c100c"/>
+          <circle cx="150" cy="210" r="120" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".08"/>
+          <circle cx="150" cy="210" r="80" fill="none" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".06"/>
+          <text x="150" y="230" text-anchor="middle" font-family="serif" font-size="80" fill="#c9a84c" fill-opacity=".06" font-style="italic">V</text>
+          <!-- Abstract fashion element -->
+          <path d="M110 80 L190 80 L200 200 Q170 220 150 215 Q130 220 100 200 Z" fill="#1a1a12" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+          <path d="M130 80 Q150 95 170 80" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+        </svg>
+        <div class="lookbook-num">02</div>
+      </div>
+    </div>
+    <div class="lookbook-item reveal d2">
+      <div class="lookbook-art" style="background:linear-gradient(180deg,#14100a,#1a1208);">
+        <svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="300" height="420" fill="#10100a"/>
+          <!-- Grid composition -->
+          <rect x="40" y="40" width="220" height="340" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".08"/>
+          <line x1="150" y1="40" x2="150" y2="380" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".06"/>
+          <line x1="40" y1="210" x2="260" y2="210" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".06"/>
+          <!-- Accessory: bag -->
+          <path d="M100 150 Q100 130 150 128 Q200 130 200 150 L210 280 Q195 295 150 297 Q105 295 90 280 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".25"/>
+          <path d="M125 148 Q125 115 150 113 Q175 115 175 148" fill="none" stroke="#c9a84c" stroke-width=".8" stroke-opacity=".25"/>
+          <line x1="90" y1="200" x2="210" y2="200" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".15"/>
+        </svg>
+        <div class="lookbook-num">03</div>
+      </div>
+    </div>
+    <div class="lookbook-item reveal d3">
+      <div class="lookbook-art" style="background:linear-gradient(135deg,#0a0a14,#141014);">
+        <svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="300" height="420" fill="#0a0a12"/>
+          <!-- Shoe / sneaker abstract -->
+          <path d="M60 280 Q80 230 150 220 Q220 230 240 280 Q260 310 250 330 L50 330 Q40 310 60 280 Z" fill="#1a1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+          <path d="M80 280 Q110 260 150 258 Q190 260 220 280" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".2"/>
+          <line x1="150" y1="220" x2="150" y2="120" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".15"/>
+          <ellipse cx="150" cy="100" rx="40" ry="22" fill="#1c1208" stroke="#c9a84c" stroke-width=".5" stroke-opacity=".2"/>
+          <!-- Laces -->
+          <path d="M120 270 Q135 262 150 265 Q165 262 180 270" fill="none" stroke="#c9a84c" stroke-width=".6" stroke-opacity=".3"/>
+        </svg>
+        <div class="lookbook-num">04</div>
+      </div>
+    </div>
+    <div class="lookbook-item reveal d4">
+      <div class="lookbook-art" style="background:linear-gradient(160deg,#1a1208,#141008);">
+        <svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <rect width="300" height="420" fill="#14100a"/>
+          <!-- Abstract geometric fashion -->
+          <polygon points="150,40 260,160 260,340 150,420 40,340 40,160" fill="none" stroke="#c9a84c" stroke-width=".4" stroke-opacity=".1"/>
+          <polygon points="150,80 230,175 230,315 150,380 70,315 70,175" fill="none" stroke="#c9a84c" stroke-width=".3" stroke-opacity=".08"/>
+          <text x="150" y="240" text-anchor="middle" font-family="serif" font-size="100" fill="#c9a84c" fill-opacity=".05" font-style="italic">V</text>
+          <text x="150" y="290" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#c9a84c" fill-opacity=".2" letter-spacing="6">ARCHIVE</text>
+        </svg>
+        <div class="lookbook-num">05</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-header">
+    <p class="section-label reveal">Our Packages</p>
+    <h2 class="section-title reveal d1">Build Your<br>Brand Website</h2>
+    <p class="section-sub reveal d2">One-page, conversion-focused websites for fashion brands — built, hosted, and maintained for you.</p>
+  </div>
+
+  <div class="pricing-grid reveal d2">
+    <!-- PROFESSIONAL -->
+    <div class="price-card featured">
+      <span class="price-badge">Most Popular</span>
+      <div class="price-name">Professional</div>
+      <div class="price-amount"><sup>$</sup>100</div>
+      <span class="price-period">/ month · billed monthly</span>
+      <ul class="price-features">
+        <li>Custom 1-page brand website</li>
+        <li>Mobile-optimized design</li>
+        <li>Product showcase section</li>
+        <li>Contact &amp; inquiry form</li>
+        <li>Hosting + SSL included</li>
+        <li>Free custom domain setup</li>
+        <li>2 revision rounds / month</li>
+        <li>48h support response</li>
+      </ul>
+      <a href="#cta-banner" class="price-cta">Get Started</a>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="price-card">
+      <div class="price-name">Premium</div>
+      <div class="price-amount"><sup>$</sup>150</div>
+      <span class="price-period">/ month · billed monthly</span>
+      <ul class="price-features">
+        <li>Everything in Professional</li>
+        <li>Lookbook / editorial gallery</li>
+        <li>Animated scroll experience</li>
+        <li>Newsletter capture + CRM</li>
+        <li>SEO-optimized copy</li>
+        <li>Priority 24h support</li>
+        <li>Unlimited revision rounds</li>
+        <li>Monthly performance report</li>
+      </ul>
+      <a href="#cta-banner" class="price-cta">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <p class="section-label reveal">What They Say</p>
+  <h2 class="section-title reveal d1">Loved by fashion<br>brands worldwide.</h2>
+
+  <div class="testi-grid">
+    <div class="testi-card reveal d1">
+      <div class="testi-stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="testi-quote">"The website they built for our label looks more editorial than sites from agencies charging 10x the price. Our DMs went up 3x the week it launched."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">M</div>
+        <div>
+          <div class="testi-name">Maya Chen</div>
+          <div class="testi-role">Founder, Mira Label — Los Angeles</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card reveal d2">
+      <div class="testi-stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="testi-quote">"We needed something fast before our pop-up weekend. They delivered in 4 days. Customers literally asked us who built the site during the event."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">J</div>
+        <div>
+          <div class="testi-name">Jordan Pierce</div>
+          <div class="testi-role">Creative Director, Sable Threads — NYC</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card reveal d3">
+      <div class="testi-stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="testi-quote">"$100/month for this quality is almost offensive to other agencies. We converted our first wholesale inquiry through the site within 2 weeks of launch."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">A</div>
+        <div>
+          <div class="testi-name">Aaliya Rossen</div>
+          <div class="testi-role">CEO, Dusk Collective — Miami</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:rgba(255,255,255,.01);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div style="text-align:center;">
+    <p class="section-label reveal">FAQ</p>
+    <h2 class="section-title reveal d1">Common Questions</h2>
+  </div>
+  <div class="faq-wrap">
+    <div class="faq-item reveal d1">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What exactly do I get with a VELOUR website?
+        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4l3 3 3-3" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-a"><p>A fully custom, one-page brand website built specifically for your fashion label. It includes a hero section, product/collection showcase, brand story, and contact form — all designed to look editorial and convert visitors into buyers or wholesale inquiries.</p></div>
+    </div>
+    <div class="faq-item reveal d2">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Can I use my existing domain name?
+        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4l3 3 3-3" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-a"><p>Yes. We connect your existing domain (from GoDaddy, Namecheap, Squarespace, or any registrar) to your new site at no extra charge. If you don't have a domain yet, we'll help you pick and register one as part of setup.</p></div>
+    </div>
+    <div class="faq-item reveal d3">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        How long does it take to launch?
+        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4l3 3 3-3" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-a"><p>Most sites go live within 5–7 business days after we receive your brand assets (logo, photos, copy). Rush delivery in 48–72 hours is available on the Premium plan. We'll walk you through exactly what to send in the onboarding form.</p></div>
+    </div>
+    <div class="faq-item reveal d4">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Do you sell clothing, or just build websites?
+        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4l3 3 3-3" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-a"><p>This site is a demo — a live example of what we build for fashion brands. VELOUR is a fictional brand we designed to show you exactly the kind of site your label could have. We build websites for brands like yours, not clothing.</p></div>
+    </div>
+    <div class="faq-item reveal d5">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What payment methods do you accept?
+        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4l3 3 3-3" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-a"><p>We accept all major credit cards (Visa, Mastercard, Amex) and PayPal via Stripe. All payments are in USD. You can cancel anytime — no lock-in contracts.</p></div>
+    </div>
+    <div class="faq-item reveal">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Can I cancel anytime?
+        <span class="faq-icon"><svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4l3 3 3-3" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-a"><p>Yes, always. Cancel with 7 days notice before your next billing cycle. There are no cancellation fees. If you cancel, we'll hand off all your site files so you own everything you paid for.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section id="cta-banner">
+  <div class="cta-glow"></div>
+  <p class="section-label reveal">Ready to Launch?</p>
+  <h2 class="section-title reveal d1">Your brand deserves<br>a website this good.</h2>
+  <p class="section-sub reveal d2">Drop your email and we'll send you a free mockup of your brand's site within 24 hours — no commitment.</p>
+  <form class="cta-form reveal d3" onsubmit="handleSubmit(event)">
+    <input type="email" class="cta-input" placeholder="your@brand.com" required>
+    <button type="submit" class="cta-submit">Get Free Mockup</button>
+  </form>
+  <p class="cta-note reveal d4">No spam. No contracts. Just your mockup.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">VELOUR</div>
+    <p class="footer-tagline">Premium fashion brand websites — built for labels that take their image seriously.</p>
+    <div class="footer-links">
+      <a href="#collection">Collection</a>
+      <a href="#about">About</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+  <div class="footer-right">
+    <p class="footer-copy">© 2025 VELOUR · A Startex Demo Site<br>Built by <a href="#" style="color:var(--gold);text-decoration:none;">Startex</a></p>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: .12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // FAQ toggle
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // CTA form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.cta-submit');
+    btn.textContent = 'Sent! ✓';
+    btn.style.background = '#2a6a2a';
+    setTimeout(() => { btn.textContent = 'Get Free Mockup'; btn.style.background = ''; }, 3000);
+  }
+</script>
+</body>
+</html>
