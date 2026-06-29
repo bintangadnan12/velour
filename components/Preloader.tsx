@@ -14,6 +14,17 @@ export function Preloader({ onComplete, progress }: PreloaderProps) {
   const [exiting, setExiting] = useState(false)
   const [visible, setVisible]  = useState(true)
 
+  // Hard fallback: always exit after 8s regardless of progress
+  useEffect(() => {
+    const fallback = setTimeout(() => {
+      if (!exiting) {
+        setExiting(true)
+        setTimeout(() => { setVisible(false); onComplete() }, 1100)
+      }
+    }, 8000)
+    return () => clearTimeout(fallback)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (progress >= 100 && !exiting) {
       const t1 = setTimeout(() => setExiting(true), 500)

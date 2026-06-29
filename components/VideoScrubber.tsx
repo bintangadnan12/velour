@@ -23,7 +23,7 @@ const START_FRAMES = [0,  46,  106, 166, 226]
 const pad = (i: number) => String(i).padStart(4, '0')
 const desktopSrc = (i: number) => `/frames/frame${pad(i)}.jpg`
 const mobileSrc  = (i: number) => `/frames-mobile/frame${pad(i)}.jpg`
-const PRELOAD_COUNT = 20
+const PRELOAD_COUNT = 5
 
 // ─── Scene content (FORMA shoe brand) ────────────────────────────────────────
 const SCENE_DATA = [
@@ -315,7 +315,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
         if (idx === 0) paint(0)
 
         // Once enough frames are ready, start hero + setup scroll
-        if (loadedRef.current === PRELOAD_COUNT && !launchedRef.current) {
+        if (loadedRef.current >= PRELOAD_COUNT && !launchedRef.current) {
           launchedRef.current = true
           onReady()
           setHeroReady(true)
@@ -348,7 +348,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
 
       img.onerror = () => {
         loadedRef.current++
-        if (loadedRef.current === PRELOAD_COUNT && !launchedRef.current) {
+        if (loadedRef.current >= PRELOAD_COUNT && !launchedRef.current) {
           launchedRef.current = true
           onReady()
           setHeroReady(true)
