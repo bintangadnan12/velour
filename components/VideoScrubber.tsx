@@ -56,13 +56,55 @@ function mapProgress(p: number) {
 
 const ease3d = [0.16, 1, 0.3, 1] as const
 
-// ─── Freeze Aura — cinematic life during hold phases ─────────────────────────
-// Tiny floating dust + ambient orbs + slow light sweep
-const DUST_POSITIONS = [8,18,27,36,45,54,63,72,81,90,14,41,58,79].map((x, i) => ({
-  x, delay: i * 0.55, dur: 9 + (i % 4) * 2.5,
-  size: 1.2 + (i % 3) * 0.7,
-  drift: [-12, 18, -6, 24, -18, 8, -24, 14, -8, 20, -16, 10, -4, 22][i] ?? 10,
-}))
+// ─── 3D Orbital Freeze Aura ───────────────────────────────────────────────────
+// Ring + particle system orbiting around the shoe in 3D space
+
+// Particles distributed at equal angles on each ring
+const ring1Particles = Array.from({ length: 6 }, (_, i) => (i * 60))   // every 60°
+const ring2Particles = Array.from({ length: 4 }, (_, i) => (i * 90))   // every 90°
+const ring3Particles = Array.from({ length: 5 }, (_, i) => (i * 72))   // every 72°
+
+function OrbitalRing({
+  size, rotateX, rotateZ = 0, duration, reverse = false,
+  ringOpacity, particles, particleSize, particleOpacity, delay = 0,
+}: {
+  size: number; rotateX: number; rotateZ?: number; duration: number; reverse?: boolean
+  ringOpacity: number; particles: number[]; particleSize: number; particleOpacity: number; delay?: number
+}) {
+  const r = size / 2
+  const endZ = reverse ? rotateZ - 360 : rotateZ + 360
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        width: size, height: size,
+        left: -r, top: -r,
+        border: `1px solid rgba(248,246,242,${ringOpacity})`,
+        borderRadius: '50%',
+        rotateX,
+        rotateZ,
+      }}
+      animate={{ rotateZ: endZ }}
+      transition={{ duration, repeat: Infinity, ease: 'linear', delay, repeatType: 'loop' }}
+    >
+      {particles.map(deg => {
+        const rad = (deg * Math.PI) / 180
+        return (
+          <div key={deg} style={{
+            position: 'absolute',
+            width: particleSize,
+            height: particleSize,
+            borderRadius: '50%',
+            background: `rgba(248,246,242,${particleOpacity})`,
+            left:      `calc(50% + ${r * Math.cos(rad)}px - ${particleSize / 2}px)`,
+            top:       `calc(50% + ${r * Math.sin(rad)}px - ${particleSize / 2}px)`,
+            boxShadow: `0 0 ${particleSize * 2}px rgba(248,246,242,${particleOpacity * 0.6})`,
+          }} />
+        )
+      })}
+    </motion.div>
+  )
+}
 
 function FreezeAura({ active }: { active: boolean }) {
   return (
@@ -73,81 +115,68 @@ function FreezeAura({ active }: { active: boolean }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.4 }}
+          transition={{ duration: 1.4, ease: 'easeInOut' }}
           style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3, overflow: 'hidden' }}
         >
-          {/* Floating dust particles */}
-          {DUST_POSITIONS.map((d, i) => (
-            <div
-              key={i}
+          {/* Orbit anchor — centered on shoe area */}
+          <div style={{
+            position: 'absolute',
+            left: '50%', top: '50%',
+            width: 0, height: 0,
+            perspective: '700px',
+            transformStyle: 'preserve-3d',
+            transform: 'translate(-50%, -50%)',
+          }}>
+            {/* Ring 1 — main wide orbit, gentle tilt, slow */}
+            <OrbitalRing
+              size={380} rotateX={66} rotateZ={15}
+              duration={18}
+              ringOpacity={0.18}
+              particles={ring1Particles}
+              particleSize={2.5} particleOpacity={0.50}
+            />
+
+            {/* Ring 2 — tighter, steeper tilt, reverse spin */}
+            <OrbitalRing
+              size={260} rotateX={78} rotateZ={-30}
+              duration={13} reverse
+              ringOpacity={0.12}
+              particles={ring2Particles}
+              particleSize={3.5} particleOpacity={0.38}
+              delay={-4}
+            />
+
+            {/* Ring 3 — small inner ring, near-vertical, fastest */}
+            <OrbitalRing
+              size={160} rotateX={52} rotateZ={60}
+              duration={9}
+              ringOpacity={0.10}
+              particles={ring3Particles}
+              particleSize={2} particleOpacity={0.30}
+              delay={-2}
+            />
+
+            {/* Soft center glow pulse */}
+            <motion.div
+              animate={{ scale: [0.8, 1.15, 0.8], opacity: [0.06, 0.14, 0.06] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               style={{
                 position: 'absolute',
-                left: `${d.x}%`,
-                bottom: '-1%',
-                width: d.size,
-                height: d.size * 3,
+                width: 120, height: 120,
+                left: -60, top: -60,
                 borderRadius: '50%',
-                background: 'rgba(248,246,242,0.55)',
-                animationName: `dust${i % 3}`,
-                animationDuration: `${d.dur}s`,
-                animationDelay: `${d.delay}s`,
-                animationTimingFunction: 'ease-in-out',
-                animationIterationCount: 'infinite',
+                background: 'radial-gradient(circle, rgba(248,246,242,1) 0%, transparent 70%)',
               }}
             />
-          ))}
+          </div>
 
-          {/* Ambient glow orb — upper left */}
+          {/* Subtle ambient light sweep — very slow */}
           <motion.div
-            animate={{ x: [0, 28, -12, 0], y: [0, -18, 22, 0], scale: [1, 1.06, 0.96, 1] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              position: 'absolute', left: '8%', top: '18%',
-              width: 420, height: 420, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(248,246,242,0.055) 0%, transparent 70%)',
-            }}
-          />
-
-          {/* Ambient glow orb — lower right */}
-          <motion.div
-            animate={{ x: [0, -22, 16, 0], y: [0, 14, -20, 0], scale: [1, 0.92, 1.07, 1] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: -5 }}
-            style={{
-              position: 'absolute', right: '10%', bottom: '15%',
-              width: 340, height: 340, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(248,246,242,0.038) 0%, transparent 70%)',
-            }}
-          />
-
-          {/* Slow diagonal light sweep */}
-          <motion.div
-            animate={{ x: ['-120%', '220%'] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'linear', delay: 1 }}
+            animate={{ x: ['-130%', '230%'] }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'linear', delay: 3 }}
             style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(108deg, transparent 38%, rgba(248,246,242,0.03) 50%, transparent 62%)',
-            }}
-          />
-
-          {/* Corner accent lines */}
-          <motion.div
-            animate={{ opacity: [0.12, 0.22, 0.12], scaleX: [0.8, 1, 0.8] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              position: 'absolute', bottom: 48, right: 48,
-              width: 60, height: 1,
-              background: 'rgba(248,246,242,0.35)',
-              transformOrigin: 'right',
-            }}
-          />
-          <motion.div
-            animate={{ opacity: [0.12, 0.22, 0.12], scaleY: [0.8, 1, 0.8] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              position: 'absolute', bottom: 48, right: 48,
-              width: 1, height: 60,
-              background: 'rgba(248,246,242,0.35)',
-              transformOrigin: 'bottom',
+              background: 'linear-gradient(106deg, transparent 40%, rgba(248,246,242,0.018) 50%, transparent 60%)',
             }}
           />
         </motion.div>
@@ -362,14 +391,9 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
 
   return (
     <section ref={sectionRef} style={{ height: `${VH_PER_SCENE * SCENES}vh`, position: 'relative' }}>
-      <div
-        style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}
-        className={freezeAura ? 'canvas-breathe' : ''}
-      >
-        {/* Canvas — breathing animation during freeze via CSS class */}
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
         <canvas
           ref={canvasRef}
-          className={freezeAura ? 'frame-breathe' : ''}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
         />
 
@@ -409,14 +433,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
         </div>
       </div>
 
-      <style>{`
-        @keyframes fpulse  { 0%,100%{opacity:.18} 50%{opacity:.75} }
-        @keyframes dust0   { 0%{transform:translateY(0) translateX(0);opacity:0} 8%{opacity:.7} 92%{opacity:.3} 100%{transform:translateY(-105vh) translateX(-18px);opacity:0} }
-        @keyframes dust1   { 0%{transform:translateY(0) translateX(0);opacity:0} 8%{opacity:.6} 92%{opacity:.25} 100%{transform:translateY(-108vh) translateX(22px);opacity:0} }
-        @keyframes dust2   { 0%{transform:translateY(0) translateX(0);opacity:0} 8%{opacity:.5} 92%{opacity:.2} 100%{transform:translateY(-106vh) translateX(-8px);opacity:0} }
-        @keyframes frameBreathe { 0%,100%{transform:scale(1) translate(0,0)} 30%{transform:scale(1.018) translate(-5px,-3px)} 60%{transform:scale(1.024) translate(4px,5px)} 80%{transform:scale(1.016) translate(-2px,-6px)} }
-        .frame-breathe { animation: frameBreathe 10s ease-in-out infinite !important; transform-origin: center center; }
-      `}</style>
+      <style>{`@keyframes fpulse{0%,100%{opacity:.18}50%{opacity:.75}}`}</style>
     </section>
   )
 }
