@@ -12,18 +12,17 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const goTo = (id: string) => {
+  const scrollToSection = (pct: number) => {
     setMenuOpen(false)
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-    }, 50)
+    const totalScroll = document.body.scrollHeight - window.innerHeight
+    window.scrollTo({ top: totalScroll * pct, behavior: 'smooth' })
   }
 
-  const links: [string, string][] = [
-    ['New Arrivals', 'edit'],
-    ['Collections', 'edit'],
-    ['About', 'story'],
-    ['Contact', 'footer'],
+  const links: [string, number][] = [
+    ['Services', 0.21],
+    ['Why Us', 0.41],
+    ['Reviews', 0.61],
+    ['Contact', 0.81],
   ]
 
   return (
@@ -49,10 +48,10 @@ export function Nav() {
         </div>
 
         <ul className="hidden md:flex gap-9 list-none">
-          {links.map(([label, id]) => (
+          {links.map(([label, pct]) => (
             <li key={label}>
               <button
-                onClick={() => goTo(id)}
+                onClick={() => scrollToSection(pct as number)}
                 className="text-[10px] tracking-[0.22em] uppercase transition-colors duration-300 hover:text-white"
                 style={{ color: 'rgba(248,246,242,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}
               >
@@ -63,7 +62,7 @@ export function Nav() {
         </ul>
 
         <button
-          onClick={() => goTo('edit')}
+          onClick={() => scrollToSection(0.81)}
           className="hidden md:block text-[10px] tracking-[0.22em] uppercase transition-all duration-300"
           style={{ color: 'var(--white)', border: '1px solid rgba(255,255,255,0.18)', padding: '9px 22px', background: 'none', cursor: 'pointer' }}
           onMouseEnter={e => { const t = e.currentTarget; t.style.background = 'var(--white)'; t.style.color = 'var(--black)' }}
@@ -91,10 +90,10 @@ export function Nav() {
         style={{ background: 'rgba(2,2,2,0.97)', backdropFilter: 'blur(24px)', opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? 'all' : 'none' }}
       >
         <ul className="flex flex-col items-center gap-8 list-none mb-14">
-          {links.map(([label, id], i) => (
+          {links.map(([label, pct], i) => (
             <li key={label}>
               <button
-                onClick={() => goTo(id)}
+                onClick={() => scrollToSection(pct as number)}
                 className="font-serif font-extralight uppercase tracking-[0.14em]"
                 style={{
                   fontSize: 'clamp(28px,7vw,44px)',
@@ -109,7 +108,7 @@ export function Nav() {
           ))}
         </ul>
         <button
-          onClick={() => goTo('edit')}
+          onClick={() => scrollToSection(0.81)}
           className="text-[10px] tracking-[0.26em] uppercase"
           style={{ color: 'var(--white)', border: '1px solid rgba(255,255,255,0.2)', padding: '14px 40px', background: 'none', cursor: 'pointer' }}
         >
