@@ -20,8 +20,8 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'LUNARE — Wear the quiet luxury.',
-  description: 'Minimalist contemporary fashion. Premium materials. Limited drops. Scandinavian minimalism meets Japanese streetwear.',
+  title: 'FORMA — Walk with intent.',
+  description: 'Premium footwear. 200 pairs per style. No restock. New York.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
