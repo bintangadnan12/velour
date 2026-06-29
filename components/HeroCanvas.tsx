@@ -3,8 +3,8 @@ import { useEffect, useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const TOTAL = 265
-const PRELOAD_COUNT = 20
+const TOTAL = 705
+const PRELOAD_COUNT = 24
 const frameSrc = (i: number) => `/frames/frame${String(i).padStart(4, '0')}.jpg`
 
 interface HeroCanvasProps {
@@ -94,7 +94,7 @@ export function HeroCanvas({ onLoad, onReady }: HeroCanvasProps) {
             scrollTrigger: {
               trigger: sectionRef.current,
               start: 'top top',
-              end: '+=5000',
+              end: '+=7500',
               scrub: true,
               pin: true,
               anticipatePin: 1,
