@@ -831,26 +831,36 @@ function paint(idx){
   ctx.drawImage(img,(cw-iw*s)/2,(ch-ih*s)/2,iw*s,ih*s);
 }
 
+// Preload first N frames, then launch — rest load silently in background
+const PRELOAD = 20;
+let launched = false;
+
+function launchSite(){
+  if(launched) return;
+  launched = true;
+  const pre = document.getElementById('preloader');
+  if(pre && !pre.classList.contains('gone')){
+    pre.classList.add('gone');
+    setTimeout(()=>{ pre.remove(); startHero(); }, 900);
+  }
+}
+
 (function loadAll(){
   for(let i=1;i<=TOTAL;i++){
     const img=new Image();
     const idx=i-1;
     img.onload=()=>{
       loaded++;
-      const pct=Math.floor(loaded/TOTAL*100);
+      const pct=Math.floor(loaded/PRELOAD*100);
       const b=document.getElementById('preBar');
       const c=document.getElementById('preCount');
-      if(b) b.style.width=pct+'%';
-      if(c) c.textContent=pct+'%';
+      if(b) b.style.width=Math.min(pct,100)+'%';
+      if(c) c.textContent=Math.min(pct,100)+'%';
       if(idx===0) paint(0);
-      if(loaded===TOTAL){
-        const pre=document.getElementById('preloader');
-        if(pre && !pre.classList.contains('gone')){
-          pre.classList.add('gone');
-          setTimeout(()=>{ pre.remove(); startHero(); },900);
-        }
-      }
+      // Launch after PRELOAD frames ready
+      if(loaded===PRELOAD) launchSite();
     };
+    img.onerror=()=>{ loaded++; if(loaded===PRELOAD) launchSite(); };
     img.src=src(i);
     imgs[idx]=img;
   }
