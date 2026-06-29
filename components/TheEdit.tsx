@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -10,9 +10,8 @@ const products = [
     category: 'Outerwear',
     price: '$285',
     desc: 'Double-faced merino wool. Dropped shoulders. Midi length. The coat you reach for every single day.',
-    bg: 'linear-gradient(135deg, #1a1a14 0%, #2a2416 50%, #1a1208 100%)',
-    from: { rotateY: -45, x: -120, z: -280, scale: 0.82 },
-    delay: 0,
+    img: 'https://images.unsplash.com/photo-1539109116155-e2fd576b3c0e?w=700&q=82&auto=format&fit=crop',
+    from: { rotateY: -40, x: -100, z: -260, scale: 0.84 },
   },
   {
     id: 2,
@@ -20,9 +19,8 @@ const products = [
     category: 'Knitwear',
     price: '$165',
     desc: "Recycled cashmere blend. Oversized relaxed fit. So light it almost isn't there — until it is.",
-    bg: 'linear-gradient(135deg, #141414 0%, #1e1e1a 50%, #0a0a0a 100%)',
-    from: { rotateY: 45, x: 120, z: -280, scale: 0.82 },
-    delay: 0.06,
+    img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=700&q=82&auto=format&fit=crop',
+    from: { rotateY: 40, x: 100, z: -260, scale: 0.84 },
   },
   {
     id: 3,
@@ -30,9 +28,8 @@ const products = [
     category: 'Bottoms',
     price: '$195',
     desc: 'Organic cotton twill. Wide leg, high rise, pressed crease. The trouser that makes every other pair redundant.',
-    bg: 'linear-gradient(135deg, #10100c 0%, #1c1a10 50%, #0e0d08 100%)',
-    from: { rotateX: -30, y: 160, z: -200, scale: 0.88 },
-    delay: 0.12,
+    img: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&q=82&auto=format&fit=crop',
+    from: { rotateX: -25, y: 140, z: -200, scale: 0.88 },
   },
   {
     id: 4,
@@ -40,24 +37,48 @@ const products = [
     category: 'Knitwear',
     price: '$145',
     desc: 'Grade-A Mongolian cashmere. Ribbed cuffs and hem. Wears alone or under everything. A true wardrobe constant.',
-    bg: 'linear-gradient(135deg, #181412 0%, #241e14 50%, #100e08 100%)',
-    from: { rotateY: -35, rotateX: 15, x: -100, z: -240, scale: 0.85 },
-    delay: 0.18,
+    img: 'https://images.unsplash.com/photo-1434389277036-48b51f0b95db?w=700&q=82&auto=format&fit=crop',
+    from: { rotateY: -32, rotateX: 12, x: -90, z: -230, scale: 0.86 },
   },
   {
     id: 5,
     name: 'The Minimal Blazer',
     category: 'Tailoring',
     price: '$225',
-    desc: 'Linen-wool blend. Unstructured construction. Wear open, wear belted, wear with nothing underneath. Endlessly adaptable.',
-    bg: 'linear-gradient(160deg, #14120e 0%, #201c12 50%, #0c0a08 100%)',
-    from: { rotateY: 40, x: 120, z: -260, scale: 0.83 },
-    delay: 0.24,
+    desc: 'Linen-wool blend. Unstructured construction. Wear open, wear belted, wear with nothing underneath.',
+    img: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=700&q=82&auto=format&fit=crop',
+    from: { rotateY: 38, x: 100, z: -250, scale: 0.84 },
   },
 ]
 
+function BagButton({ name }: { name: string }) {
+  const [state, setState] = useState<'idle' | 'added'>('idle')
+
+  const handleClick = () => {
+    if (state === 'added') return
+    setState('added')
+    setTimeout(() => setState('idle'), 2200)
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      className="text-[10px] tracking-[0.22em] uppercase transition-all duration-300 min-w-[140px]"
+      style={{
+        color: state === 'added' ? 'var(--black)' : 'var(--white)',
+        border: state === 'added' ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.18)',
+        padding: '12px 28px',
+        background: state === 'added' ? 'var(--white)' : 'none',
+        cursor: state === 'added' ? 'default' : 'pointer',
+      }}
+      aria-label={`Add ${name} to bag`}
+    >
+      {state === 'added' ? 'Added ✓' : 'Add to Bag'}
+    </button>
+  )
+}
+
 export function TheEdit() {
-  const sectionRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement[]>([])
 
   useEffect(() => {
@@ -67,7 +88,7 @@ export function TheEdit() {
       if (!card) return
       const p = products[i]
 
-      gsap.set(card, { transformPerspective: 1200, transformStyle: 'preserve-3d' })
+      gsap.set(card, { transformPerspective: 1100, transformStyle: 'preserve-3d' })
 
       gsap.from(card, {
         rotateY: p.from.rotateY ?? 0,
@@ -79,32 +100,21 @@ export function TheEdit() {
         opacity: 0,
         ease: 'expo.out',
         duration: 1.4,
-        delay: p.delay,
         scrollTrigger: {
           trigger: card,
           start: 'top 85%',
-          end: 'top 30%',
           toggleActions: 'play none none reverse',
-        }
+        },
       })
 
-      // Subtle parallax on hover
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect()
-        const cx = rect.left + rect.width / 2
-        const cy = rect.top + rect.height / 2
-        const dx = (e.clientX - cx) / rect.width
-        const dy = (e.clientY - cy) / rect.height
-        gsap.to(card, {
-          rotateY: dx * 8,
-          rotateX: -dy * 5,
-          ease: 'power2.out',
-          duration: 0.5,
-          transformPerspective: 800,
-        })
+        const dx = (e.clientX - rect.left - rect.width / 2) / rect.width
+        const dy = (e.clientY - rect.top - rect.height / 2) / rect.height
+        gsap.to(card, { rotateY: dx * 6, rotateX: -dy * 4, ease: 'power2.out', duration: 0.5, transformPerspective: 900 })
       })
       card.addEventListener('mouseleave', () => {
-        gsap.to(card, { rotateY: 0, rotateX: 0, ease: 'power3.out', duration: 0.8 })
+        gsap.to(card, { rotateY: 0, rotateX: 0, ease: 'power3.out', duration: 0.9 })
       })
     })
 
@@ -112,76 +122,70 @@ export function TheEdit() {
   }, [])
 
   return (
-    <section id="edit" ref={sectionRef} style={{ padding: 'clamp(80px,10vw,140px) clamp(24px,5vw,80px)' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+    <section id="edit" style={{ padding: 'clamp(80px,10vw,140px) clamp(24px,5vw,80px)' }}>
+      <div style={{ maxWidth: 1300, margin: '0 auto' }}>
         {/* Header */}
-        <div className="flex items-end justify-between mb-[clamp(56px,7vw,96px)] flex-wrap gap-4">
+        <div className="flex items-end justify-between mb-[clamp(56px,7vw,100px)] flex-wrap gap-4">
           <div>
-            <span className="block text-[9px] tracking-[0.34em] uppercase mb-5" style={{ color: 'var(--gold)' }}>Best Sellers</span>
+            <span className="block text-[9px] tracking-[0.34em] uppercase mb-4" style={{ color: 'rgba(248,246,242,0.35)' }}>
+              Best Sellers — AW26
+            </span>
             <h2 className="font-serif font-extralight" style={{ fontSize: 'clamp(34px,5vw,68px)', color: 'var(--white)', lineHeight: 1.05 }}>
-              The <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>Edit</em>
+              The Edit
             </h2>
           </div>
-          <span className="text-[12px] tracking-[0.16em] uppercase" style={{ color: 'var(--muted)' }}>AW25 Collection</span>
+          <span className="text-[11px] tracking-[0.18em]" style={{ color: 'rgba(248,246,242,0.3)' }}>
+            5 pieces · Limited to 200 units each
+          </span>
         </div>
 
-        {/* Products — alternating layout */}
-        <div className="flex flex-col gap-[clamp(80px,10vw,140px)]">
+        {/* Products */}
+        <div className="flex flex-col gap-[clamp(80px,11vw,150px)]">
           {products.map((p, i) => (
             <div
               key={p.id}
               ref={el => { if (el) cardsRef.current[i] = el }}
-              className={`grid md:grid-cols-2 gap-8 md:gap-16 items-center ${i % 2 === 1 ? 'md:[direction:rtl]' : ''}`}
-              style={{ willChange: 'transform' }}
+              className={`grid md:grid-cols-2 gap-8 md:gap-14 items-center`}
+              style={{ willChange: 'transform', direction: i % 2 === 1 ? 'rtl' : 'ltr' }}
             >
-              {/* Image placeholder */}
-              <div className="relative overflow-hidden" style={{ aspectRatio: '4/5', background: p.bg }}>
-                {/* Gold accent lines */}
-                <div className="absolute inset-0 opacity-10" style={{
-                  backgroundImage: 'linear-gradient(rgba(201,168,76,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.3) 1px, transparent 1px)',
-                  backgroundSize: '40px 40px'
-                }} />
-                {/* Center brand mark */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                  <div className="font-serif italic text-[120px] font-extralight leading-none opacity-[0.05]"
-                    style={{ color: 'var(--gold)' }}>L</div>
-                  <div className="text-[9px] tracking-[0.4em] uppercase opacity-20"
-                    style={{ color: 'var(--gold)' }}>LUNARE</div>
-                </div>
-                {/* Product number */}
-                <div className="absolute top-6 left-6 font-serif text-[11px]" style={{ color: 'var(--gold)', opacity: 0.4 }}>
+              {/* Image */}
+              <div className="relative overflow-hidden" style={{ aspectRatio: '4/5', direction: 'ltr' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={p.img}
+                  alt={p.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700"
+                  style={{ filter: 'grayscale(15%) brightness(0.88)' }}
+                  loading="lazy"
+                />
+                {/* subtle bottom overlay for text */}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(2,2,2,0.55) 0%, transparent 50%)' }} />
+                {/* Index */}
+                <div className="absolute top-5 left-5 font-serif text-[11px]" style={{ color: 'rgba(248,246,242,0.3)' }}>
                   {String(p.id).padStart(2, '0')}
                 </div>
-                {/* Category badge */}
-                <div className="absolute bottom-6 right-6 text-[8px] tracking-[0.2em] uppercase px-3 py-1.5"
-                  style={{ border: '1px solid rgba(201,168,76,0.3)', color: 'var(--gold)' }}>
+                {/* Category bottom */}
+                <div className="absolute bottom-5 left-5 text-[8px] tracking-[0.24em] uppercase" style={{ color: 'rgba(248,246,242,0.45)' }}>
                   {p.category}
                 </div>
               </div>
 
               {/* Info */}
-              <div style={{ direction: 'ltr' }} className="flex flex-col justify-center py-8">
-                <span className="text-[9px] tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--gold)', opacity: 0.7 }}>{p.category}</span>
-                <h3 className="font-serif font-extralight mb-4" style={{ fontSize: 'clamp(28px,4vw,52px)', color: 'var(--white)', lineHeight: 1.05 }}>
+              <div style={{ direction: 'ltr' }} className="flex flex-col justify-center py-6">
+                <span className="text-[9px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(248,246,242,0.3)' }}>
+                  {p.category}
+                </span>
+                <h3 className="font-serif font-extralight mb-5" style={{ fontSize: 'clamp(26px,3.8vw,50px)', color: 'var(--white)', lineHeight: 1.08 }}>
                   {p.name}
                 </h3>
-                <p className="text-[14px] leading-relaxed mb-8 max-w-sm" style={{ color: 'var(--muted)' }}>{p.desc}</p>
+                <p className="text-[14px] leading-loose mb-8 max-w-sm" style={{ color: 'rgba(248,246,242,0.5)' }}>
+                  {p.desc}
+                </p>
                 <div className="flex items-center justify-between" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24 }}>
-                  <span className="font-serif text-[28px] font-extralight" style={{ color: 'var(--white)' }}>{p.price}</span>
-                  <button
-                    className="text-[10px] tracking-[0.22em] uppercase transition-all duration-300"
-                    style={{ color: 'var(--gold)', border: '1px solid rgba(201,168,76,0.35)', padding: '12px 28px', background: 'none', cursor: 'pointer' }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--gold)'
-                      ;(e.currentTarget as HTMLElement).style.color = 'var(--black)'
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'none'
-                      ;(e.currentTarget as HTMLElement).style.color = 'var(--gold)'
-                    }}
-                  >
-                    Add to Bag
-                  </button>
+                  <span className="font-serif text-[26px] font-extralight" style={{ color: 'var(--white)' }}>
+                    {p.price}
+                  </span>
+                  <BagButton name={p.name} />
                 </div>
               </div>
             </div>

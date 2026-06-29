@@ -3,75 +3,119 @@ import { useEffect, useRef, useState } from 'react'
 
 export function Nav() {
   const navRef = useRef<HTMLElement>(null)
-  const [visible, setVisible] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => {
-      const pastHero = window.scrollY > window.innerHeight * 0.5
-      setVisible(pastHero)
-      setScrolled(pastHero)
-    }
-
+    const onScroll = () => setScrolled(window.scrollY > 60)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   const goTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    setMenuOpen(false)
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    }, 50)
   }
 
+  const links: [string, string][] = [
+    ['New Arrivals', 'edit'],
+    ['Collections', 'edit'],
+    ['About', 'story'],
+    ['Contact', 'footer'],
+  ]
+
   return (
-    <nav
-      ref={navRef}
-      className="fixed top-0 left-0 right-0 z-[500] flex items-center justify-between transition-all duration-500"
-      style={{
-        padding: scrolled ? '14px clamp(24px,5vw,80px)' : '26px clamp(24px,5vw,80px)',
-        background: scrolled ? 'rgba(2,2,2,0.85)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(201,168,76,0.1)' : '1px solid transparent',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(-12px)',
-        pointerEvents: visible ? 'all' : 'none',
-      }}
-    >
-      <div className="font-serif tracking-[0.28em] uppercase text-[19px] font-light" style={{ color: 'var(--white)' }}>
-        LUN<em style={{ color: 'var(--gold)', fontStyle: 'italic' }}>ARE</em>
-      </div>
-      <ul className="hidden md:flex gap-9 list-none">
-        {[['New Arrivals', 'edit'], ['Collections', 'features'], ['About', 'story'], ['Contact', 'footer']].map(([label, id]) => (
-          <li key={id}>
-            <button
-              onClick={() => goTo(id)}
-              className="text-[10px] tracking-[0.22em] uppercase transition-colors duration-300 hover:text-white"
-              style={{ color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              {label}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button
-        onClick={() => goTo('edit')}
-        className="text-[10px] tracking-[0.22em] uppercase transition-all duration-300 hover:text-black"
+    <>
+      <nav
+        ref={navRef}
+        className="fixed top-0 left-0 right-0 z-[500] flex items-center justify-between transition-all duration-500"
         style={{
-          color: 'var(--gold)',
-          border: '1px solid rgba(201,168,76,0.35)',
-          padding: '10px 22px',
-          background: 'none',
-          cursor: 'pointer',
-        }}
-        onMouseEnter={e => {
-          (e.target as HTMLElement).style.background = 'var(--gold)'
-          ;(e.target as HTMLElement).style.color = 'var(--black)'
-        }}
-        onMouseLeave={e => {
-          (e.target as HTMLElement).style.background = 'none'
-          ;(e.target as HTMLElement).style.color = 'var(--gold)'
+          padding: scrolled ? '14px clamp(24px,5vw,80px)' : '22px clamp(24px,5vw,80px)',
+          background: scrolled ? 'rgba(2,2,2,0.92)' : 'rgba(2,2,2,0.18)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: scrolled
+            ? '1px solid rgba(255,255,255,0.07)'
+            : '1px solid rgba(255,255,255,0.03)',
         }}
       >
-        Shop the Drop
-      </button>
-    </nav>
+        <div
+          className="font-serif tracking-[0.28em] uppercase text-[17px] font-light cursor-pointer select-none"
+          style={{ color: 'var(--white)' }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+          LUNARE
+        </div>
+
+        <ul className="hidden md:flex gap-9 list-none">
+          {links.map(([label, id]) => (
+            <li key={label}>
+              <button
+                onClick={() => goTo(id)}
+                className="text-[10px] tracking-[0.22em] uppercase transition-colors duration-300 hover:text-white"
+                style={{ color: 'rgba(248,246,242,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          onClick={() => goTo('edit')}
+          className="hidden md:block text-[10px] tracking-[0.22em] uppercase transition-all duration-300"
+          style={{ color: 'var(--white)', border: '1px solid rgba(255,255,255,0.18)', padding: '9px 22px', background: 'none', cursor: 'pointer' }}
+          onMouseEnter={e => { const t = e.currentTarget; t.style.background = 'var(--white)'; t.style.color = 'var(--black)' }}
+          onMouseLeave={e => { const t = e.currentTarget; t.style.background = 'none'; t.style.color = 'var(--white)' }}
+        >
+          Shop the Drop
+        </button>
+
+        {/* Hamburger */}
+        <button
+          className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-[5px]"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+        >
+          <span className="block w-5 h-px transition-all duration-300" style={{ background: 'var(--white)', transform: menuOpen ? 'rotate(45deg) translateY(6px)' : 'none' }} />
+          <span className="block w-5 h-px transition-all duration-300" style={{ background: 'var(--white)', opacity: menuOpen ? 0 : 1 }} />
+          <span className="block w-5 h-px transition-all duration-300" style={{ background: 'var(--white)', transform: menuOpen ? 'rotate(-45deg) translateY(-6px)' : 'none' }} />
+        </button>
+      </nav>
+
+      {/* Mobile overlay menu */}
+      <div
+        className="fixed inset-0 z-[400] flex flex-col items-center justify-center md:hidden transition-all duration-500"
+        style={{ background: 'rgba(2,2,2,0.97)', backdropFilter: 'blur(24px)', opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? 'all' : 'none' }}
+      >
+        <ul className="flex flex-col items-center gap-8 list-none mb-14">
+          {links.map(([label, id], i) => (
+            <li key={label}>
+              <button
+                onClick={() => goTo(id)}
+                className="font-serif font-extralight uppercase tracking-[0.14em]"
+                style={{
+                  fontSize: 'clamp(28px,7vw,44px)',
+                  color: 'rgba(248,246,242,0.7)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  transitionDelay: `${i * 55}ms`,
+                }}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={() => goTo('edit')}
+          className="text-[10px] tracking-[0.26em] uppercase"
+          style={{ color: 'var(--white)', border: '1px solid rgba(255,255,255,0.2)', padding: '14px 40px', background: 'none', cursor: 'pointer' }}
+        >
+          Shop the Drop
+        </button>
+      </div>
+    </>
   )
 }

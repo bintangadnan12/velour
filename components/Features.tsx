@@ -3,13 +3,27 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const features = [
-  { num: '01', name: 'Premium Materials', desc: 'Organic cotton, merino wool, and recycled cashmere blend. Every fabric is certified and sourced with intention — no compromise on what touches your skin.' },
-  { num: '02', name: 'Limited Production', desc: 'Maximum 200 units per style per season. When a drop sells out, it is gone. Rarity is not a marketing tactic — it is a commitment to quality over volume.' },
-  { num: '03', name: 'Precision Tailoring', desc: 'Each piece is cut and sewn with obsessive attention to seam allowance, drape, and silhouette. Clothes that hang the way they are supposed to.' },
-  { num: '04', name: 'Sustainable Packaging', desc: '100% recycled and biodegradable packaging. No plastic, no filler. Your order arrives in kraft paper and organic cotton dust bag — reusable by design.' },
-  { num: '05', name: 'Free Global Shipping', desc: 'Complimentary shipping on all orders over $150. Free returns within 30 days, no questions asked. We want you to feel confident in every purchase.' },
-  { num: '06', name: 'Designed to Last', desc: 'Anti-trend by principle. Our silhouettes are considered and seasonless. Buy less, choose well, make it last — this is the LUNARE philosophy in practice.' },
+const values = [
+  {
+    label: 'Material',
+    headline: 'Fabric first, always.',
+    body: 'Every yarn is traced to its source. Organic cotton from certified farms. Merino from free-range flocks. Cashmere reclaimed and rewoven. We know where every thread begins.',
+  },
+  {
+    label: 'Volume',
+    headline: '200 pieces. That\'s it.',
+    body: 'We produce no more than 200 units of each style per season. Not as a gimmick — because making less is the only way to make better. Scarcity is not our strategy. Integrity is.',
+  },
+  {
+    label: 'Construction',
+    headline: 'Built to be worn out.',
+    body: 'Double-stitched seams. Reinforced stress points. Cut with extra seam allowance so a tailor can adjust years from now. These are clothes meant to outlast trends by design.',
+  },
+  {
+    label: 'Returns',
+    headline: '30 days, no questions.',
+    body: 'We believe in the fit you feel, not the fit on a model. Try it. Wear it around your home. If it doesn\'t feel right, send it back. Free shipping both ways, always.',
+  },
 ]
 
 export function Features() {
@@ -17,33 +31,42 @@ export function Features() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
-    const cards = ref.current?.querySelectorAll('.feat-card')
-    cards?.forEach((card, i) => {
-      gsap.from(card, {
-        opacity: 0, y: 36, duration: 0.85, ease: 'power3.out',
-        delay: (i % 3) * 0.08,
-        scrollTrigger: { trigger: card, start: 'top 88%' }
+    const items = ref.current?.querySelectorAll('.val-item')
+    items?.forEach((el, i) => {
+      gsap.from(el, {
+        opacity: 0, y: 28, duration: 0.9, ease: 'power3.out',
+        delay: (i % 2) * 0.08,
+        scrollTrigger: { trigger: el, start: 'top 88%' },
       })
     })
   }, [])
 
   return (
-    <section id="features" ref={ref} style={{ padding: 'clamp(80px,10vw,140px) clamp(24px,5vw,80px)', background: 'var(--off-black)' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <div className="flex items-end justify-between mb-[clamp(44px,6vw,80px)] flex-wrap gap-5">
-          <h2 className="font-serif font-extralight" style={{ fontSize: 'clamp(34px,5vw,68px)', color: 'var(--white)', lineHeight: 1.05 }}>
-            Crafted with <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>intention</em>
+    <section id="features" ref={ref} style={{ padding: 'clamp(80px,10vw,140px) clamp(24px,5vw,80px)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        {/* Section label + heading */}
+        <div className="mb-[clamp(52px,7vw,96px)]">
+          <span className="block text-[9px] tracking-[0.34em] uppercase mb-5" style={{ color: 'rgba(248,246,242,0.3)' }}>
+            How we work
+          </span>
+          <h2 className="font-serif font-extralight" style={{ fontSize: 'clamp(32px,4.5vw,62px)', color: 'var(--white)', lineHeight: 1.08, maxWidth: 520 }}>
+            The principles behind everything we make.
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
-          {features.map(f => (
-            <div key={f.num} className="feat-card group p-9 transition-colors duration-300 hover:bg-[rgba(201,168,76,0.04)] cursor-default"
-              style={{ borderRight: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <div className="font-serif text-[12px] mb-5" style={{ color: 'var(--gold)', opacity: 0.7 }}>{f.num}</div>
-              <div className="text-[15px] font-medium mb-2.5" style={{ color: 'var(--white)' }}>{f.name}</div>
-              <div className="text-[13px] leading-relaxed" style={{ color: 'var(--muted)' }}>{f.desc}</div>
-              <div className="mt-4 text-[16px] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                style={{ color: 'var(--gold)' }}>→</div>
+
+        {/* 2-col grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[clamp(40px,6vw,96px)] gap-y-[clamp(48px,6vw,80px)]">
+          {values.map((v, i) => (
+            <div key={i} className="val-item" style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 28 }}>
+              <div className="text-[9px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(248,246,242,0.28)' }}>
+                {v.label}
+              </div>
+              <div className="font-serif font-extralight mb-4" style={{ fontSize: 'clamp(20px,2.4vw,30px)', color: 'var(--white)', lineHeight: 1.2 }}>
+                {v.headline}
+              </div>
+              <p className="text-[13px] leading-loose" style={{ color: 'rgba(248,246,242,0.45)' }}>
+                {v.body}
+              </p>
             </div>
           ))}
         </div>
