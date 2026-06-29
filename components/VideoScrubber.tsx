@@ -7,25 +7,20 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TOTAL        = 300
 const SCENES       = 5
-const VH_PER_SCENE = 700   // 700vh × 5 = 3500vh total — relaxed pacing
+const VH_PER_SCENE = 700   // 700vh × 5 = 3500vh
 
-// Per scene (local 0→1):
-//   0.00–0.10  → scrub   (video advances to key frame)
-//   0.10–0.90  → freeze  (video frozen, text visible)
-//   0.90–1.00  → fade    (text fades out)
+// Per scene: 0–10% scrub → 10–90% freeze → 90–100% fade
 const SCRUB_END = 0.10
 const HOLD_END  = 0.90
 
-// "Hero moment" frame for each of the 5 scenes
 const KEY_FRAMES   = [45, 105, 165, 225, 299]
 const START_FRAMES = [0,  46,  106, 166, 226]
 
 const pad = (i: number) => String(i).padStart(4, '0')
 const desktopSrc = (i: number) => `/frames/frame${pad(i)}.jpg`
 const mobileSrc  = (i: number) => `/frames-mobile/frame${pad(i)}.jpg`
-const PRELOAD_COUNT = 1
 
-// ─── Scene content (FORMA shoe brand) ────────────────────────────────────────
+// ─── Scene content ────────────────────────────────────────────────────────────
 const SCENE_DATA = [
   {
     id: 'arrival', step: '01',
@@ -63,12 +58,11 @@ const SCENE_DATA = [
   },
 ]
 
-// ─── Map scroll progress → frame index + overlay state ───────────────────────
+// ─── Scroll progress → target frame + overlay ─────────────────────────────────
 function mapProgress(p: number) {
   const si    = Math.min(Math.floor(p * SCENES), SCENES - 1)
-  const local = (p - si / SCENES) * SCENES   // 0→1 within this scene
+  const local = (p - si / SCENES) * SCENES
 
-  // Frame
   let frame: number
   if (local < SCRUB_END) {
     const t = local / SCRUB_END
@@ -78,7 +72,6 @@ function mapProgress(p: number) {
   }
   frame = Math.max(0, Math.min(TOTAL - 1, frame))
 
-  // Overlay alpha: ramp in over 5%, hold, ramp out over 8%
   let alpha = 0
   if (local >= SCRUB_END && local <= HOLD_END) {
     const inRamp  = SCRUB_END + 0.05
@@ -88,14 +81,12 @@ function mapProgress(p: number) {
     else                      alpha = 1
   }
 
-  const inHold = local >= SCRUB_END && local <= HOLD_END
-
-  return { frame, sceneIndex: si, inHold, alpha }
+  return { frame, sceneIndex: si, inHold: local >= SCRUB_END && local <= HOLD_END, alpha }
 }
 
 const ease3d = [0.16, 1, 0.3, 1] as const
 
-// ─── Scene overlay content ────────────────────────────────────────────────────
+// ─── Scene overlay ────────────────────────────────────────────────────────────
 function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
   const [email, setEmail]         = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -117,8 +108,6 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
       marginLeft: iR ? 'auto' : undefined,
       pointerEvents: 'none',
     }}>
-
-      {/* Step label */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.05 }}
@@ -127,7 +116,6 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
         {data.step} / 05 &nbsp;·&nbsp; FORMA
       </motion.div>
 
-      {/* Headline lines — clip reveal */}
       <div style={{ marginBottom: 'clamp(14px,2vh,24px)' }}>
         {data.headline.map((line, i) => (
           <div key={i} style={{ overflow: 'hidden' }}>
@@ -148,7 +136,6 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
         ))}
       </div>
 
-      {/* Accent bar */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.35 }}
@@ -161,19 +148,13 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
         <motion.div
           initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, ease: ease3d, delay: 0.3 }}
-          style={{
-            width: 36, height: 1,
-            background: 'rgba(248,246,242,0.28)',
-            transformOrigin: iR ? 'right' : 'left',
-            flexShrink: 0,
-          }}
+          style={{ width: 36, height: 1, background: 'rgba(248,246,242,0.28)', transformOrigin: iR ? 'right' : 'left', flexShrink: 0 }}
         />
         <span style={{ fontSize: 8, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.30)', whiteSpace: 'nowrap' }}>
           {data.accent}
         </span>
       </motion.div>
 
-      {/* Body */}
       {data.body && (
         <motion.div
           initial={{ opacity: 0, y: 20, rotateX: 10 }}
@@ -189,7 +170,6 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
         </motion.div>
       )}
 
-      {/* Contact form (scene 5) */}
       {data.cta && (
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -197,39 +177,27 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
           style={{ marginTop: 'clamp(28px,4vh,48px)', pointerEvents: 'auto', alignSelf: iC ? 'center' : undefined }}
         >
           {submitted ? (
-            <motion.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ fontSize: 12, letterSpacing: '0.16em', color: 'rgba(248,246,242,0.5)' }}
-            >
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontSize: 12, letterSpacing: '0.16em', color: 'rgba(248,246,242,0.5)' }}>
               You&apos;re on the list — we&apos;ll reach out before the drop.
             </motion.p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <form
-                onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true) }}
-                style={{ display: 'flex' }}
-              >
+              <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true) }} style={{ display: 'flex' }}>
                 <input
                   type="email" value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="your@email.com" required
                   style={{ background: 'rgba(248,246,242,0.07)', border: '1px solid rgba(248,246,242,0.18)', borderRight: 'none', color: 'var(--white)', fontSize: 11, letterSpacing: '0.1em', padding: '14px 22px', outline: 'none', fontFamily: 'inherit', width: 210 }}
                 />
-                <button
-                  type="submit"
-                  style={{ background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}
-                >
+                <button type="submit" style={{ background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
                   Secure Pair
                 </button>
               </form>
-              <div style={{ fontSize: 9, letterSpacing: '0.2em', color: 'rgba(248,246,242,0.2)' }}>
-                New York · hello@forma.co · Free shipping
-              </div>
+              <div style={{ fontSize: 9, letterSpacing: '0.2em', color: 'rgba(248,246,242,0.2)' }}>New York · hello@forma.co · Free shipping</div>
             </div>
           )}
         </motion.div>
       )}
 
-      {/* Scroll hint (scene 1 only) */}
       {data.id === 'arrival' && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -251,20 +219,21 @@ interface Props {
 }
 
 export function VideoScrubber({ onLoad, onReady }: Props) {
-  const canvasRef   = useRef<HTMLCanvasElement>(null)
-  const sectionRef  = useRef<HTMLDivElement>(null)
-  const overlayRef  = useRef<HTMLDivElement>(null)
-  const imgsRef     = useRef<HTMLImageElement[]>(Array(TOTAL).fill(null))
-  const curFrameRef = useRef(0)
-  const loadedRef   = useRef(0)
-  const launchedRef = useRef(false)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const sectionRef   = useRef<HTMLDivElement>(null)
+  const overlayRef   = useRef<HTMLDivElement>(null)
+  const imgsRef      = useRef<HTMLImageElement[]>(Array(TOTAL).fill(null))
+  // RAF smooth interpolation
+  const curFrameRef  = useRef(0)      // actual rendered frame (float)
+  const targetFrameRef = useRef(0)    // where scroll says we should be
+  const rafRef       = useRef<number | null>(null)
+  const launchedRef  = useRef(false)
 
   const [isMobile,    setIsMobile]    = useState(false)
   const [heroReady,   setHeroReady]   = useState(false)
   const [activeScene, setActiveScene] = useState(0)
   const [showOverlay, setShowOverlay] = useState(false)
 
-  // Detect mobile
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
@@ -272,7 +241,6 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Paint a frame to canvas (cover fit)
   const paint = useCallback((idx: number) => {
     const canvas = canvasRef.current; if (!canvas) return
     const ctx = canvas.getContext('2d'); if (!ctx) return
@@ -283,15 +251,13 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
     ctx.drawImage(img, (cw - iw * s) / 2, (ch - ih * s) / 2, iw * s, ih * s)
   }, [])
 
-  // Resize canvas to fill viewport
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return
     canvas.width  = window.innerWidth
     canvas.height = window.innerHeight
-    paint(curFrameRef.current)
+    paint(Math.round(curFrameRef.current))
   }, [paint])
 
-  // Main setup: preload frames + ScrollTrigger
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
     resizeCanvas()
@@ -299,99 +265,94 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
 
     const src = isMobile ? mobileSrc : desktopSrc
 
+    // Kick off all frame downloads in background
     for (let i = 1; i <= TOTAL; i++) {
       const img = new Image()
       const idx = i - 1
-
       img.onload = () => {
-        loadedRef.current++
-
-        // Report loading progress for preloader
-        if (loadedRef.current <= PRELOAD_COUNT) {
-          onLoad(Math.min(Math.floor((loadedRef.current / PRELOAD_COUNT) * 100), 100))
-        }
-
-        // Paint first frame immediately
-        if (idx === 0) paint(0)
-
-        // Once enough frames are ready, start hero + setup scroll
-        if (loadedRef.current >= PRELOAD_COUNT && !launchedRef.current) {
-          launchedRef.current = true
-          onReady()
-          setHeroReady(true)
-
-          // ── ScrollTrigger tracks section progress (no pin — CSS sticky handles it) ──
-          ScrollTrigger.create({
-            trigger: sectionRef.current,
-            start:   'top top',
-            end:     'bottom bottom',
-            scrub:   1.4,
-            onUpdate: (self) => {
-              const { frame, sceneIndex, inHold, alpha } = mapProgress(self.progress)
-
-              // Paint frame
-              if (frame !== curFrameRef.current) {
-                curFrameRef.current = frame
-                paint(frame)
-              }
-
-              // Drive overlay opacity directly via DOM (avoid state churn)
-              const ov = overlayRef.current
-              if (ov) ov.style.opacity = String(alpha)
-
-              // Section state — only update on change
-              setActiveScene(prev => prev !== sceneIndex ? sceneIndex : prev)
-              setShowOverlay(prev => prev !== inHold ? inHold : prev)
-            },
-          })
-        }
+        if (idx === 0) paint(0)  // show first frame the moment it arrives
       }
-
-      img.onerror = () => {
-        loadedRef.current++
-        if (loadedRef.current >= PRELOAD_COUNT && !launchedRef.current) {
-          launchedRef.current = true
-          onReady()
-          setHeroReady(true)
-        }
-      }
-
       img.src = src(i)
       imgsRef.current[idx] = img
+    }
+
+    // ── RAF smooth lerp loop ────────────────────────────────────────────────
+    const tick = () => {
+      const cur = curFrameRef.current
+      const tgt = targetFrameRef.current
+      const d   = tgt - cur
+      if (Math.abs(d) > 0.2) {
+        // Lerp: feels like smooth video, not frame-jumping
+        curFrameRef.current = cur + d * 0.10
+        paint(Math.round(curFrameRef.current))
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+
+    // ── Launch immediately (don't gate on image count) ─────────────────────
+    // Animate progress 0→100 on the preloader bar over 600ms, then signal ready
+    if (!launchedRef.current) {
+      launchedRef.current = true
+
+      let p = 0
+      const fill = setInterval(() => {
+        p = Math.min(p + 10, 100)
+        onLoad(p)
+        if (p >= 100) clearInterval(fill)
+      }, 60)  // 60ms × 10 steps = 600ms total
+
+      setTimeout(() => {
+        onReady()
+        setHeroReady(true)
+
+        ScrollTrigger.create({
+          trigger: sectionRef.current,
+          start:   'top top',
+          end:     'bottom bottom',
+          onUpdate: (self) => {
+            const { frame, sceneIndex, inHold, alpha } = mapProgress(self.progress)
+
+            // Set TARGET — RAF loop does the smooth interpolation
+            targetFrameRef.current = frame
+
+            // Overlay driven directly via DOM ref for zero-lag
+            const ov = overlayRef.current
+            if (ov) ov.style.opacity = String(alpha)
+
+            setActiveScene(prev => prev !== sceneIndex ? sceneIndex : prev)
+            setShowOverlay(prev => prev !== inHold ? inHold : prev)
+          },
+        })
+      }, 650)  // slight delay so progress bar fills before exit
     }
 
     return () => {
       window.removeEventListener('resize', resizeCanvas)
       ScrollTrigger.getAll().forEach(t => t.kill())
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
   }, [isMobile, paint, resizeCanvas, onLoad, onReady])
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    // Outer container — tall enough for all 5 freeze zones
     <section
       ref={sectionRef}
       style={{ height: `${VH_PER_SCENE * SCENES}vh`, position: 'relative' }}
     >
-      {/* CSS sticky inner — stays in viewport as section scrolls */}
       <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
 
-        {/* Canvas */}
         <canvas
           ref={canvasRef}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
         />
 
-        {/* Cinematic veil gradient */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-            background: 'linear-gradient(to bottom, rgba(2,2,2,0.42) 0%, rgba(2,2,2,0) 28%, rgba(2,2,2,0) 62%, rgba(2,2,2,0.85) 100%)',
-          }}
-        />
+        {/* Cinematic vignette */}
+        <div aria-hidden style={{
+          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
+          background: 'linear-gradient(to bottom, rgba(2,2,2,0.40) 0%, rgba(2,2,2,0) 28%, rgba(2,2,2,0) 62%, rgba(2,2,2,0.85) 100%)',
+        }} />
 
-        {/* Overlay — opacity driven via ref for zero-lag scroll sync */}
+        {/* Scene overlay */}
         <div
           ref={overlayRef}
           style={{ position: 'absolute', inset: 0, zIndex: 2, opacity: 0, perspective: '1400px' }}
@@ -412,53 +373,40 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
           </AnimatePresence>
         </div>
 
-        {/* Watermark — top center */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
-            display: 'flex', justifyContent: 'center', padding: '28px 0',
-            pointerEvents: 'none',
-          }}
-        >
+        {/* Watermark */}
+        <div aria-hidden style={{
+          position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
+          display: 'flex', justifyContent: 'center', padding: '28px 0',
+          pointerEvents: 'none',
+        }}>
           <span style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.14)' }}>
             FORMA · AW26
           </span>
         </div>
 
-        {/* Vertical progress bar — right edge */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)',
-            zIndex: 10, display: 'flex', flexDirection: 'column', gap: 8,
-            pointerEvents: 'none',
-          }}
-        >
+        {/* Progress dots */}
+        <div aria-hidden style={{
+          position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)',
+          zIndex: 10, display: 'flex', flexDirection: 'column', gap: 8, pointerEvents: 'none',
+        }}>
           {SCENE_DATA.map((s, i) => (
-            <div
-              key={s.id}
-              style={{
-                width:      i === activeScene ? 2 : 1,
-                height:     i === activeScene ? 32 : 14,
-                background: i === activeScene ? 'rgba(248,246,242,0.65)' : 'rgba(248,246,242,0.18)',
-                borderRadius: 1,
-                transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)',
-              }}
-            />
+            <div key={s.id} style={{
+              width:      i === activeScene ? 2 : 1,
+              height:     i === activeScene ? 32 : 14,
+              background: i === activeScene ? 'rgba(248,246,242,0.65)' : 'rgba(248,246,242,0.18)',
+              borderRadius: 1,
+              transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)',
+            }} />
           ))}
         </div>
 
-        {/* Scene counter — bottom left */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute', bottom: 28, left: 32, zIndex: 10,
-            fontFamily: 'var(--font-serif)',
-            fontSize: 11, color: 'rgba(248,246,242,0.16)', letterSpacing: '0.1em',
-            pointerEvents: 'none',
-          }}
-        >
+        {/* Scene counter */}
+        <div aria-hidden style={{
+          position: 'absolute', bottom: 28, left: 32, zIndex: 10,
+          fontFamily: 'var(--font-serif)',
+          fontSize: 11, color: 'rgba(248,246,242,0.16)', letterSpacing: '0.1em',
+          pointerEvents: 'none',
+        }}>
           {String(activeScene + 1).padStart(2, '0')} / 05
         </div>
       </div>
