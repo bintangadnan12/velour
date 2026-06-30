@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -67,215 +67,271 @@ const CENTER: React.CSSProperties = {
   width: 0, height: 0, transform: 'translate(-50%,-50%)',
 }
 
-// ── Scene 0 — THE ARRIVAL: concentric shockwave rings + radial burst ──────────
-function Aura0() {
-  const burst = Array.from({ length: 16 }, (_, i) => i * 22.5)
+// ── Scene 0 — THE ARRIVAL: Chromatic aberration shockwave + radial burst + glitch
+function Aura0({ isMobile }: { isMobile: boolean }) {
+  const nLines = isMobile ? 16 : 28
+  const lineLen = isMobile ? 200 : 360
+  const rings = [80, 180, 320, 500, 700]
   return (
     <div style={AURA_WRAP}>
-      <div style={CENTER}>
-        {/* 6 expanding shockwave rings */}
-        {[100, 200, 320, 460, 600, 750].map((sz, i) => (
-          <motion.div key={i}
-            style={{ position: 'absolute', borderRadius: '50%', border: `1.5px solid ${C(0.55)}`,
-                     width: sz, height: sz, left: -sz/2, top: -sz/2 }}
-            animate={{ scale: [0, 2.5], opacity: [0.8, 0] }}
-            transition={{ duration: 2.5 + i * 0.15, repeat: Infinity, ease: [0.2,0,0.8,1],
-                          delay: i * 0.35, repeatDelay: 0.4 }}
-          />
-        ))}
-        {/* 16 radial burst streaks */}
-        {burst.map((deg, i) => {
-          const rad = deg * Math.PI / 180
-          const d = 180 + (i % 4) * 45
-          return (
-            <motion.div key={deg}
-              style={{ position: 'absolute', width: i%3===0?4:2.5, height: i%3===0?4:2.5,
-                       borderRadius: '50%', background: C(0.9), left: -1.5, top: -1.5,
-                       boxShadow: `0 0 8px ${C(0.6)}` }}
-              animate={{ x: [0, Math.cos(rad)*d], y: [0, Math.sin(rad)*d], opacity: [1,0], scale:[2,0.3] }}
-              transition={{ duration: 1.8+(i%3)*0.3, repeat: Infinity, ease:'easeOut',
-                            delay: (i*0.1)%1.5, repeatDelay: 0.6 }}
+      <div style={{ position:'absolute', left:'50%', top:'50%', width:0, height:0 }}>
+        {/* Chromatic aberration rings — 3 colour channels offset */}
+        {rings.flatMap((sz, ri) =>
+          ([
+            ['rgba(255,55,55,', -6],
+            ['rgba(248,246,242,', 0],
+            ['rgba(55,120,255,', 6],
+          ] as [string, number][]).map(([col, ox], ci) => (
+            <motion.div key={`${ri}-${ci}`}
+              style={{ position:'absolute', width:sz, height:sz,
+                       left:-sz/2+(ox as number), top:-sz/2,
+                       borderRadius:'50%',
+                       border:`${ci===1?'1.5px':'1px'} solid ${col}${ci===1?0.75:0.55})`,
+                       mixBlendMode: ci===1 ? 'normal' : 'screen' as const }}
+              animate={{ scale:[0.04, 3], opacity:[ci===1?1:0.85, 0] }}
+              transition={{ duration:2.2+ri*0.28, repeat:Infinity, ease:[0.12,0,0.8,1] as const,
+                            delay:ri*0.42+(ci as number)*0.05, repeatDelay:0.35 }}
             />
-          )
-        })}
-        {/* Center supernova */}
+          ))
+        )}
+        {/* Radial speed streaks */}
+        {Array.from({length:nLines}, (_,i) => i*(360/nLines)).map((angle, i) => (
+          <motion.div key={`sl-${i}`}
+            style={{ position:'absolute', left:0, top:-0.5,
+                     width:lineLen, height:1,
+                     background:'linear-gradient(to right, rgba(248,246,242,0.95), transparent)',
+                     transformOrigin:'left center', rotate:angle }}
+            animate={{ scaleX:[0,1,0], opacity:[0,1,0] }}
+            transition={{ duration:0.42, repeat:Infinity, ease:'easeOut',
+                          delay:(i*0.038)%0.85, repeatDelay:2.5 }} />
+        ))}
+        {/* Center supernova flash */}
         <motion.div
-          animate={{ scale:[0.3,3.5], opacity:[0.4,0] }}
-          transition={{ duration:2, repeat:Infinity, ease:'easeOut', repeatDelay:0.8 }}
-          style={{ position:'absolute', width:60, height:60, left:-30, top:-30, borderRadius:'50%',
-                   background:`radial-gradient(circle, ${C(0.5)} 0%, transparent 70%)` }}
-        />
+          animate={{ scale:[0,6], opacity:[0.9,0] }}
+          transition={{ duration:1.8, repeat:Infinity, ease:'easeOut', repeatDelay:1.3 }}
+          style={{ position:'absolute', width:20, height:20, left:-10, top:-10, borderRadius:'50%',
+                   background:'white', mixBlendMode:'screen' as const }} />
       </div>
+      {/* Glitch bands */}
+      {[14, 38, 63, 82].map((pct, i) => (
+        <motion.div key={i}
+          style={{ position:'absolute', left:0, right:0, top:`${pct}%`, height: i%2===0 ? 3 : 5, overflow:'hidden' }}
+          animate={{ x:[0, i%2===0 ? -30 : 22, i%2===0 ? 12 : -15, 0], opacity:[0,1,1,0] }}
+          transition={{ duration:0.09, repeat:Infinity, ease:'linear', delay:0.7+i*0.65, repeatDelay:4 }}>
+          <div style={{ position:'absolute', inset:0, background:'rgba(248,246,242,0.25)' }} />
+        </motion.div>
+      ))}
     </div>
   )
 }
 
-// ── Scene 1 — EVERY LAYER: precision engineering grid + laser scan ─────────────
+// ── Scene 1 — EVERY LAYER: Engineering blueprint crosshair + dual laser scan ───
 function Aura1({ isMobile }: { isMobile: boolean }) {
-  const cols = isMobile ? [-120,-60,0,60,120] : [-240,-160,-80,0,80,160,240]
-  const rows = isMobile ? [-120,-60,0,60,120]  : [-180,-90,0,90,180]
-  return (
-    <div style={AURA_WRAP}>
-      <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
-        {rows.map((y, i) => (
-          <motion.div key={`h${i}`}
-            style={{ position:'absolute', left:0, right:0, height:1,
-                     background:`linear-gradient(to right, transparent, ${C(0.35)} 20%, ${C(0.35)} 80%, transparent)`,
-                     top:`calc(50% + ${y}px)` }}
-            initial={{ opacity:0, scaleX:0 }} animate={{ opacity:1, scaleX:1 }}
-            transition={{ duration:0.9, ease:ease3d, delay: i * 0.12 }}
-          />
-        ))}
-        {cols.map((x, i) => (
-          <motion.div key={`v${i}`}
-            style={{ position:'absolute', top:0, bottom:0, width:1,
-                     background:`linear-gradient(to bottom, transparent, ${C(0.25)} 20%, ${C(0.25)} 80%, transparent)`,
-                     left:`calc(50% + ${x}px)` }}
-            initial={{ opacity:0, scaleY:0 }} animate={{ opacity:1, scaleY:1 }}
-            transition={{ duration:0.9, ease:ease3d, delay: 0.3 + i * 0.08 }}
-          />
-        ))}
-        {rows.flatMap((y, ri) => cols.map((x, ci) => (
-          <motion.div key={`d${ri}-${ci}`}
-            style={{ position:'absolute', width:4, height:4, borderRadius:'50%',
-                     background: C(0.7), boxShadow:`0 0 8px ${C(0.5)}`,
-                     left:`calc(50% + ${x}px - 2px)`, top:`calc(50% + ${y}px - 2px)` }}
-            initial={{ opacity:0, scale:0 }} animate={{ opacity:1, scale:1 }}
-            transition={{ duration:0.3, delay: 0.5 + (ri*cols.length+ci)*0.018 }}
-          />
-        )))}
-        <motion.div
-          animate={{ left: ['5%', '95%'] }}
-          transition={{ duration:2.8, repeat:Infinity, ease:'linear', repeatType:'reverse' }}
-          style={{ position:'absolute', top:0, bottom:0, width:2,
-                   background:`linear-gradient(to bottom, transparent, ${C(0.9)} 30%, ${C(0.9)} 70%, transparent)`,
-                   boxShadow:`0 0 20px 4px ${C(0.4)}` }}
-        />
-        <motion.div
-          animate={{ top: ['10%','90%'] }}
-          transition={{ duration:3.5, repeat:Infinity, ease:'linear', repeatType:'reverse', delay:0.8 }}
-          style={{ position:'absolute', left:0, right:0, height:1,
-                   background:`linear-gradient(to right, transparent, ${C(0.7)} 30%, ${C(0.7)} 70%, transparent)`,
-                   boxShadow:`0 0 16px 3px ${C(0.3)}` }}
-        />
-      </div>
-    </div>
-  )
-}
-
-// ── Scene 2 — GROUND INTELLIGENCE: horizontal floor ripples at sole level ──────
-function Aura2() {
-  return (
-    <div style={AURA_WRAP}>
-      {/* Flat ground ellipses — bottom 60% of screen */}
-      <div style={{ position:'absolute', left:'50%', top:'65%', transform:'translate(-50%,-50%)', width:0, height:0 }}>
-        {[280,460,640,820,1000].map((w, i) => {
-          const h = Math.round(w * 0.12)
-          return (
-            <motion.div key={i}
-              style={{ position:'absolute', width:w, height:h, left:-w/2, top:-h/2,
-                       borderRadius:'50%', border:`1.5px solid ${C(0.6)}` }}
-              animate={{ scale:[0.1, 1.8], opacity:[0.8, 0] }}
-              transition={{ duration:2.8+i*0.2, repeat:Infinity, ease:'easeOut',
-                            delay:i*0.45, repeatDelay:0.3 }}
-            />
-          )
-        })}
-        {/* Static base plate — always visible */}
-        <motion.div
-          animate={{ opacity:[0.25,0.55,0.25], scaleX:[0.9,1.05,0.9] }}
-          transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
-          style={{ position:'absolute', width:300, height:36, left:-150, top:-18, borderRadius:'50%',
-                   border:`1.5px solid ${C(0.6)}`, boxShadow:`0 0 40px ${C(0.1)}` }}
-        />
-        {/* 5 vertical energy lines rising from ground */}
-        {[-100,-50,0,50,100].map((x, i) => (
-          <motion.div key={i}
-            animate={{ scaleY:[0,1,0], opacity:[0,0.7,0] }}
-            transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut', delay:i*0.22+0.5 }}
-            style={{ position:'absolute', left:x, bottom:0, top:-120, width:1,
-                     background:`linear-gradient(to top, ${C(0.6)}, transparent)`,
-                     transformOrigin:'bottom' }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ── Scene 3 — SKIN-GRADE LEATHER: slow organic wave ribbons sweeping ───────────
-function Aura3() {
-  const ribbons = [
-    { w:500, angle:-25, dur:6,  delay:0   },
-    { w:600, angle:15,  dur:8,  delay:0.8 },
-    { w:400, angle:-50, dur:5,  delay:1.5 },
-    { w:700, angle:35,  dur:9,  delay:0.3 },
-    { w:350, angle:70,  dur:4,  delay:1.1 },
-    { w:550, angle:-8,  dur:7,  delay:2.0 },
+  const labels = isMobile ? [] : [
+    { text:'08 COMPONENTS', style:{ left:'3%', top:'7%' } as React.CSSProperties },
+    { text:'03 MATERIALS',  style:{ right:'3%', top:'7%' } as React.CSSProperties },
+    { text:'ZERO EXCESS',   style:{ left:'3%', bottom:'7%' } as React.CSSProperties },
+    { text:'12mm STACK',    style:{ right:'3%', bottom:'7%' } as React.CSSProperties },
   ]
+  const ticks = [-30,-20,-10,10,20,30]
   return (
     <div style={AURA_WRAP}>
-      <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
-        {/* Wide sweeping ribbon lines — diagonal at various angles */}
-        {ribbons.map((r, i) => (
-          <motion.div key={i}
-            style={{ position:'absolute', width:r.w, height:1.5, rotate:r.angle,
-                     background:`linear-gradient(to right, transparent, ${C(0.55)} 25%, ${C(0.55)} 75%, transparent)`,
-                     boxShadow:`0 0 12px ${C(0.25)}` }}
-            animate={{ scaleX:[0.1,1,0.1], opacity:[0,0.8,0], y:[-20,20,-20] }}
-            transition={{ duration:r.dur, repeat:Infinity, ease:'easeInOut', delay:r.delay }}
-          />
-        ))}
-        {/* Slow morphing blob — organic leather texture feel */}
-        {[1,2,3].map(i => (
-          <motion.div key={i}
-            animate={{ scale:[0.8+i*0.1, 1.2+i*0.1, 0.8+i*0.1],
-                       opacity:[0.05,0.15,0.05],
-                       borderRadius:['40% 60% 55% 45%','55% 45% 40% 60%','40% 60% 55% 45%'] }}
-            transition={{ duration:4+i*1.5, repeat:Infinity, ease:'easeInOut', delay:i*0.7 }}
-            style={{ position:'absolute', width:250+i*80, height:200+i*60,
-                     left:`-${125+i*40}px`, top:`-${100+i*30}px`,
-                     background:`radial-gradient(ellipse, ${C(0.8)} 0%, transparent 65%)` }}
-          />
-        ))}
-      </div>
+      <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%' }}
+           viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+        {Array.from({length:19}, (_,i)=>(i+1)*5).flatMap(v=>[
+          <line key={`h${v}`} x1="0" y1={v} x2="100" y2={v} stroke={C(0.08)} strokeWidth="0.06"/>,
+          <line key={`v${v}`} x1={v} y1="0" x2={v} y2="100" stroke={C(0.08)} strokeWidth="0.06"/>
+        ])}
+        <line x1="0" y1="50" x2="43" y2="50" stroke={C(0.4)} strokeWidth="0.14" strokeDasharray="2,2.5"/>
+        <line x1="57" y1="50" x2="100" y2="50" stroke={C(0.4)} strokeWidth="0.14" strokeDasharray="2,2.5"/>
+        <line x1="50" y1="0" x2="50" y2="43" stroke={C(0.4)} strokeWidth="0.14" strokeDasharray="2,2.5"/>
+        <line x1="50" y1="57" x2="50" y2="100" stroke={C(0.4)} strokeWidth="0.14" strokeDasharray="2,2.5"/>
+        <circle cx="50" cy="50" r="7"  fill="none" stroke={C(0.55)} strokeWidth="0.24"/>
+        <circle cx="50" cy="50" r="14" fill="none" stroke={C(0.32)} strokeWidth="0.15"/>
+        <circle cx="50" cy="50" r="22" fill="none" stroke={C(0.2)}  strokeWidth="0.11"/>
+        <circle cx="50" cy="50" r="32" fill="none" stroke={C(0.12)} strokeWidth="0.09"/>
+        {ticks.flatMap(o=>[
+          <line key={`ht${o}`} x1={50+o} y1="48.6" x2={50+o} y2="51.4" stroke={C(0.4)} strokeWidth="0.2"/>,
+          <line key={`vt${o}`} x1="48.6" y1={50+o} x2="51.4" y2={50+o} stroke={C(0.4)} strokeWidth="0.2"/>
+        ])}
+        <path d="M4,4 L4,13 M4,4 L13,4"     stroke={C(0.65)} strokeWidth="0.38" fill="none"/>
+        <path d="M96,4 L96,13 M96,4 L87,4"   stroke={C(0.65)} strokeWidth="0.38" fill="none"/>
+        <path d="M4,96 L4,87 M4,96 L13,96"   stroke={C(0.65)} strokeWidth="0.38" fill="none"/>
+        <path d="M96,96 L96,87 M96,96 L87,96" stroke={C(0.65)} strokeWidth="0.38" fill="none"/>
+      </svg>
+      <motion.div
+        animate={{ top:['7%','93%'] }}
+        transition={{ duration:3, repeat:Infinity, ease:'linear', repeatType:'reverse' }}
+        style={{ position:'absolute', left:0, right:0, height:2,
+                 background:`linear-gradient(to right, transparent, ${C(0.95)} 20%, ${C(0.95)} 80%, transparent)`,
+                 boxShadow:`0 0 18px 6px ${C(0.35)}` }} />
+      <motion.div
+        animate={{ left:['7%','93%'] }}
+        transition={{ duration:4, repeat:Infinity, ease:'linear', repeatType:'reverse', delay:0.9 }}
+        style={{ position:'absolute', top:0, bottom:0, width:2,
+                 background:`linear-gradient(to bottom, transparent, ${C(0.65)} 20%, ${C(0.65)} 80%, transparent)`,
+                 boxShadow:`0 0 18px 6px ${C(0.22)}` }} />
+      {labels.map((l, i) => (
+        <motion.div key={i}
+          initial={{ opacity:0 }} animate={{ opacity:1 }}
+          transition={{ delay:0.5+i*0.1, duration:0.4 }}
+          style={{ position:'absolute', fontSize:7, letterSpacing:'0.24em',
+                   textTransform:'uppercase', color:C(0.4),
+                   fontFamily:'var(--font-sans)', ...l.style }}>
+          {l.text}
+        </motion.div>
+      ))}
     </div>
   )
 }
 
-// ── Scene 4 — FORMA 001: grand finale — 3D orbit + shockwave + grid + ground ───
-function Aura4({ isMobile }: { isMobile: boolean }) {
-  const orbitParticles = (n: number) => Array.from({length:n}, (_,i) => i*(360/n))
-  const burst = Array.from({ length: 20 }, (_, i) => i * 18)
-  const rings = isMobile
-    ? [
-        { sz:240, rx:65, rz:10,  dur:22, rev:false, op:0.35, pDeg:orbitParticles(6), ps:2.5, po:0.6  },
-        { sz:155, rx:78, rz:-45, dur:15, rev:true,  op:0.28, pDeg:orbitParticles(4), ps:3,   po:0.5, dl:-4 },
-        { sz:90,  rx:50, rz:60,  dur:10, rev:false, op:0.22, pDeg:orbitParticles(6), ps:1.5, po:0.4, dl:-6 },
-      ]
-    : [
-        { sz:440, rx:65, rz:10,  dur:22, rev:false, op:0.35, pDeg:orbitParticles(7), ps:3,   po:0.6  },
-        { sz:300, rx:78, rz:-45, dur:15, rev:true,  op:0.28, pDeg:orbitParticles(5), ps:3.5, po:0.5, dl:-4 },
-        { sz:180, rx:50, rz:60,  dur:10, rev:false, op:0.22, pDeg:orbitParticles(8), ps:2,   po:0.4, dl:-6 },
-      ]
+// ── Scene 2 — GROUND INTELLIGENCE: Rotating radar sweep + sonar blips ─────────
+function Aura2({ isMobile }: { isMobile: boolean }) {
+  const R = isMobile ? 110 : 190
+  const blips = useMemo(() => [
+    {fx:0.56,fy:0.62,d:0.4},{fx:0.71,fy:0.56,d:1.2},{fx:0.36,fy:0.69,d:2.0},
+    {fx:0.63,fy:0.73,d:0.8},{fx:0.43,fy:0.59,d:2.5},{fx:0.77,fy:0.66,d:1.5},
+    {fx:0.30,fy:0.74,d:3.1},{fx:0.68,fy:0.60,d:1.8},
+  ], [])
   return (
     <div style={AURA_WRAP}>
-      {/* 3D orbital rings */}
+      {[1, 1.6, 2.4, 3.5].map((scale, i) => {
+        const w = R*2*scale, h = R*0.26*scale
+        return (
+          <div key={i} style={{ position:'absolute',
+            left:`calc(50% - ${w/2}px)`, top:`calc(65% - ${h/2}px)`,
+            width:w, height:h, borderRadius:'50%',
+            border:`1px solid ${C(Math.max(0.04, 0.16 - i*0.04))}` }} />
+        )
+      })}
+      <div style={{ position:'absolute', left:'50%', top:'65%',
+                    transform:'translate(-50%,-50%)', width:0, height:0 }}>
+        <motion.div
+          animate={{ rotate:[0,360] }}
+          transition={{ duration:3.2, repeat:Infinity, ease:'linear' }}
+          style={{ position:'absolute',
+                   width:R*4.6, height:R*0.55,
+                   left:-R*2.3, top:-R*0.275,
+                   borderRadius:'50%',
+                   background:`conic-gradient(from 0deg, ${C(0.09)} 0deg, ${C(0.04)} 45deg, transparent 75deg, transparent 360deg)` }} />
+        <motion.div
+          animate={{ rotate:[0,360] }}
+          transition={{ duration:3.2, repeat:Infinity, ease:'linear' }}
+          style={{ position:'absolute', left:0, top:0, width:0, height:0 }}>
+          <div style={{ position:'absolute', left:0, top:-2,
+                        width:R*2.3, height:4,
+                        background:`linear-gradient(to right, ${C(1)}, ${C(0.55)} 35%, transparent)`,
+                        boxShadow:`0 0 14px 5px ${C(0.55)}, 0 0 4px 1px white` }} />
+        </motion.div>
+        <div style={{ position:'absolute', width:10, height:10, left:-5, top:-5,
+                      borderRadius:'50%', background:C(0.9), boxShadow:`0 0 14px 4px ${C(0.6)}` }} />
+        {blips.map((b, i) => (
+          <motion.div key={i}
+            style={{ position:'absolute',
+                     left: (b.fx - 0.5) * R * 4.6,
+                     top:  (b.fy - 0.65) * R * 2.2,
+                     width:5, height:5, borderRadius:'50%',
+                     background:C(1), boxShadow:`0 0 12px 4px ${C(0.75)}` }}
+            animate={{ opacity:[0,1,0.9,0], scale:[0,1.8,1,0] }}
+            transition={{ duration:2.8, repeat:Infinity, ease:'easeOut', delay:b.d, repeatDelay:1.2 }} />
+        ))}
+      </div>
+      <motion.div
+        animate={{ opacity:[0.28,0.85,0.28] }}
+        transition={{ duration:1.6, repeat:Infinity, ease:'easeInOut' }}
+        style={{ position:'absolute', bottom:'7%', right:'4%',
+                 fontSize:8, letterSpacing:'0.3em', textTransform:'uppercase',
+                 color:C(0.6), fontFamily:'var(--font-sans)' }}>
+        ● SCAN ACTIVE
+      </motion.div>
+    </div>
+  )
+}
+
+// ── Scene 3 — SKIN-GRADE LEATHER: Isocontour wave field + grain texture ───────
+function Aura3({ isMobile }: { isMobile: boolean }) {
+  const lineCount = isMobile ? 14 : 22
+  const grains = useMemo(() =>
+    Array.from({length: isMobile ? 35 : 70}, () => ({
+      x:  5 + Math.random() * 90,
+      y:  8 + Math.random() * 84,
+      s:  0.8 + Math.random() * 2,
+      o:  0.1 + Math.random() * 0.3,
+      dur:2.5 + Math.random() * 3.5,
+      del:Math.random() * 5,
+    })), [isMobile])
+  return (
+    <div style={AURA_WRAP}>
+      {Array.from({length:lineCount}, (_, i) => {
+        const topPct = 12 + (i / (lineCount-1)) * 76
+        const baseOp = 0.05 + Math.sin((i/(lineCount-1)) * Math.PI) * 0.22
+        const amp    = 5 + (i % 4) * 5
+        const dur    = 3.5 + (i % 5) * 0.9
+        return (
+          <motion.div key={i}
+            style={{ position:'absolute', left:0, right:0, height:1, top:`${topPct}%`,
+                     background:`linear-gradient(to right, transparent, ${C(baseOp)} 12%, ${C(baseOp)} 88%, transparent)` }}
+            animate={{ y:[-amp, amp, -amp] }}
+            transition={{ duration: dur, repeat:Infinity, ease:'easeInOut', delay:i*0.22 }} />
+        )
+      })}
+      {grains.map((g, i) => (
+        <motion.div key={i}
+          style={{ position:'absolute', left:`${g.x}%`, top:`${g.y}%`,
+                   width:g.s, height:g.s, borderRadius:'50%', background:C(g.o) }}
+          animate={{ opacity:[g.o*0.3, g.o, g.o*0.3] }}
+          transition={{ duration:g.dur, repeat:Infinity, ease:'easeInOut', delay:g.del }} />
+      ))}
+      <motion.div
+        animate={{ scale:[0.85,1.3,0.85], opacity:[0.07,0.22,0.07] }}
+        transition={{ duration:5.5, repeat:Infinity, ease:'easeInOut' }}
+        style={{ position:'absolute', left:'50%', top:'50%',
+                 width:isMobile?280:500, height:isMobile?180:320,
+                 transform:'translate(-50%,-50%)',
+                 borderRadius:'38% 62% 50% 50% / 45% 45% 55% 55%',
+                 background:`radial-gradient(ellipse, ${C(1)} 0%, transparent 65%)` }} />
+      {!isMobile && (
+        <motion.div
+          initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:1, duration:0.6 }}
+          style={{ position:'absolute', left:'4%', bottom:'9%',
+                   fontSize:7, letterSpacing:'0.26em', color:C(0.32),
+                   textTransform:'uppercase', fontFamily:'var(--font-sans)', lineHeight:2 }}>
+          FULL-GRAIN CALFSKIN<br/>NATURALLY TANNED<br/>2.8mm THICKNESS
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
+// ── Scene 4 — FORMA 001: All systems — orbital + burst + radar + glitch ────────
+function Aura4({ isMobile }: { isMobile: boolean }) {
+  const op = (n: number) => Array.from({length:n}, (_,i) => i*(360/n))
+  const burstN  = isMobile ? 18 : 28
+  const ringSz  = isMobile ? [200,130,78] : [380,255,155]
+  return (
+    <div style={AURA_WRAP}>
       <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)',
-                    width:0, height:0, perspective:'700px', transformStyle:'preserve-3d' }}>
-        {rings.map((r, i) => {
+                    width:0, height:0, perspective:'800px', transformStyle:'preserve-3d' }}>
+        {([
+          { sz:ringSz[0], rx:65, rz:10,  dur:22, rev:false, op:0.5,  pDeg:op(7), ps:3,   po:0.7  },
+          { sz:ringSz[1], rx:78, rz:-45, dur:14, rev:true,  op:0.38, pDeg:op(5), ps:3.5, po:0.55, dl:-3 },
+          { sz:ringSz[2], rx:50, rz:60,  dur:9,  rev:false, op:0.28, pDeg:op(8), ps:2,   po:0.45, dl:-6 },
+        ] as Array<{sz:number,rx:number,rz:number,dur:number,rev:boolean,op:number,pDeg:number[],ps:number,po:number,dl?:number}>)
+        .map((r, i) => {
           const half = r.sz/2
           return (
             <motion.div key={i}
               style={{ position:'absolute', width:r.sz, height:r.sz, left:-half, top:-half,
-                       border:`1.5px solid ${C(r.op)}`, borderRadius:'50%', rotateX:r.rx, rotateZ:r.rz }}
+                       border:`1.5px solid ${C(r.op)}`, borderRadius:'50%',
+                       rotateX:r.rx, rotateZ:r.rz }}
               animate={{ rotateZ: r.rev ? r.rz-360 : r.rz+360 }}
-              transition={{ duration:r.dur, repeat:Infinity, ease:'linear', delay:r.dl??0, repeatType:'loop' }}
-            >
+              transition={{ duration:r.dur, repeat:Infinity, ease:'linear',
+                            delay:r.dl ?? 0, repeatType:'loop' }}>
               {r.pDeg.map(deg => {
                 const rad = deg*Math.PI/180
-                return <div key={deg} style={{ position:'absolute', width:r.ps, height:r.ps, borderRadius:'50%',
-                  background:C(r.po), boxShadow:`0 0 ${r.ps*2.5}px ${C(r.po*0.6)}`,
+                return <div key={deg} style={{ position:'absolute', width:r.ps, height:r.ps,
+                  borderRadius:'50%', background:C(r.po),
+                  boxShadow:`0 0 ${r.ps*3}px ${C(r.po*0.7)}`,
                   left:`calc(50% + ${half*Math.cos(rad)}px - ${r.ps/2}px)`,
                   top: `calc(50% + ${half*Math.sin(rad)}px - ${r.ps/2}px)` }} />
               })}
@@ -283,45 +339,58 @@ function Aura4({ isMobile }: { isMobile: boolean }) {
           )
         })}
       </div>
-      {/* Burst particles */}
       <div style={CENTER}>
-        {burst.map((deg, i) => {
-          const rad = deg*Math.PI/180, d = 220+(i%5)*40
+        {Array.from({length:burstN}, (_,i) => i*(360/burstN)).map((angle, i) => {
+          const rad = angle*Math.PI/180
+          const d   = (isMobile?150:240) + (i%5)*38
           return (
-            <motion.div key={deg}
-              style={{ position:'absolute', width:3, height:3, borderRadius:'50%',
-                       background:C(0.9), left:-1.5, top:-1.5, boxShadow:`0 0 6px ${C(0.6)}` }}
+            <motion.div key={i}
+              style={{ position:'absolute', width:2.5, height:2.5, borderRadius:'50%',
+                       background:C(0.95), left:-1.5, top:-1.5, boxShadow:`0 0 8px ${C(0.7)}` }}
               animate={{ x:[0,Math.cos(rad)*d], y:[0,Math.sin(rad)*d], opacity:[1,0], scale:[2.5,0.2] }}
-              transition={{ duration:2.5+(i%4)*0.3, repeat:Infinity, ease:'easeOut',
-                            delay:(i*0.12)%2, repeatDelay:0.5 }}
-            />
+              transition={{ duration:2.2+(i%4)*0.3, repeat:Infinity, ease:'easeOut',
+                            delay:(i*0.09)%1.8, repeatDelay:0.5 }} />
           )
         })}
-        {/* Ground ripples below */}
-        {[200,360,520].map((w, i) => (
-          <motion.div key={`g${i}`}
-            style={{ position:'absolute', width:w, height:Math.round(w*0.11), left:-w/2, top:120+i*18,
-                     borderRadius:'50%', border:`1px solid ${C(0.4)}` }}
-            animate={{ scale:[0.2,2.2], opacity:[0.7,0] }}
-            transition={{ duration:2.5, repeat:Infinity, ease:'easeOut', delay:i*0.6, repeatDelay:0.4 }}
-          />
-        ))}
-        {/* Center supernova */}
-        <motion.div
-          animate={{ scale:[0.2,4], opacity:[0.35,0] }}
-          transition={{ duration:2.8, repeat:Infinity, ease:'easeOut', repeatDelay:0.8 }}
-          style={{ position:'absolute', width:100, height:100, left:-50, top:-50, borderRadius:'50%',
-                   background:`radial-gradient(circle, ${C(0.45)} 0%, transparent 70%)` }}
-        />
       </div>
-      {/* Full-width scanning line */}
+      <div style={{ position:'absolute', left:'50%', top:'65%',
+                    transform:'translate(-50%,-50%)', width:0, height:0 }}>
+        <motion.div
+          animate={{ rotate:[0,360] }}
+          transition={{ duration:3.5, repeat:Infinity, ease:'linear' }}
+          style={{ position:'absolute', left:0, top:0, width:0, height:0 }}>
+          <div style={{ position:'absolute', left:0, top:-1.5,
+                        width:isMobile?180:280, height:3,
+                        background:`linear-gradient(to right, ${C(0.9)}, ${C(0.4)} 40%, transparent)`,
+                        boxShadow:`0 0 10px 3px ${C(0.45)}` }} />
+        </motion.div>
+      </div>
+      {[20, 52, 76].map((pct, i) => (
+        <motion.div key={i}
+          style={{ position:'absolute', left:0, right:0, top:`${pct}%`, height:i%2===0?3:5 }}
+          animate={{ x:[0, i%2===0?-26:18, 0], opacity:[0,1,0] }}
+          transition={{ duration:0.08, repeat:Infinity, delay:1.2+i*0.9, repeatDelay:4 }}>
+          <div style={{ position:'absolute', inset:0, background:'rgba(248,246,242,0.28)' }} />
+        </motion.div>
+      ))}
       <motion.div
-        animate={{ top:['15%','85%'] }}
-        transition={{ duration:4, repeat:Infinity, ease:'linear', repeatType:'reverse' }}
-        style={{ position:'absolute', left:0, right:0, height:1,
-                 background:`linear-gradient(to right, transparent, ${C(0.6)} 35%, ${C(0.6)} 65%, transparent)`,
-                 boxShadow:`0 0 20px 4px ${C(0.2)}` }}
-      />
+        animate={{ top:['10%','90%'] }}
+        transition={{ duration:4.5, repeat:Infinity, ease:'linear', repeatType:'reverse' }}
+        style={{ position:'absolute', left:0, right:0, height:1.5,
+                 background:`linear-gradient(to right, transparent, ${C(0.7)} 25%, ${C(0.7)} 75%, transparent)`,
+                 boxShadow:`0 0 22px 7px ${C(0.25)}` }} />
+      {!isMobile && (
+        <motion.div
+          animate={{ opacity:[0,1,1,0] }}
+          transition={{ duration:0.25, repeat:Infinity, times:[0,0.12,0.88,1], repeatDelay:5, delay:1.5 }}
+          style={{ position:'absolute', top:'11%', left:'50%', transform:'translateX(-50%)',
+                   fontFamily:'var(--font-serif)', fontSize:28, fontWeight:200,
+                   letterSpacing:'0.38em', textTransform:'uppercase', color:C(0.95),
+                   textShadow:`0 0 40px ${C(0.7)}, 0 0 80px ${C(0.35)}`,
+                   whiteSpace:'nowrap' }}>
+          FORMA 001
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -333,7 +402,7 @@ function FreezeAura({ active, sceneIndex, isMobile }: { active: boolean; sceneIn
       {active && sceneIndex === 0 && (
         <motion.div key="s0" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           transition={{ duration:0.6 }} style={shared}>
-          <Aura0 />
+          <Aura0 isMobile={isMobile} />
         </motion.div>
       )}
       {active && sceneIndex === 1 && (
@@ -345,13 +414,13 @@ function FreezeAura({ active, sceneIndex, isMobile }: { active: boolean; sceneIn
       {active && sceneIndex === 2 && (
         <motion.div key="s2" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           transition={{ duration:0.6 }} style={shared}>
-          <Aura2 />
+          <Aura2 isMobile={isMobile} />
         </motion.div>
       )}
       {active && sceneIndex === 3 && (
         <motion.div key="s3" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           transition={{ duration:0.6 }} style={shared}>
-          <Aura3 />
+          <Aura3 isMobile={isMobile} />
         </motion.div>
       )}
       {active && sceneIndex === 4 && (
