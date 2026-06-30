@@ -37,10 +37,17 @@ body::after {
   mix-blend-mode: screen;
 }
 
-/* Custom cursor */
+/* Custom cursor — hidden on touch devices */
 .cursor { position: fixed; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: difference; transition: opacity 0.3s; }
 .cursor-ring { position: fixed; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(201,168,76,0.45); pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width 0.35s var(--ease), height 0.35s var(--ease); }
 .cursor-ring.big { width: 64px; height: 64px; }
+@media (pointer: coarse) { .cursor, .cursor-ring { display: none !important; } }
+
+/* Mobile base */
+@media (max-width: 767px) {
+  html { font-size: 15px; }
+  body { overflow-x: hidden; }
+}
 
 /* Smooth scroll */
 html.lenis { height: auto; }

@@ -1,5 +1,16 @@
 'use client'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+
+function useIsMobile() {
+  const [m, setM] = useState(false)
+  useEffect(() => {
+    const check = () => setM(window.innerWidth < 768)
+    check(); window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return m
+}
 
 const ease3d = [0.16, 1, 0.3, 1] as const
 const DARK   = '#0a0908'
@@ -8,13 +19,13 @@ const SUBTLE = 'rgba(10,9,8,0.22)'
 const FAINT  = 'rgba(10,9,8,0.07)'
 
 export function Footer() {
+  const isMobile = useIsMobile()
   return (
     <footer id="footer" style={{ background: '#ede9e4', borderTop: `1px solid ${FAINT}` }}>
 
-      {/* Main content — tight grid, no wasted space */}
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(44px,5vw,72px) clamp(24px,5vw,80px) clamp(28px,3vw,44px)' }}>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 'clamp(32px,4vw,80px)', marginBottom: 'clamp(28px,3vh,40px)', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr auto', gap: 'clamp(32px,4vw,56px)', marginBottom: 'clamp(28px,3vh,40px)', alignItems: 'start' }}>
 
           {/* Brand block */}
           <motion.div
@@ -35,7 +46,7 @@ export function Footer() {
           </motion.div>
 
           {/* Nav columns */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 'clamp(24px,3vw,52px)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(3,1fr)', gap: isMobile ? '28px 20px' : 'clamp(24px,3vw,52px)' }}>
             {[
               { heading: 'Shop',    links: ['New Arrivals', 'Best Sellers', 'FORMA Drift', 'FORMA Bone', 'FORMA Noir'] },
               { heading: 'Brand',   links: ['Our Story', 'Sustainability', 'Size Guide', 'Care Guide'] },
@@ -73,7 +84,7 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <div style={{ fontSize: 10, letterSpacing: '0.1em', color: SUBTLE }}>© 2026 FORMA. All rights reserved.</div>
           <div style={{ display: 'flex', gap: 18 }}>
             {['Privacy Policy', 'Terms of Use', 'Accessibility'].map(link => (

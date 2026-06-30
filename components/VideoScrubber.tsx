@@ -111,14 +111,12 @@ function Aura0() {
 }
 
 // ── Scene 1 — EVERY LAYER: precision engineering grid + laser scan ─────────────
-function Aura1() {
-  const cols = [-240,-160,-80,0,80,160,240]
-  const rows = [-180,-90,0,90,180]
+function Aura1({ isMobile }: { isMobile: boolean }) {
+  const cols = isMobile ? [-120,-60,0,60,120] : [-240,-160,-80,0,80,160,240]
+  const rows = isMobile ? [-120,-60,0,60,120]  : [-180,-90,0,90,180]
   return (
     <div style={AURA_WRAP}>
-      {/* Full-screen grid — absolute positioned relative to viewport */}
       <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
-        {/* Horizontal lines across full width */}
         {rows.map((y, i) => (
           <motion.div key={`h${i}`}
             style={{ position:'absolute', left:0, right:0, height:1,
@@ -128,7 +126,6 @@ function Aura1() {
             transition={{ duration:0.9, ease:ease3d, delay: i * 0.12 }}
           />
         ))}
-        {/* Vertical lines full height */}
         {cols.map((x, i) => (
           <motion.div key={`v${i}`}
             style={{ position:'absolute', top:0, bottom:0, width:1,
@@ -138,7 +135,6 @@ function Aura1() {
             transition={{ duration:0.9, ease:ease3d, delay: 0.3 + i * 0.08 }}
           />
         ))}
-        {/* Bright intersection dots */}
         {rows.flatMap((y, ri) => cols.map((x, ci) => (
           <motion.div key={`d${ri}-${ci}`}
             style={{ position:'absolute', width:4, height:4, borderRadius:'50%',
@@ -148,7 +144,6 @@ function Aura1() {
             transition={{ duration:0.3, delay: 0.5 + (ri*cols.length+ci)*0.018 }}
           />
         )))}
-        {/* Bright vertical laser scan — sweeps left to right */}
         <motion.div
           animate={{ left: ['5%', '95%'] }}
           transition={{ duration:2.8, repeat:Infinity, ease:'linear', repeatType:'reverse' }}
@@ -156,7 +151,6 @@ function Aura1() {
                    background:`linear-gradient(to bottom, transparent, ${C(0.9)} 30%, ${C(0.9)} 70%, transparent)`,
                    boxShadow:`0 0 20px 4px ${C(0.4)}` }}
         />
-        {/* Horizontal scan */}
         <motion.div
           animate={{ top: ['10%','90%'] }}
           transition={{ duration:3.5, repeat:Infinity, ease:'linear', repeatType:'reverse', delay:0.8 }}
@@ -250,19 +244,26 @@ function Aura3() {
 }
 
 // ── Scene 4 — FORMA 001: grand finale — 3D orbit + shockwave + grid + ground ───
-function Aura4() {
+function Aura4({ isMobile }: { isMobile: boolean }) {
   const orbitParticles = (n: number) => Array.from({length:n}, (_,i) => i*(360/n))
   const burst = Array.from({ length: 20 }, (_, i) => i * 18)
+  const rings = isMobile
+    ? [
+        { sz:240, rx:65, rz:10,  dur:22, rev:false, op:0.35, pDeg:orbitParticles(6), ps:2.5, po:0.6  },
+        { sz:155, rx:78, rz:-45, dur:15, rev:true,  op:0.28, pDeg:orbitParticles(4), ps:3,   po:0.5, dl:-4 },
+        { sz:90,  rx:50, rz:60,  dur:10, rev:false, op:0.22, pDeg:orbitParticles(6), ps:1.5, po:0.4, dl:-6 },
+      ]
+    : [
+        { sz:440, rx:65, rz:10,  dur:22, rev:false, op:0.35, pDeg:orbitParticles(7), ps:3,   po:0.6  },
+        { sz:300, rx:78, rz:-45, dur:15, rev:true,  op:0.28, pDeg:orbitParticles(5), ps:3.5, po:0.5, dl:-4 },
+        { sz:180, rx:50, rz:60,  dur:10, rev:false, op:0.22, pDeg:orbitParticles(8), ps:2,   po:0.4, dl:-6 },
+      ]
   return (
     <div style={AURA_WRAP}>
       {/* 3D orbital rings */}
       <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)',
                     width:0, height:0, perspective:'700px', transformStyle:'preserve-3d' }}>
-        {[
-          { sz:440, rx:65, rz:10,  dur:22, rev:false, op:0.35, pDeg:orbitParticles(7), ps:3,   po:0.6  },
-          { sz:300, rx:78, rz:-45, dur:15, rev:true,  op:0.28, pDeg:orbitParticles(5), ps:3.5, po:0.5, dl:-4 },
-          { sz:180, rx:50, rz:60,  dur:10, rev:false, op:0.22, pDeg:orbitParticles(8), ps:2,   po:0.4, dl:-6 },
-        ].map((r, i) => {
+        {rings.map((r, i) => {
           const half = r.sz/2
           return (
             <motion.div key={i}
@@ -325,7 +326,7 @@ function Aura4() {
   )
 }
 
-function FreezeAura({ active, sceneIndex }: { active: boolean; sceneIndex: number }) {
+function FreezeAura({ active, sceneIndex, isMobile }: { active: boolean; sceneIndex: number; isMobile: boolean }) {
   const shared: React.CSSProperties = { position:'absolute', inset:0, pointerEvents:'none', zIndex:3, overflow:'hidden' }
   return (
     <AnimatePresence mode="wait">
@@ -338,7 +339,7 @@ function FreezeAura({ active, sceneIndex }: { active: boolean; sceneIndex: numbe
       {active && sceneIndex === 1 && (
         <motion.div key="s1" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           transition={{ duration:0.6 }} style={shared}>
-          <Aura1 />
+          <Aura1 isMobile={isMobile} />
         </motion.div>
       )}
       {active && sceneIndex === 2 && (
@@ -356,7 +357,7 @@ function FreezeAura({ active, sceneIndex }: { active: boolean; sceneIndex: numbe
       {active && sceneIndex === 4 && (
         <motion.div key="s4" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           transition={{ duration:0.6 }} style={shared}>
-          <Aura4 />
+          <Aura4 isMobile={isMobile} />
         </motion.div>
       )}
     </AnimatePresence>
@@ -364,33 +365,38 @@ function FreezeAura({ active, sceneIndex }: { active: boolean; sceneIndex: numbe
 }
 
 // ─── Scene overlay content ────────────────────────────────────────────────────
-function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
+function SceneContent({ data, isMobile }: { data: typeof SCENE_DATA[0]; isMobile: boolean }) {
   const [email, setEmail]         = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const iL = data.align === 'left', iR = data.align === 'right', iC = data.align === 'center'
+  // On mobile: always left-aligned, full width
+  const iL = isMobile ? true  : data.align === 'left'
+  const iR = isMobile ? false : data.align === 'right'
+  const iC = isMobile ? false : data.align === 'center'
 
   return (
     <div style={{
       position: 'absolute', inset: 0,
-      display: 'flex', flexDirection: 'column', justifyContent: 'center',
-      padding: iC
-        ? 'clamp(80px,10vh,120px) clamp(40px,8vw,140px)'
-        : `clamp(80px,10vh,120px) ${iR ? 'clamp(60px,8vw,120px)' : '10%'} clamp(80px,10vh,120px) ${iL ? 'clamp(60px,8vw,120px)' : '10%'}`,
-      alignItems: iC ? 'center' : iL ? 'flex-start' : 'flex-end',
-      textAlign:  iC ? 'center' : iL ? 'left'        : 'right',
-      maxWidth:   iC ? '100%' : '55%',
+      display: 'flex', flexDirection: 'column', justifyContent: isMobile ? 'flex-end' : 'center',
+      padding: isMobile
+        ? '0 24px clamp(48px,7vh,80px)'
+        : iC
+          ? 'clamp(80px,10vh,120px) clamp(40px,8vw,140px)'
+          : `clamp(80px,10vh,120px) ${iR ? 'clamp(60px,8vw,120px)' : '10%'} clamp(80px,10vh,120px) ${iL ? 'clamp(60px,8vw,120px)' : '10%'}`,
+      alignItems: iC ? 'center' : 'flex-start',
+      textAlign: 'left',
+      maxWidth: isMobile ? '100%' : iC ? '100%' : '55%',
       marginLeft: iR ? 'auto' : undefined,
       pointerEvents: 'none',
     }}>
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        style={{ fontSize: 9, letterSpacing: '0.36em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.22)', marginBottom: 'clamp(20px,3vh,36px)' }}
+        style={{ fontSize: 9, letterSpacing: '0.36em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.22)', marginBottom: 'clamp(16px,2.5vh,36px)' }}
       >
         {data.step} / 05 &nbsp;·&nbsp; FORMA
       </motion.div>
 
-      <div style={{ marginBottom: 'clamp(14px,2vh,24px)' }}>
+      <div style={{ marginBottom: 'clamp(12px,2vh,24px)' }}>
         {data.headline.map((line, i) => (
           <div key={i} style={{ overflow: 'hidden' }}>
             <motion.div
@@ -399,7 +405,7 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
               style={{
                 display: 'block',
                 fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(40px,5.8vw,88px)',
+                fontSize: isMobile ? 'clamp(34px,10vw,52px)' : 'clamp(40px,5.8vw,88px)',
                 fontWeight: 200, lineHeight: 1.04,
                 letterSpacing: '-0.02em', color: 'var(--white)',
               }}
@@ -413,21 +419,21 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 'clamp(18px,3vh,34px)', justifyContent: iC ? 'center' : iR ? 'flex-end' : 'flex-start' }}
+        style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 'clamp(14px,2.5vh,34px)', flexWrap: 'wrap' }}
       >
         <motion.div
           initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, ease: ease3d, delay: 0.28 }}
-          style={{ width: 36, height: 1, background: 'rgba(248,246,242,0.28)', transformOrigin: iR ? 'right' : 'left', flexShrink: 0 }}
+          style={{ width: 28, height: 1, marginTop: 6, background: 'rgba(248,246,242,0.28)', transformOrigin: 'left', flexShrink: 0 }}
         />
-        <span style={{ fontSize: 8, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.30)', whiteSpace: 'nowrap' }}>{data.accent}</span>
+        <span style={{ fontSize: 8, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.30)', lineHeight: 1.6 }}>{data.accent}</span>
       </motion.div>
 
       {data.body && (
         <motion.div
           initial={{ opacity: 0, y: 18, rotateX: 8 }} animate={{ opacity: 1, y: 0, rotateX: 0 }}
           transition={{ duration: 0.9, ease: ease3d, delay: 0.38 }}
-          style={{ fontSize: 'clamp(12px,1.25vw,15px)', lineHeight: 1.88, color: 'rgba(248,246,242,0.42)', whiteSpace: 'pre-line', maxWidth: 380, alignSelf: iC ? 'center' : undefined }}
+          style={{ fontSize: 'clamp(12px,3.5vw,15px)', lineHeight: 1.88, color: 'rgba(248,246,242,0.42)', whiteSpace: 'pre-line', maxWidth: isMobile ? '100%' : 380 }}
         >
           {data.body}
         </motion.div>
@@ -437,7 +443,7 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
         <motion.div
           initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: ease3d, delay: 0.5 }}
-          style={{ marginTop: 'clamp(28px,4vh,48px)', pointerEvents: 'auto', alignSelf: iC ? 'center' : undefined }}
+          style={{ marginTop: 'clamp(22px,4vh,48px)', pointerEvents: 'auto' }}
         >
           {submitted ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -445,12 +451,13 @@ function SceneContent({ data }: { data: typeof SCENE_DATA[0] }) {
               You&apos;re on the list — we&apos;ll reach out before the drop.
             </motion.p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true) }} style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'flex-start' : 'center', gap: 12 }}>
+              <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true) }}
+                style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 8 : 0, width: isMobile ? '100%' : 'auto' }}>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required
-                  style={{ background: 'rgba(248,246,242,0.07)', border: '1px solid rgba(248,246,242,0.18)', borderRight: 'none', color: 'var(--white)', fontSize: 11, letterSpacing: '0.1em', padding: '14px 22px', outline: 'none', fontFamily: 'inherit', width: 210 }} />
+                  style={{ background: 'rgba(248,246,242,0.07)', border: '1px solid rgba(248,246,242,0.18)', borderRight: isMobile ? '1px solid rgba(248,246,242,0.18)' : 'none', borderBottom: isMobile ? 'none' : '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 11, letterSpacing: '0.1em', padding: '14px 18px', outline: 'none', fontFamily: 'inherit', width: isMobile ? '100%' : 210 }} />
                 <button type="submit"
-                  style={{ background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                  style={{ background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', width: isMobile ? '100%' : 'auto' }}>
                   Secure Pair
                 </button>
               </form>
@@ -579,7 +586,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
         <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', background: 'linear-gradient(to bottom, rgba(2,2,2,0.40) 0%, rgba(2,2,2,0) 28%, rgba(2,2,2,0) 62%, rgba(2,2,2,0.85) 100%)' }} />
 
         {/* Freeze aura — unique per scene */}
-        <FreezeAura active={freezeAura} sceneIndex={activeScene} />
+        <FreezeAura active={freezeAura} sceneIndex={activeScene} isMobile={isMobile} />
 
         {/* Scene overlay */}
         <div ref={overlayRef} style={{ position: 'absolute', inset: 0, zIndex: 4, opacity: 0, perspective: '1400px' }}>
@@ -587,7 +594,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
             {heroReady && showOverlay && (
               <motion.div key={activeScene} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.45, ease: 'easeOut' }} style={{ position: 'absolute', inset: 0 }}>
-                <SceneContent data={SCENE_DATA[activeScene]} />
+                <SceneContent data={SCENE_DATA[activeScene]} isMobile={isMobile} />
               </motion.div>
             )}
           </AnimatePresence>

@@ -72,7 +72,7 @@ function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: n
           style={{
             flex: '0 0 54%',
             position: 'relative',
-            minHeight: 'clamp(300px, 42vw, 560px)',
+            minHeight: 'clamp(260px, 56vw, 560px)',
             overflow: 'hidden',
             transformStyle: 'preserve-3d',
             boxShadow: hovered ? '0 30px 72px rgba(10,9,8,0.18)' : '0 8px 36px rgba(10,9,8,0.09)',
@@ -105,7 +105,7 @@ function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: n
         <div style={{
           flex: '0 0 46%',
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          padding: 'clamp(36px,5vh,64px) clamp(32px,4vw,72px)',
+          padding: 'clamp(28px,5vh,64px) clamp(20px,4vw,72px)',
           background: '#f5f3ef',
         }}>
           <div style={{ fontSize: 8, letterSpacing: '0.32em', textTransform: 'uppercase', color: SUBTLE, marginBottom: 12 }}>
@@ -153,7 +153,7 @@ function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: n
 
 export function ProductShowcase() {
   return (
-    <section id="products" style={{ background: '#f5f3ef', padding: 'clamp(72px,10vh,120px) 0 0' }}>
+    <section id="products" style={{ background: '#f5f3ef', padding: 'clamp(48px,7vh,120px) 0 0' }}>
 
       <div style={{ textAlign: 'center', marginBottom: 'clamp(48px,8vh,96px)', padding: '0 clamp(24px,5vw,80px)' }}>
         <motion.div
