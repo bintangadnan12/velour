@@ -1,13 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BRAND } from '@/config/site'
 
 interface PreloaderProps {
   onComplete: () => void
   progress: number
 }
 
-const LETTERS = ['F', 'O', 'R', 'M', 'A']
+const LETTERS = BRAND.name.split('')
 const ease3d = [0.16, 1, 0.3, 1] as const
 
 export function Preloader({ onComplete, progress }: PreloaderProps) {
@@ -96,7 +97,7 @@ export function Preloader({ onComplete, progress }: PreloaderProps) {
               marginBottom: 40,
             }}
           >
-            Walk with intent.
+            {BRAND.tagline}
           </motion.div>
 
           {/* Progress bar */}
