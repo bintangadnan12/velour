@@ -56,128 +56,289 @@ function mapProgress(p: number) {
 
 const ease3d = [0.16, 1, 0.3, 1] as const
 
-// ─── 3D Orbital Freeze Aura ───────────────────────────────────────────────────
-// Ring + particle system orbiting around the shoe in 3D space
+// ─── Freeze Aura — 5 unique effects per scene ────────────────────────────────
 
-// Particles distributed at equal angles on each ring
-const ring1Particles = Array.from({ length: 6 }, (_, i) => (i * 60))   // every 60°
-const ring2Particles = Array.from({ length: 4 }, (_, i) => (i * 90))   // every 90°
-const ring3Particles = Array.from({ length: 5 }, (_, i) => (i * 72))   // every 72°
+const W = 'rgba(248,246,242,'  // white/cream base
 
-function OrbitalRing({
-  size, rotateX, rotateZ = 0, duration, reverse = false,
-  ringOpacity, particles, particleSize, particleOpacity, delay = 0,
-}: {
+// Shared: 3D orbital ring used by Scene 0 and Scene 4
+function OrbitalRing({ size, rotateX, rotateZ = 0, duration, reverse = false, ringOpacity, particleDeg, particleSize, particleOpacity, delay = 0 }: {
   size: number; rotateX: number; rotateZ?: number; duration: number; reverse?: boolean
-  ringOpacity: number; particles: number[]; particleSize: number; particleOpacity: number; delay?: number
+  ringOpacity: number; particleDeg: number[]; particleSize: number; particleOpacity: number; delay?: number
 }) {
   const r = size / 2
-  const endZ = reverse ? rotateZ - 360 : rotateZ + 360
   return (
     <motion.div
-      style={{
-        position: 'absolute',
-        width: size, height: size,
-        left: -r, top: -r,
-        border: `1px solid rgba(248,246,242,${ringOpacity})`,
-        borderRadius: '50%',
-        rotateX,
-        rotateZ,
-      }}
-      animate={{ rotateZ: endZ }}
+      style={{ position: 'absolute', width: size, height: size, left: -r, top: -r,
+               border: `1px solid ${W}${ringOpacity})`, borderRadius: '50%', rotateX, rotateZ }}
+      animate={{ rotateZ: reverse ? rotateZ - 360 : rotateZ + 360 }}
       transition={{ duration, repeat: Infinity, ease: 'linear', delay, repeatType: 'loop' }}
     >
-      {particles.map(deg => {
-        const rad = (deg * Math.PI) / 180
-        return (
-          <div key={deg} style={{
-            position: 'absolute',
-            width: particleSize,
-            height: particleSize,
-            borderRadius: '50%',
-            background: `rgba(248,246,242,${particleOpacity})`,
-            left:      `calc(50% + ${r * Math.cos(rad)}px - ${particleSize / 2}px)`,
-            top:       `calc(50% + ${r * Math.sin(rad)}px - ${particleSize / 2}px)`,
-            boxShadow: `0 0 ${particleSize * 2}px rgba(248,246,242,${particleOpacity * 0.6})`,
-          }} />
-        )
+      {particleDeg.map(deg => {
+        const rad = deg * Math.PI / 180
+        return <div key={deg} style={{ position: 'absolute', width: particleSize, height: particleSize, borderRadius: '50%',
+          background: `${W}${particleOpacity})`,
+          left: `calc(50% + ${r * Math.cos(rad)}px - ${particleSize / 2}px)`,
+          top:  `calc(50% + ${r * Math.sin(rad)}px - ${particleSize / 2}px)`,
+          boxShadow: `0 0 ${particleSize * 2}px ${W}${particleOpacity * 0.5})` }} />
       })}
     </motion.div>
   )
 }
 
-function FreezeAura({ active }: { active: boolean }) {
+// ── Scene 0 — "The Arrival": Shockwave burst rings expanding outward ──────────
+function Aura0() {
+  const rings = [
+    { size: 80,  delay: 0,    dur: 2.8 },
+    { size: 180, delay: 0.4,  dur: 3.0 },
+    { size: 320, delay: 0.8,  dur: 3.2 },
+    { size: 480, delay: 1.2,  dur: 3.4 },
+    { size: 650, delay: 1.6,  dur: 3.6 },
+  ]
+  const burstAngles = Array.from({ length: 12 }, (_, i) => i * 30)
+  return (
+    <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 0, height: 0 }}>
+      {rings.map((r, i) => (
+        <motion.div key={i}
+          style={{ position: 'absolute', width: r.size, height: r.size, left: -r.size / 2, top: -r.size / 2,
+                   border: `1px solid ${W}0.22)`, borderRadius: '50%' }}
+          animate={{ scale: [0.1, 2.2], opacity: [0.9, 0] }}
+          transition={{ duration: r.dur, repeat: Infinity, ease: 'easeOut', delay: r.delay, repeatDelay: 1.2 }}
+        />
+      ))}
+      {burstAngles.map((deg, i) => {
+        const rad = deg * Math.PI / 180
+        const dist = 160 + (i % 3) * 40
+        return (
+          <motion.div key={deg}
+            style={{ position: 'absolute', width: i % 4 === 0 ? 3 : 2, height: i % 4 === 0 ? 3 : 2,
+                     borderRadius: '50%', background: `${W}0.7)`, left: -1, top: -1 }}
+            animate={{ x: [0, Math.cos(rad) * dist], y: [0, Math.sin(rad) * dist], opacity: [0.9, 0], scale: [1.5, 0.5] }}
+            transition={{ duration: 2.4 + (i % 3) * 0.3, repeat: Infinity, ease: 'easeOut', delay: (i * 0.12) % 2, repeatDelay: 0.8 }}
+          />
+        )
+      })}
+      <motion.div
+        animate={{ scale: [0.6, 2.5], opacity: [0.18, 0] }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut', repeatDelay: 0.6 }}
+        style={{ position: 'absolute', width: 140, height: 140, left: -70, top: -70, borderRadius: '50%',
+                 background: `radial-gradient(circle, ${W}0.22) 0%, transparent 70%)` }}
+      />
+    </div>
+  )
+}
+
+// ── Scene 1 — "Every Layer": Precision geometric grid + scanning lines ─────────
+function Aura1() {
+  const hLines = [-120, -60, 0, 60, 120]
+  const vLines = [-120, -60, 0, 60, 120]
+  const intersections = hLines.flatMap(y => vLines.map(x => ({ x, y })))
+  return (
+    <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 0, height: 0 }}>
+      {/* Horizontal grid lines */}
+      {hLines.map((y, i) => (
+        <motion.div key={`h${i}`}
+          style={{ position: 'absolute', height: 1, background: `${W}0.12)`, top: y, left: -200, right: -200 }}
+          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+          transition={{ duration: 1.2, ease: ease3d, delay: i * 0.1 }}
+        />
+      ))}
+      {/* Vertical grid lines */}
+      {vLines.map((x, i) => (
+        <motion.div key={`v${i}`}
+          style={{ position: 'absolute', width: 1, background: `${W}0.10)`, left: x, top: -160, bottom: -160 }}
+          initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
+          transition={{ duration: 1.2, ease: ease3d, delay: 0.3 + i * 0.08 }}
+        />
+      ))}
+      {/* Dots at intersections */}
+      {intersections.map((pt, i) => (
+        <motion.div key={i}
+          style={{ position: 'absolute', width: 3, height: 3, borderRadius: '50%', background: `${W}0.45)`,
+                   left: pt.x - 1.5, top: pt.y - 1.5, boxShadow: `0 0 6px ${W}0.25)` }}
+          initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: ease3d, delay: 0.6 + i * 0.025 }}
+        />
+      ))}
+      {/* Scanning laser line — horizontal sweep */}
+      <motion.div
+        animate={{ y: [-140, 140] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'linear', repeatType: 'reverse' }}
+        style={{ position: 'absolute', left: -200, right: -200, height: 1,
+                 background: `linear-gradient(to right, transparent, ${W}0.5) 30%, ${W}0.5) 70%, transparent)`,
+                 boxShadow: `0 0 12px ${W}0.2)` }}
+      />
+      {/* Corner brackets */}
+      {[[-170,-130],[170,-130],[-170,130],[170,130]].map(([cx,cy],i) => {
+        const sx = cx < 0 ? 1 : -1, sy = cy < 0 ? 1 : -1
+        return (
+          <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 1.0 + i * 0.1 }}
+            style={{ position: 'absolute', left: cx, top: cy, width: 18, height: 18 }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 18, height: 1, transformOrigin: `${sx < 0 ? 'right' : 'left'} center`,
+                          background: `${W}0.45)` }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 1, height: 18, transformOrigin: `center ${sy < 0 ? 'bottom' : 'top'}`,
+                          background: `${W}0.45)` }} />
+          </motion.div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Scene 2 — "Ground Intelligence": Horizontal ground ripple ellipses ─────────
+function Aura2() {
+  const waves = [
+    { w: 180, h: 28,  delay: 0,   dur: 2.6 },
+    { w: 320, h: 44,  delay: 0.5, dur: 2.9 },
+    { w: 480, h: 62,  delay: 1.0, dur: 3.2 },
+    { w: 640, h: 78,  delay: 1.5, dur: 3.5 },
+  ]
+  return (
+    <div style={{ position: 'absolute', left: '50%', top: '62%', transform: 'translate(-50%,-50%)', width: 0, height: 0 }}>
+      {waves.map((w, i) => (
+        <motion.div key={i}
+          style={{ position: 'absolute', left: -w.w / 2, top: -w.h / 2,
+                   width: w.w, height: w.h, borderRadius: '50%',
+                   border: `1px solid ${W}0.28)` }}
+          animate={{ scale: [0.2, 1.8], opacity: [0.75, 0] }}
+          transition={{ duration: w.dur, repeat: Infinity, ease: 'easeOut', delay: w.delay, repeatDelay: 0.5 }}
+        />
+      ))}
+      {/* Static base ellipse */}
+      <motion.div
+        animate={{ opacity: [0.08, 0.22, 0.08] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'absolute', left: -130, top: -20, width: 260, height: 40, borderRadius: '50%',
+                 border: `1px solid ${W}0.35)`, boxShadow: `0 0 30px ${W}0.06)` }}
+      />
+      {/* Vertical connection lines — like sole touching ground */}
+      {[-60, 0, 60].map((x, i) => (
+        <motion.div key={i}
+          animate={{ scaleY: [0, 1, 0], opacity: [0, 0.3, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 + 0.8 }}
+          style={{ position: 'absolute', left: x, top: -60, width: 1, height: 60,
+                   background: `linear-gradient(to bottom, transparent, ${W}0.3))`, transformOrigin: 'top' }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// ── Scene 3 — "Skin-Grade Leather": Flowing organic arcs + ribbon waves ────────
+function Aura3() {
+  const arcs = [
+    { size: 200, rotateZ: 0,   dur: 8,  opacity: 0.14, reverse: false },
+    { size: 300, rotateZ: 30,  dur: 12, opacity: 0.10, reverse: true  },
+    { size: 160, rotateZ: -20, dur: 6,  opacity: 0.18, reverse: false },
+    { size: 420, rotateZ: 60,  dur: 16, opacity: 0.07, reverse: true  },
+  ]
+  return (
+    <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 0, height: 0 }}>
+      {/* Breathing arcs — quarter-circle with organic rotation */}
+      {arcs.map((a, i) => (
+        <motion.div key={i}
+          style={{ position: 'absolute', width: a.size, height: a.size, left: -a.size / 2, top: -a.size / 2,
+                   borderRadius: '50%', border: `1px solid ${W}${a.opacity})`,
+                   clipPath: 'inset(0 50% 50% 0 round 50%)' }}
+          animate={{ rotate: a.reverse ? [a.rotateZ, a.rotateZ - 360] : [a.rotateZ, a.rotateZ + 360],
+                     scale: [0.92, 1.08, 0.92] }}
+          transition={{ rotate: { duration: a.dur, repeat: Infinity, ease: 'linear' },
+                        scale: { duration: a.dur * 0.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 } }}
+        />
+      ))}
+      {/* Flowing ribbon lines — organic sine-wave feel via rotation stagger */}
+      {[0, 45, 90, 135].map((angle, i) => (
+        <motion.div key={`r${i}`}
+          style={{ position: 'absolute', width: 280, height: 1, left: -140,
+                   background: `linear-gradient(to right, transparent, ${W}0.18) 30%, ${W}0.18) 70%, transparent)`,
+                   rotate: angle }}
+          animate={{ scaleX: [0.4, 1.2, 0.4], opacity: [0.2, 0.6, 0.2] }}
+          transition={{ duration: 3 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
+        />
+      ))}
+      {/* Soft center organic glow */}
+      <motion.div
+        animate={{ scale: [0.7, 1.3, 0.7], opacity: [0.04, 0.12, 0.04] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'absolute', width: 160, height: 160, left: -80, top: -80, borderRadius: '40% 60% 55% 45% / 50% 45% 55% 50%',
+                 background: `radial-gradient(ellipse, ${W}1) 0%, transparent 65%)` }}
+      />
+    </div>
+  )
+}
+
+// ── Scene 4 — "FORMA 001": Grand finale — all systems combined ────────────────
+function Aura4() {
+  const p6 = Array.from({ length: 6  }, (_, i) => i * 60)
+  const p8 = Array.from({ length: 8  }, (_, i) => i * 45)
+  const p4 = Array.from({ length: 4  }, (_, i) => i * 90)
+  const burst = Array.from({ length: 16 }, (_, i) => i * 22.5)
+  return (
+    <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 0, height: 0, perspective: '700px', transformStyle: 'preserve-3d' }}>
+      {/* Orbital ring system */}
+      <OrbitalRing size={400} rotateX={68} rotateZ={10}  duration={20}    ringOpacity={0.16} particleDeg={p6} particleSize={2.5} particleOpacity={0.45} />
+      <OrbitalRing size={270} rotateX={80} rotateZ={-40} duration={14} reverse ringOpacity={0.12} particleDeg={p4} particleSize={3}   particleOpacity={0.35} delay={-3} />
+      <OrbitalRing size={170} rotateX={55} rotateZ={55}  duration={9}     ringOpacity={0.10} particleDeg={p8} particleSize={1.5} particleOpacity={0.28} delay={-5} />
+      {/* Burst particles — biggest energy */}
+      {burst.map((deg, i) => {
+        const rad = deg * Math.PI / 180, dist = 200 + (i % 4) * 35
+        return (
+          <motion.div key={deg}
+            style={{ position: 'absolute', width: 2, height: 2, borderRadius: '50%', background: `${W}0.8)`, left: -1, top: -1 }}
+            animate={{ x: [0, Math.cos(rad) * dist], y: [0, Math.sin(rad) * dist], opacity: [1, 0], scale: [2, 0.5] }}
+            transition={{ duration: 2.8 + (i % 3) * 0.4, repeat: Infinity, ease: 'easeOut', delay: (i * 0.15) % 2.5, repeatDelay: 0.6 }}
+          />
+        )
+      })}
+      {/* Ground echo */}
+      {[1,2,3].map(i => (
+        <motion.div key={`g${i}`}
+          style={{ position: 'absolute', left: -120, top: 100 + i * 22, width: 240, height: 28, borderRadius: '50%',
+                   border: `1px solid ${W}0.14)` }}
+          animate={{ scale: [0.3, 2], opacity: [0.6, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: i * 0.7, repeatDelay: 0.4 }}
+        />
+      ))}
+      {/* Center nova */}
+      <motion.div
+        animate={{ scale: [0.4, 2.8], opacity: [0.22, 0] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', repeatDelay: 1 }}
+        style={{ position: 'absolute', width: 80, height: 80, left: -40, top: -40, borderRadius: '50%',
+                 background: `radial-gradient(circle, ${W}0.3) 0%, transparent 70%)` }}
+      />
+      {/* Scanning line */}
+      <motion.div
+        animate={{ y: [-200, 200] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'linear', repeatType: 'reverse' }}
+        style={{ position: 'absolute', left: -250, right: -250, height: 1,
+                 background: `linear-gradient(to right, transparent, ${W}0.35) 40%, ${W}0.35) 60%, transparent)`,
+                 boxShadow: `0 0 14px ${W}0.15)` }}
+      />
+    </div>
+  )
+}
+
+function FreezeAura({ active, sceneIndex }: { active: boolean; sceneIndex: number }) {
   return (
     <AnimatePresence>
       {active && (
         <motion.div
-          key="aura"
+          key={`aura-${sceneIndex}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.4, ease: 'easeInOut' }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
           style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3, overflow: 'hidden' }}
         >
-          {/* Orbit anchor — centered on shoe area */}
-          <div style={{
-            position: 'absolute',
-            left: '50%', top: '50%',
-            width: 0, height: 0,
-            perspective: '700px',
-            transformStyle: 'preserve-3d',
-            transform: 'translate(-50%, -50%)',
-          }}>
-            {/* Ring 1 — main wide orbit, gentle tilt, slow */}
-            <OrbitalRing
-              size={380} rotateX={66} rotateZ={15}
-              duration={18}
-              ringOpacity={0.18}
-              particles={ring1Particles}
-              particleSize={2.5} particleOpacity={0.50}
-            />
-
-            {/* Ring 2 — tighter, steeper tilt, reverse spin */}
-            <OrbitalRing
-              size={260} rotateX={78} rotateZ={-30}
-              duration={13} reverse
-              ringOpacity={0.12}
-              particles={ring2Particles}
-              particleSize={3.5} particleOpacity={0.38}
-              delay={-4}
-            />
-
-            {/* Ring 3 — small inner ring, near-vertical, fastest */}
-            <OrbitalRing
-              size={160} rotateX={52} rotateZ={60}
-              duration={9}
-              ringOpacity={0.10}
-              particles={ring3Particles}
-              particleSize={2} particleOpacity={0.30}
-              delay={-2}
-            />
-
-            {/* Soft center glow pulse */}
-            <motion.div
-              animate={{ scale: [0.8, 1.15, 0.8], opacity: [0.06, 0.14, 0.06] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute',
-                width: 120, height: 120,
-                left: -60, top: -60,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(248,246,242,1) 0%, transparent 70%)',
-              }}
-            />
-          </div>
-
-          {/* Subtle ambient light sweep — very slow */}
+          {sceneIndex === 0 && <Aura0 />}
+          {sceneIndex === 1 && <Aura1 />}
+          {sceneIndex === 2 && <Aura2 />}
+          {sceneIndex === 3 && <Aura3 />}
+          {sceneIndex === 4 && <Aura4 />}
+          {/* Ambient light sweep — all scenes */}
           <motion.div
             animate={{ x: ['-130%', '230%'] }}
-            transition={{ duration: 14, repeat: Infinity, ease: 'linear', delay: 3 }}
-            style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(106deg, transparent 40%, rgba(248,246,242,0.018) 50%, transparent 60%)',
-            }}
+            transition={{ duration: 16, repeat: Infinity, ease: 'linear', delay: 2 }}
+            style={{ position: 'absolute', inset: 0, background: 'linear-gradient(106deg, transparent 40%, rgba(248,246,242,0.016) 50%, transparent 60%)' }}
           />
         </motion.div>
       )}
@@ -400,8 +561,8 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
         {/* Cinematic vignette */}
         <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', background: 'linear-gradient(to bottom, rgba(2,2,2,0.40) 0%, rgba(2,2,2,0) 28%, rgba(2,2,2,0) 62%, rgba(2,2,2,0.85) 100%)' }} />
 
-        {/* Freeze aura — particles, orbs, sweep */}
-        <FreezeAura active={freezeAura} />
+        {/* Freeze aura — unique per scene */}
+        <FreezeAura active={freezeAura} sceneIndex={activeScene} />
 
         {/* Scene overlay */}
         <div ref={overlayRef} style={{ position: 'absolute', inset: 0, zIndex: 4, opacity: 0, perspective: '1400px' }}>
