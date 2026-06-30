@@ -1,5 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
+import { ABOUT, BRAND } from '@/config/site'
 
 const ease3d = [0.16, 1, 0.3, 1] as const
 const DARK   = '#0a0908'
@@ -7,17 +8,8 @@ const MUTED  = 'rgba(10,9,8,0.45)'
 const SUBTLE = 'rgba(10,9,8,0.24)'
 const FAINT  = 'rgba(10,9,8,0.08)'
 
-const STATS = [
-  { value: '2022', label: 'Founded' },
-  { value: '200',  label: 'Units per style' },
-  { value: '12',   label: 'Styles per year' },
-]
-
-const PRINCIPLES = [
-  { title: 'Material honesty', body: 'Every component is disclosed. No blended fabrics sold as pure. No synthetic leather sold as real.' },
-  { title: 'Scale discipline',  body: "200 pairs per style. No exceptions. When it's gone, it doesn't come back." },
-  { title: 'Lifetime repair',   body: 'Every FORMA comes with free repair for life. Because ownership should mean something.' },
-]
+const STATS      = ABOUT.stats
+const PRINCIPLES = ABOUT.principles
 
 export function AboutSection() {
   return (
@@ -33,7 +25,7 @@ export function AboutSection() {
           initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
           style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: SUBTLE, marginBottom: 'clamp(28px,4vh,48px)' }}
         >
-          About FORMA
+          About {BRAND.name}
         </motion.div>
 
         {/* Two-column grid — fills full height, no gaps */}
@@ -51,7 +43,7 @@ export function AboutSection() {
                 transition={{ duration: 1.1, ease: ease3d }}
                 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(26px,3.4vw,50px)', fontWeight: 200, lineHeight: 1.1, color: DARK, letterSpacing: '-0.01em' }}
               >
-                Built for the ground<br />beneath your feet.
+                {ABOUT.headline[0]}<br />{ABOUT.headline[1]}
               </motion.h2>
             </div>
 
@@ -62,7 +54,7 @@ export function AboutSection() {
               transition={{ duration: 0.85, ease: ease3d, delay: 0.15 }}
               style={{ fontSize: 'clamp(12px,1.1vw,14px)', lineHeight: 1.9, color: MUTED, marginBottom: 18, maxWidth: 420 }}
             >
-              FORMA began in 2022 with a single question: why does footwear that costs a thousand dollars still feel disposable at eighteen months?
+              {ABOUT.p1}
             </motion.p>
 
             <motion.p
@@ -70,7 +62,7 @@ export function AboutSection() {
               transition={{ duration: 0.85, ease: ease3d, delay: 0.25 }}
               style={{ fontSize: 'clamp(12px,1.1vw,14px)', lineHeight: 1.9, color: 'rgba(10,9,8,0.33)', maxWidth: 420, marginBottom: 28 }}
             >
-              We stripped out the marketing, the seasonal overproduction, the name-chasing. What remained was material honesty, precision construction, and the discipline to make only 200 pairs per style — ever.
+              {ABOUT.p2}
             </motion.p>
 
             <motion.div
@@ -78,7 +70,7 @@ export function AboutSection() {
               style={{ display: 'flex', alignItems: 'center', gap: 12 }}
             >
               <div style={{ width: 30, height: 1, background: FAINT }} />
-              <span style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: SUBTLE }}>FORMA Studio · New York</span>
+              <span style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: SUBTLE }}>{ABOUT.location}</span>
             </motion.div>
           </div>
 

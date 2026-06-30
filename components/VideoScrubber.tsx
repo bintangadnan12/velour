@@ -3,30 +3,22 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { BRAND, SCENES as SCENE_DATA, INTEGRATIONS } from '@/config/site'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const TOTAL        = 300
+const TOTAL        = BRAND.totalFrames
 const SCENES       = 5
 const VH_PER_SCENE = 700
 
 const SCRUB_END = 0.10
 const HOLD_END  = 0.90
 
-const KEY_FRAMES   = [45, 105, 165, 225, 299]
-const START_FRAMES = [0,  46,  106, 166, 226]
+const KEY_FRAMES:   number[] = [...BRAND.keyFrames]
+const START_FRAMES: number[] = [...BRAND.startFrames]
 
 const pad = (i: number) => String(i).padStart(4, '0')
 const desktopSrc = (i: number) => `/frames/frame${pad(i)}.jpg`
 const mobileSrc  = (i: number) => `/frames-mobile/frame${pad(i)}.jpg`
-
-// ─── Scene data ───────────────────────────────────────────────────────────────
-const SCENE_DATA = [
-  { id: 'arrival',   step: '01', headline: ['The', 'Arrival.'],       accent: 'First Edition · 200 Pairs · New York',                    body: 'Engineered from a single conviction — that footwear should earn its place in your life. Permanently.',  cta: false, align: 'left'   as const },
-  { id: 'construct', step: '02', headline: ['Every Layer.','Considered.'], accent: '08 Components · 03 Materials · Zero Excess',          body: 'We showed you the inside so you could trust the outside. Nothing hidden. Nothing unnecessary.',          cta: false, align: 'right'  as const },
-  { id: 'sole',      step: '03', headline: ['Ground','Intelligence.'], accent: 'Recycled Rubber · Multi-Directional Grip · 12mm Stack',   body: 'The sole is the first thing that meets the world.\nWe treated it accordingly.',                         cta: false, align: 'left'   as const },
-  { id: 'upper',     step: '04', headline: ['Skin-Grade','Leather.'],  accent: 'Full-Grain · Naturally Tanned · Traceable to Source',     body: 'The upper ages with you.\nCreases become character. Wear becomes story.',                               cta: false, align: 'right'  as const },
-  { id: 'finale',    step: '05', headline: ['FORMA','001.'],           accent: '200 Pairs · No Restock · Ships in 48h',                   body: null, cta: true, align: 'center' as const },
-]
 
 // ─── Progress mapping ─────────────────────────────────────────────────────────
 function mapProgress(p: number) {
@@ -388,7 +380,7 @@ function Aura4({ isMobile }: { isMobile: boolean }) {
                    letterSpacing:'0.38em', textTransform:'uppercase', color:C(0.95),
                    textShadow:`0 0 40px ${C(0.7)}, 0 0 80px ${C(0.35)}`,
                    whiteSpace:'nowrap' }}>
-          FORMA 001
+          {BRAND.name} {SCENE_DATA[4]?.headline[1] ?? '001'}
         </motion.div>
       )}
     </div>
@@ -462,7 +454,7 @@ function SceneContent({ data, isMobile }: { data: typeof SCENE_DATA[0]; isMobile
         transition={{ duration: 0.5 }}
         style={{ fontSize: 9, letterSpacing: '0.36em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.22)', marginBottom: 'clamp(16px,2.5vh,36px)' }}
       >
-        {data.step} / 05 &nbsp;·&nbsp; FORMA
+        {data.step} / 05 &nbsp;·&nbsp; {BRAND.name}
       </motion.div>
 
       <div style={{ marginBottom: 'clamp(12px,2vh,24px)' }}>
@@ -517,20 +509,56 @@ function SceneContent({ data, isMobile }: { data: typeof SCENE_DATA[0]; isMobile
           {submitted ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               style={{ fontSize: 12, letterSpacing: '0.16em', color: 'rgba(248,246,242,0.5)' }}>
-              You&apos;re on the list — we&apos;ll reach out before the drop.
+              {INTEGRATIONS.email.successMsg}
             </motion.p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'flex-start' : 'center', gap: 12 }}>
-              <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true) }}
-                style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 8 : 0, width: isMobile ? '100%' : 'auto' }}>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required
-                  style={{ background: 'rgba(248,246,242,0.07)', border: '1px solid rgba(248,246,242,0.18)', borderRight: isMobile ? '1px solid rgba(248,246,242,0.18)' : 'none', borderBottom: isMobile ? 'none' : '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 11, letterSpacing: '0.1em', padding: '14px 18px', outline: 'none', fontFamily: 'inherit', width: isMobile ? '100%' : 210 }} />
-                <button type="submit"
-                  style={{ background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', width: isMobile ? '100%' : 'auto' }}>
-                  Secure Pair
-                </button>
-              </form>
-              <div style={{ fontSize: 9, letterSpacing: '0.2em', color: 'rgba(248,246,242,0.2)' }}>New York · hello@forma.co · Free shipping</div>
+              {/* Email form */}
+              {INTEGRATIONS.email.enabled && (
+                <form onSubmit={async e => {
+                  e.preventDefault()
+                  if (!email) return
+                  if (INTEGRATIONS.email.apiEndpoint) {
+                    await fetch(INTEGRATIONS.email.apiEndpoint, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email }),
+                    }).catch(() => {})
+                  }
+                  setSubmitted(true)
+                }}
+                  style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 8 : 0, width: isMobile ? '100%' : 'auto' }}>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                    placeholder={INTEGRATIONS.email.placeholder} required
+                    style={{ background: 'rgba(248,246,242,0.07)', border: '1px solid rgba(248,246,242,0.18)', borderRight: isMobile ? '1px solid rgba(248,246,242,0.18)' : 'none', borderBottom: isMobile ? 'none' : '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 11, letterSpacing: '0.1em', padding: '14px 18px', outline: 'none', fontFamily: 'inherit', width: isMobile ? '100%' : 210 }} />
+                  <button type="submit"
+                    style={{ background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.18)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', width: isMobile ? '100%' : 'auto' }}>
+                    {INTEGRATIONS.email.buttonLabel}
+                  </button>
+                </form>
+              )}
+
+              {/* WhatsApp button */}
+              {INTEGRATIONS.whatsapp.enabled && (
+                <a href={`https://wa.me/${INTEGRATIONS.whatsapp.number}?text=${encodeURIComponent(INTEGRATIONS.whatsapp.message)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(37,211,102,0.12)', border: '1px solid rgba(37,211,102,0.35)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', padding: '14px 24px', textDecoration: 'none', fontFamily: 'inherit', whiteSpace: 'nowrap', width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  {INTEGRATIONS.whatsapp.label}
+                </a>
+              )}
+
+              {/* Store link */}
+              {INTEGRATIONS.store.enabled && (
+                <a href={INTEGRATIONS.store.url} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(248,246,242,0.1)', border: '1px solid rgba(248,246,242,0.25)', color: 'var(--white)', fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', padding: '14px 24px', textDecoration: 'none', fontFamily: 'inherit', whiteSpace: 'nowrap', width: isMobile ? '100%' : 'auto' }}>
+                  {INTEGRATIONS.store.label}
+                </a>
+              )}
+
+              <div style={{ fontSize: 9, letterSpacing: '0.2em', color: 'rgba(248,246,242,0.2)' }}>
+                {BRAND.city} · {BRAND.name.toLowerCase()}@brand.co · Free shipping
+              </div>
             </div>
           )}
         </motion.div>

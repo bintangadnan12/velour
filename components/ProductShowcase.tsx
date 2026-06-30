@@ -1,6 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { PRODUCTS } from '@/config/site'
 
 const ease3d = [0.16, 1, 0.3, 1] as const
 const DARK   = '#0a0908'
@@ -8,29 +9,6 @@ const MUTED  = 'rgba(10,9,8,0.42)'
 const SUBTLE = 'rgba(10,9,8,0.22)'
 const FAINT  = 'rgba(10,9,8,0.09)'
 
-const PRODUCTS = [
-  {
-    id: 1, name: 'FORMA Drift', category: 'Daily Trainer', price: '$340',
-    tag: 'Bestseller · 3 Seasons',
-    desc: "Recycled EVA midsole. Breathable mesh upper. The shoe you forget you're wearing — until you miss it.",
-    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900&q=85&auto=format&fit=crop',
-    rotation: -2,
-  },
-  {
-    id: 2, name: 'FORMA Bone', category: 'Minimal Silhouette', price: '$295',
-    tag: 'Limited · 62 remaining',
-    desc: 'Full-grain leather. Tonal stitching. Wears with everything or nothing else. A wardrobe constant.',
-    img: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=900&q=85&auto=format&fit=crop',
-    rotation: 2,
-  },
-  {
-    id: 3, name: 'FORMA Noir', category: 'Leather Edition', price: '$420',
-    tag: 'New this season',
-    desc: 'Waxed calfskin. Commando sole. Wears into work or into the night without asking permission.',
-    img: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=900&q=85&auto=format&fit=crop',
-    rotation: -2,
-  },
-]
 
 function ProductCard({ product, index }: { product: typeof PRODUCTS[0]; index: number }) {
   const wrapRef = useRef<HTMLDivElement>(null)

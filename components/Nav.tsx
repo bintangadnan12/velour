@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { BRAND, FOOTER } from '@/config/site'
 
 export function Nav() {
   const navRef = useRef<HTMLElement>(null)
@@ -49,7 +50,7 @@ export function Nav() {
           style={{ color: 'var(--white)' }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          FORMA
+          {BRAND.name}
         </div>
 
         <ul className="hidden md:flex gap-9 list-none">
@@ -73,7 +74,7 @@ export function Nav() {
           onMouseEnter={e => { const t = e.currentTarget; t.style.background = 'var(--white)'; t.style.color = 'var(--black)' }}
           onMouseLeave={e => { const t = e.currentTarget; t.style.background = 'none'; t.style.color = 'var(--white)' }}
         >
-          Shop the Drop
+          {FOOTER.nav[0]?.links[0] ? 'Shop the Drop' : 'Shop Now'}
         </button>
 
         {/* Hamburger */}
