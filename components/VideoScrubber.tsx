@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { BRAND, SCENES as SCENE_DATA, INTEGRATIONS } from '@/config/site'
+import { WebGLOverlay, type ScrollState } from '@/components/WebGLOverlay'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TOTAL        = BRAND.totalFrames
@@ -588,6 +589,10 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
   const rafRef         = useRef<number | null>(null)
   const launchedRef    = useRef(false)
 
+  // WebGL scroll state — updated every ScrollTrigger tick, read every Three.js frame
+  const glStateRef = useRef<ScrollState>({ sceneIndex: 0, inHold: false, velocity: 0, alpha: 0 })
+  const prevProgressRef = useRef(0)
+
   const [isMobile,    setIsMobile]    = useState(false)
   const [heroReady,   setHeroReady]   = useState(false)
   const [activeScene, setActiveScene] = useState(0)
@@ -659,6 +664,10 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
             setActiveScene(prev => prev !== sceneIndex ? sceneIndex : prev)
             setShowOverlay(prev => prev !== inHold ? inHold : prev)
             setFreezeAura(prev => prev !== inHold ? inHold : prev)
+            // Update WebGL state ref (no re-render)
+            const velocity = self.progress - prevProgressRef.current
+            prevProgressRef.current = self.progress
+            glStateRef.current = { sceneIndex, inHold, velocity, alpha }
           },
         })
       }, 650)
@@ -681,6 +690,9 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
 
         {/* Cinematic vignette */}
         <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', background: 'linear-gradient(to bottom, rgba(2,2,2,0.40) 0%, rgba(2,2,2,0) 28%, rgba(2,2,2,0) 62%, rgba(2,2,2,0.85) 100%)' }} />
+
+        {/* Three.js WebGL overlay — scroll-driven particles + shaders */}
+        <WebGLOverlay stateRef={glStateRef} />
 
         {/* Freeze aura — unique per scene */}
         <FreezeAura active={freezeAura} sceneIndex={activeScene} isMobile={isMobile} />
