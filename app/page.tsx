@@ -4,6 +4,7 @@ import { Preloader } from '@/components/Preloader'
 import { Nav } from '@/components/Nav'
 import { VideoScrubber } from '@/components/VideoScrubber'
 import { ProductShowcase } from '@/components/ProductShowcase'
+import { ShoeConfigurator } from '@/components/ShoeConfigurator'
 import { AboutSection } from '@/components/AboutSection'
 import { Footer } from '@/components/Footer'
 
@@ -23,7 +24,10 @@ export default function Home() {
         {/* 02 — Product showcase, 3D stacked reveal */}
         <ProductShowcase />
 
-        {/* 03 — Brand story */}
+        {/* 03 — Shoe configurator */}
+        <ShoeConfigurator />
+
+        {/* 04 — Brand story */}
         <AboutSection />
       </main>
       <Footer />
