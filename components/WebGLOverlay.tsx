@@ -6,235 +6,362 @@ import * as THREE from 'three'
 export type ScrollState = {
   sceneIndex: number
   inHold:     boolean
-  velocity:   number   // scroll delta per frame, approx –1..1
-  alpha:       number   // overlay alpha from mapProgress
+  velocity:   number   // raw progress delta — normalise * 300 inside
+  alpha:      number
 }
 
-// ── color palette ─────────────────────────────────────────────────────────────
+// ── palette ───────────────────────────────────────────────────────────────────
 const GOLD   = new THREE.Color(0xC9A84C)
+const COPPER = new THREE.Color(0xE8B86D)
 const WHITE  = new THREE.Color(0xF8F6F2)
 const AMBER  = new THREE.Color(0xD4884A)
-const COPPER = new THREE.Color(0xE8B86D)
 
-// ── GLSL noise helpers ────────────────────────────────────────────────────────
-const NOISE_GLSL = `
-vec3 mod289v(vec3 x){return x-floor(x*(1./289.))*289.;}
-vec2 mod289v(vec2 x){return x-floor(x*(1./289.))*289.;}
-vec3 permute3(vec3 x){return mod289v(((x*34.)+1.)*x);}
+// ── spring lerp helper ────────────────────────────────────────────────────────
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+
+// ── GLSL ──────────────────────────────────────────────────────────────────────
+const NOISE_GLSL = /* glsl */`
+vec3 _p3(vec3 x){return x-floor(x*(1./289.))*289.;}
+vec3 _pm(vec3 x){return _p3(((x*34.)+1.)*x);}
 float snoise(vec2 v){
-  const vec4 C=vec4(.211324865,.366025404,-.577350269,.024390244);
-  vec2 i=floor(v+dot(v,C.yy));
-  vec2 x0=v-i+dot(i,C.xx);
+  const vec4 C=vec4(.211,.366,-.577,.024);
+  vec2 i=floor(v+dot(v,C.yy)),x0=v-i+dot(i,C.xx);
   vec2 i1=(x0.x>x0.y)?vec2(1,0):vec2(0,1);
   vec4 x12=x0.xyxy+C.xxzz; x12.xy-=i1;
-  i=mod289v(i);
-  vec3 p=permute3(permute3(i.y+vec3(0,i1.y,1))+i.x+vec3(0,i1.x,1));
+  i=_p3(i);
+  vec3 p=_pm(_pm(i.y+vec3(0,i1.y,1))+i.x+vec3(0,i1.x,1));
   vec3 m=max(.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.);
   m=m*m*m*m;
-  vec3 x=2.*fract(p*C.www)-1.;
-  vec3 h=abs(x)-.5;
-  vec3 ox=floor(x+.5);
-  vec3 a0=x-ox;
-  m*=1.79284291-.85373472*(a0*a0+h*h);
-  vec3 g;
-  g.x=a0.x*x0.x+h.x*x0.y;
-  g.yz=a0.yz*x12.xz+h.yz*x12.yw;
+  vec3 x2=2.*fract(p*.024)-1.,h=abs(x2)-.5,ox=floor(x2+.5),a0=x2-ox;
+  m*=1.793-.854*(a0*a0+h*h);
+  vec3 g; g.x=a0.x*x0.x+h.x*x0.y; g.yz=a0.yz*x12.xz+h.yz*x12.yw;
   return 130.*dot(m,g);
 }
 `
 
-// ── Scene 0: Spectral particle burst — gold+white explosion ──────────────────
-function Scene0Burst({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const ref  = useRef<THREE.Points>(null)
-  const COUNT = 320
-  const dirs = useMemo(() => {
-    const d = new Float32Array(COUNT * 3)
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCENE 0 — Spectral shockwave burst  (gold + white explosive rings + particles)
+// ═══════════════════════════════════════════════════════════════════════════════
+function Scene0({ st }: { st: React.MutableRefObject<ScrollState> }) {
+  // ── shockwave rings ──────────────────────────────────────────────────────────
+  const ringsRef = useRef<THREE.Group>(null)
+  const RING_COUNT = 5
+  const ringGeos = useMemo(() =>
+    Array.from({ length: RING_COUNT }, (_, i) => {
+      const g = new THREE.RingGeometry(0.01, 0.06, 64)
+      return g
+    }), [])
+  const ringMats = useMemo(() =>
+    Array.from({ length: RING_COUNT }, (_, i) =>
+      new THREE.MeshBasicMaterial({
+        color: i % 2 === 0 ? GOLD : WHITE,
+        transparent: true, opacity: 0,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending, depthWrite: false,
+      })
+    ), [])
+  const ringPhases = useRef(Array.from({ length: RING_COUNT }, (_, i) => i / RING_COUNT))
+
+  // ── particles ────────────────────────────────────────────────────────────────
+  const ptsRef = useRef<THREE.Points>(null)
+  const COUNT  = 360
+  const pData  = useMemo(() => {
+    const geo  = new THREE.BufferGeometry()
+    const pos  = new Float32Array(COUNT * 3)
+    const col  = new Float32Array(COUNT * 3)
+    const dirs = new Float32Array(COUNT * 3)
     for (let i = 0; i < COUNT; i++) {
       const theta = Math.random() * Math.PI * 2
       const phi   = Math.acos(2 * Math.random() - 1)
-      d[i*3]   = Math.sin(phi) * Math.cos(theta)
-      d[i*3+1] = Math.sin(phi) * Math.sin(theta) * 0.55
-      d[i*3+2] = 0
+      dirs[i*3]   = Math.sin(phi) * Math.cos(theta)
+      dirs[i*3+1] = Math.sin(phi) * Math.sin(theta) * 0.45
+      dirs[i*3+2] = 0
+      const c = Math.random() < 0.55 ? GOLD : WHITE
+      col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b
     }
-    return d
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    geo.setAttribute('color',    new THREE.BufferAttribute(col, 3))
+    return { geo, dirs }
   }, [])
-  const colors = useMemo(() => {
-    const c = new Float32Array(COUNT * 3)
+  const pMat = useMemo(() => new THREE.PointsMaterial({
+    vertexColors: true, size: 0.13, transparent: true, opacity: 0,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
+  const clock = useRef(Math.random() * 10)
+  const opRef = useRef(0)
+
+  useFrame((state, dt) => {
+    const active = st.current.sceneIndex === 0
+    const target = active ? (st.current.inHold ? st.current.alpha * 0.95 : st.current.alpha * 0.45) : 0
+    opRef.current = lerp(opRef.current, target, 0.07)
+    if (opRef.current < 0.005 && !active) return
+
+    clock.current += dt * 0.45
+    const t = clock.current % 1  // 0→1 cycling
+
+    // Burst easing: explosive out, slow dissolve
+    const burst = Math.pow(t, 0.22)        // fast rush out
+    const fade  = 1 - Math.pow(t, 2.5)    // slow dissolve
+
+    // Update particle positions
+    const posArr = pData.geo.attributes.position.array as Float32Array
+    const maxR   = 3.8
     for (let i = 0; i < COUNT; i++) {
-      const col = Math.random() < 0.6 ? GOLD : WHITE
-      c[i*3] = col.r; c[i*3+1] = col.g; c[i*3+2] = col.b
+      const r = burst * maxR * (0.3 + (i / COUNT) * 0.7)
+      posArr[i*3]   = pData.dirs[i*3]   * r
+      posArr[i*3+1] = pData.dirs[i*3+1] * r
+      posArr[i*3+2] = 0
     }
-    return c
-  }, [])
-  const t = useRef(0)
+    pData.geo.attributes.position.needsUpdate = true
+    pMat.opacity = fade * opRef.current
 
-  useFrame((_, dt) => {
-    if (!ref.current) return
-    const mat = ref.current.material as THREE.PointsMaterial
-    if (st.current.sceneIndex !== 0) { mat.opacity = 0; return }
-
-    t.current = (t.current + dt * 0.38) % 1
-    const ease = t.current < 0.35
-      ? t.current / 0.35
-      : 1 - (t.current - 0.35) / 0.65
-    const R = ease * 7
-    const pos = ref.current.geometry.attributes.position.array as Float32Array
-    for (let i = 0; i < COUNT; i++) {
-      pos[i*3]   = dirs[i*3]   * R * (0.45 + (i / COUNT) * 0.55)
-      pos[i*3+1] = dirs[i*3+1] * R * (0.45 + (i / COUNT) * 0.55)
-      pos[i*3+2] = 0
-    }
-    ref.current.geometry.attributes.position.needsUpdate = true
-    mat.opacity = st.current.inHold ? st.current.alpha * 0.9 : st.current.alpha * 0.28
-  })
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={COUNT} args={[new Float32Array(COUNT * 3), 3]} />
-        <bufferAttribute attach="attributes-color"    count={COUNT} args={[colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial vertexColors size={0.055} transparent opacity={0} sizeAttenuation depthWrite={false} />
-    </points>
-  )
-}
-
-// ── Scene 1: Helix DNA spiral — blueprint white lines ────────────────────────
-function Scene1Helix({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const ref  = useRef<THREE.LineSegments>(null)
-  const COUNT = 80
-  const geo = useMemo(() => {
-    const pos: number[] = []
-    for (let i = 0; i < COUNT; i++) {
-      const t  = (i / COUNT) * Math.PI * 6
-      const t2 = ((i+1) / COUNT) * Math.PI * 6
-      const r  = 3.2
-      // strand A
-      pos.push(Math.cos(t)*r, (i/COUNT)*8-4, Math.sin(t)*1.2)
-      pos.push(Math.cos(t2)*r, ((i+1)/COUNT)*8-4, Math.sin(t2)*1.2)
-      // strand B (offset 180°)
-      pos.push(Math.cos(t+Math.PI)*r, (i/COUNT)*8-4, Math.sin(t+Math.PI)*1.2)
-      pos.push(Math.cos(t2+Math.PI)*r, ((i+1)/COUNT)*8-4, Math.sin(t2+Math.PI)*1.2)
-      // rungs every 4
-      if (i % 4 === 0) {
-        pos.push(Math.cos(t)*r, (i/COUNT)*8-4, Math.sin(t)*1.2)
-        pos.push(Math.cos(t+Math.PI)*r, (i/COUNT)*8-4, Math.sin(t+Math.PI)*1.2)
+    // Update shockwave rings
+    for (let ri = 0; ri < RING_COUNT; ri++) {
+      ringPhases.current[ri] = (ringPhases.current[ri] + dt * 0.38) % 1
+      const rp  = ringPhases.current[ri]
+      const rs  = Math.pow(rp, 0.28) * 4.2
+      const rfa = (1 - Math.pow(rp, 1.8)) * opRef.current
+      const mesh = ringsRef.current?.children[ri] as THREE.Mesh | undefined
+      if (mesh) {
+        mesh.scale.setScalar(rs)
+        ;(mesh.material as THREE.MeshBasicMaterial).opacity = rfa * 0.7
       }
     }
-    const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3))
-    return g
-  }, [])
-
-  useFrame((state, dt) => {
-    if (!ref.current) return
-    const mat = ref.current.material as THREE.LineBasicMaterial
-    if (st.current.sceneIndex !== 1) { mat.opacity = 0; return }
-    ref.current.rotation.y = state.clock.elapsedTime * 0.18
-    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.1) * 0.12
-    mat.opacity = st.current.inHold ? st.current.alpha * 0.7 : st.current.alpha * 0.22
   })
 
   return (
-    <lineSegments ref={ref} geometry={geo}>
-      <lineBasicMaterial color={WHITE} transparent opacity={0} depthWrite={false} />
-    </lineSegments>
+    <group>
+      <group ref={ringsRef}>
+        {ringGeos.map((g, i) => (
+          <mesh key={i} geometry={g} material={ringMats[i]} />
+        ))}
+      </group>
+      <points ref={ptsRef} geometry={pData.geo} material={pMat} />
+    </group>
   )
 }
 
-// ── Scene 2: Slipstream — horizontal speed particle trails ───────────────────
-function Scene2Slipstream({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const ref  = useRef<THREE.Points>(null)
-  const COUNT = 220
-  const data = useMemo(() => {
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCENE 1 — Blueprint wireframe sphere dissolving into particles
+// ═══════════════════════════════════════════════════════════════════════════════
+function Scene1({ st }: { st: React.MutableRefObject<ScrollState> }) {
+  const grpRef = useRef<THREE.Group>(null)
+  const COUNT  = 420
+
+  const pData = useMemo(() => {
+    const geo    = new THREE.BufferGeometry()
+    const pos    = new Float32Array(COUNT * 3)
+    const target = new Float32Array(COUNT * 3)  // sphere surface positions
+    const origin = new Float32Array(COUNT * 3)  // scattered origin
+
+    for (let i = 0; i < COUNT; i++) {
+      // Fibonacci sphere distribution
+      const phi   = Math.acos(1 - 2 * (i + 0.5) / COUNT)
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i
+      const r     = 2.6
+      target[i*3]   = r * Math.sin(phi) * Math.cos(theta)
+      target[i*3+1] = r * Math.cos(phi) * 0.75
+      target[i*3+2] = r * Math.sin(phi) * Math.sin(theta) * 0.4
+
+      origin[i*3]   = (Math.random() - 0.5) * 12
+      origin[i*3+1] = (Math.random() - 0.5) * 8
+      origin[i*3+2] = (Math.random() - 0.5) * 3
+
+      pos[i*3]   = origin[i*3]
+      pos[i*3+1] = origin[i*3+1]
+      pos[i*3+2] = origin[i*3+2]
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    return { geo, target, origin }
+  }, [])
+
+  const pMat = useMemo(() => new THREE.PointsMaterial({
+    color: WHITE, size: 0.09, transparent: true, opacity: 0,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
+
+  const formRef   = useRef(0)   // 0=scattered, 1=formed sphere
+  const opRef     = useRef(0)
+  const rotYRef   = useRef(0)
+
+  useFrame((state, dt) => {
+    const active = st.current.sceneIndex === 1
+    const vel    = Math.abs(st.current.velocity) * 280
+    const targetOp = active ? (st.current.inHold ? st.current.alpha * 0.9 : st.current.alpha * 0.4) : 0
+    opRef.current  = lerp(opRef.current, targetOp, 0.07)
+    if (opRef.current < 0.004 && !active) return
+
+    // Form/scatter based on hold
+    const targetForm = (active && st.current.inHold) ? 1 : 0
+    formRef.current  = lerp(formRef.current, targetForm, 0.055)
+
+    // Rotation — speed up with scroll velocity
+    rotYRef.current += dt * (0.22 + vel * 0.8)
+    if (grpRef.current) grpRef.current.rotation.y = rotYRef.current
+
+    const posArr = pData.geo.attributes.position.array as Float32Array
+    for (let i = 0; i < COUNT; i++) {
+      posArr[i*3]   = lerp(pData.origin[i*3],   pData.target[i*3],   formRef.current)
+      posArr[i*3+1] = lerp(pData.origin[i*3+1], pData.target[i*3+1], formRef.current)
+      posArr[i*3+2] = lerp(pData.origin[i*3+2], pData.target[i*3+2], formRef.current)
+    }
+    pData.geo.attributes.position.needsUpdate = true
+    pMat.opacity = opRef.current
+  })
+
+  return (
+    <group ref={grpRef}>
+      <points geometry={pData.geo} material={pMat} />
+    </group>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCENE 2 — Slipstream: ground-plane + depth speed lines (velocity-reactive)
+// ═══════════════════════════════════════════════════════════════════════════════
+function Scene2({ st }: { st: React.MutableRefObject<ScrollState> }) {
+  const COUNT = 280
+  const pData = useMemo(() => {
+    const geo   = new THREE.BufferGeometry()
     const pos   = new Float32Array(COUNT * 3)
-    const seeds = new Float32Array(COUNT)      // per-particle phase
+    const seeds = new Float32Array(COUNT)
     for (let i = 0; i < COUNT; i++) {
       pos[i*3]   = (Math.random() - 0.5) * 18
-      pos[i*3+1] = (Math.random() - 0.5) * 10
-      pos[i*3+2] = 0
+      pos[i*3+1] = -2 + Math.random() * 4
+      pos[i*3+2] = (Math.random() - 0.5) * 2
       seeds[i]   = Math.random()
     }
-    return { pos, seeds }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    return { geo, seeds }
   }, [])
+  const pMat = useMemo(() => new THREE.PointsMaterial({
+    color: WHITE, size: 0.08, transparent: true, opacity: 0,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
+
+  // Streak lines
+  const SCOUNT = 60
+  const sData = useMemo(() => {
+    const geo = new THREE.BufferGeometry()
+    const pos = new Float32Array(SCOUNT * 6)
+    for (let i = 0; i < SCOUNT; i++) {
+      const y = (Math.random() - 0.5) * 7
+      const z = (Math.random() - 0.5) * 2
+      const len = 0.3 + Math.random() * 1.4
+      pos[i*6]   = -len; pos[i*6+1] = y; pos[i*6+2] = z
+      pos[i*6+3] =  len; pos[i*6+4] = y; pos[i*6+5] = z
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    return { geo }
+  }, [])
+  const sMat = useMemo(() => new THREE.LineBasicMaterial({
+    color: WHITE, transparent: true, opacity: 0,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
+  const streakRef = useRef<THREE.LineSegments>(null)
+  const opRef     = useRef(0)
+  const speedRef  = useRef(3)
 
   useFrame((state, dt) => {
-    if (!ref.current) return
-    const mat = ref.current.material as THREE.PointsMaterial
-    if (st.current.sceneIndex !== 2) { mat.opacity = 0; return }
+    const active = st.current.sceneIndex === 2
+    const vel    = Math.abs(st.current.velocity) * 300
+    const targetOp = active ? (st.current.inHold ? st.current.alpha * 0.85 : st.current.alpha * 0.38) : 0
+    opRef.current = lerp(opRef.current, targetOp, 0.07)
+    if (opRef.current < 0.004 && !active) return
 
-    const posArr = ref.current.geometry.attributes.position.array as Float32Array
-    const speed  = 3.5 + Math.abs(st.current.velocity) * 12
+    // Speed reacts to velocity
+    const targetSpeed = 4 + vel * 6
+    speedRef.current  = lerp(speedRef.current, targetSpeed, 0.12)
+
+    const posArr = pData.geo.attributes.position.array as Float32Array
     for (let i = 0; i < COUNT; i++) {
-      posArr[i*3] -= speed * dt
+      posArr[i*3] -= speedRef.current * dt
       if (posArr[i*3] < -9) posArr[i*3] = 9
     }
-    ref.current.geometry.attributes.position.needsUpdate = true
-    mat.opacity = st.current.inHold ? st.current.alpha * 0.75 : st.current.alpha * 0.25
+    pData.geo.attributes.position.needsUpdate = true
+    pMat.opacity = opRef.current
+
+    // Streaks scale with velocity
+    const targetScale = 1 + vel * 0.8
+    if (streakRef.current) {
+      streakRef.current.scale.x = lerp(streakRef.current.scale.x, targetScale, 0.14)
+    }
+    sMat.opacity = opRef.current * Math.min(1, vel * 1.5 + 0.4)
   })
 
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={COUNT} args={[data.pos, 3]} />
-      </bufferGeometry>
-      <pointsMaterial color={WHITE} size={0.04} transparent opacity={0} sizeAttenuation depthWrite={false} />
-    </points>
+    <group>
+      <points geometry={pData.geo} material={pMat} />
+      <lineSegments ref={streakRef} geometry={sData.geo} material={sMat} />
+    </group>
   )
 }
 
-// ── Scene 3: Aurora GLSL — fluid gold/amber shader full-screen ───────────────
-const AURORA_VERT = `
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCENE 3 — Aurora GLSL shader (gold / amber / copper liquid waves)
+// ═══════════════════════════════════════════════════════════════════════════════
+const AURORA_VERT = /* glsl */`
 varying vec2 vUv;
-void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}
+void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }
 `
-const AURORA_FRAG = `
+const AURORA_FRAG = /* glsl */`
 uniform float uTime;
 uniform float uIntensity;
+uniform float uSpeed;
 varying vec2 vUv;
 ${NOISE_GLSL}
 void main(){
   vec2 uv=vUv;
-  float n1=snoise(vec2(uv.x*2.2+uTime*.11,uv.y*1.4+uTime*.07))*.5+.5;
-  float n2=snoise(vec2(uv.x*3.8-uTime*.09,uv.y*2.1+uTime*.14))*.5+.5;
-  float n3=snoise(vec2(uv.x*1.1+uTime*.05,uv.y*3.9-uTime*.1))*.5+.5;
-  float n=n1*.5+n2*.3+n3*.2;
-  vec3 gold  =vec3(0.788,0.659,0.294);
-  vec3 amber =vec3(0.85,0.52,0.15);
-  vec3 copper=vec3(0.95,0.78,0.42);
-  vec3 deep  =vec3(0.32,0.20,0.06);
+  // 4 noise octaves for richness
+  float n1=snoise(vec2(uv.x*2.1+uTime*uSpeed*.9,  uv.y*1.3+uTime*uSpeed*.6))*.5+.5;
+  float n2=snoise(vec2(uv.x*3.9-uTime*uSpeed*.7,  uv.y*2.2+uTime*uSpeed*1.1))*.5+.5;
+  float n3=snoise(vec2(uv.x*1.2+uTime*uSpeed*.4,  uv.y*4.1-uTime*uSpeed*.8))*.5+.5;
+  float n4=snoise(vec2(uv.x*5.5-uTime*uSpeed*.5,  uv.y*1.8+uTime*uSpeed*.3))*.5+.5;
+  float n =n1*.42+n2*.28+n3*.18+n4*.12;
+  vec3 gold  =vec3(.788,.659,.294);
+  vec3 amber =vec3(.85,.52,.15);
+  vec3 copper=vec3(.95,.78,.42);
+  vec3 deep  =vec3(.28,.17,.04);
+  vec3 bright=vec3(1.,.92,.62);
   vec3 col=mix(deep,gold,n1);
-  col=mix(col,copper,n2*n3*.9);
-  col=mix(col,amber,n3*.35);
-  float edge=smoothstep(0.,.22,uv.x)*smoothstep(1.,.78,uv.x)
-            *smoothstep(0.,.18,uv.y)*smoothstep(1.,.82,uv.y);
-  float a=n*.6*uIntensity*edge;
-  gl_FragColor=vec4(col,a);
+  col=mix(col,copper,n2*n3*.85);
+  col=mix(col,amber, n3*.4);
+  col=mix(col,bright,pow(n,4.)*0.6);
+  // vignette that still leaves center visible
+  float vx=smoothstep(0.,.18,uv.x)*smoothstep(1.,.82,uv.x);
+  float vy=smoothstep(0.,.12,uv.y)*smoothstep(1.,.88,uv.y);
+  float alpha=n*.72*uIntensity*vx*vy;
+  gl_FragColor=vec4(col,alpha);
 }
 `
-
 function Scene3Aurora({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const matRef = useRef<THREE.ShaderMaterial>(null)
+  const matRef   = useRef<THREE.ShaderMaterial>(null)
   const uniforms = useMemo(() => ({
     uTime:      { value: 0 },
     uIntensity: { value: 0 },
+    uSpeed:     { value: 1 },
   }), [])
 
-  useFrame((state) => {
+  useFrame((state, dt) => {
     if (!matRef.current) return
-    if (st.current.sceneIndex !== 3) {
-      matRef.current.uniforms.uIntensity.value *= 0.92
-      return
-    }
-    matRef.current.uniforms.uTime.value = state.clock.elapsedTime
-    const target = st.current.inHold ? st.current.alpha : st.current.alpha * 0.3
-    matRef.current.uniforms.uIntensity.value +=
-      (target - matRef.current.uniforms.uIntensity.value) * 0.06
+    const active = st.current.sceneIndex === 3
+    const vel    = Math.abs(st.current.velocity) * 300
+    matRef.current.uniforms.uTime.value += dt
+    const targetI = active
+      ? (st.current.inHold ? st.current.alpha * 0.92 : st.current.alpha * 0.38)
+      : 0
+    matRef.current.uniforms.uIntensity.value = lerp(
+      matRef.current.uniforms.uIntensity.value, targetI, 0.055
+    )
+    // Aurora flows faster when scrolling
+    matRef.current.uniforms.uSpeed.value = lerp(
+      matRef.current.uniforms.uSpeed.value, 1 + vel * 2, 0.1
+    )
   })
 
   return (
     <mesh>
-      <planeGeometry args={[20, 12]} />
+      <planeGeometry args={[18, 11]} />
       <shaderMaterial
         ref={matRef}
         vertexShader={AURORA_VERT}
@@ -248,160 +375,199 @@ function Scene3Aurora({ st }: { st: React.MutableRefObject<ScrollState> }) {
   )
 }
 
-// ── Scene 4: Galaxy vortex — gold spiral particles ────────────────────────────
-function Scene4Vortex({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const ref  = useRef<THREE.Points>(null)
-  const COUNT = 380
-  const data = useMemo(() => {
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCENE 4 — Galaxy vortex (gold spiral arms + core glow)
+// ═══════════════════════════════════════════════════════════════════════════════
+const VORTEX_VERT = /* glsl */`
+attribute float aAngle;
+attribute float aRadius;
+attribute float aSpeed;
+uniform float uTime;
+uniform float uSpin;
+void main(){
+  float a = aAngle + uTime * aSpeed * uSpin;
+  float r = aRadius;
+  vec3 pos = vec3(cos(a)*r, position.y, sin(a)*r*0.32);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.);
+  gl_PointSize = 3. + (1.-r/6.)*4.;
+}
+`
+const VORTEX_FRAG = /* glsl */`
+uniform float uIntensity;
+varying vec3 vColor;
+void main(){
+  vec2 c = gl_PointCoord - .5;
+  float d = dot(c,c);
+  if(d>.25) discard;
+  gl_FragColor = vec4(vColor, (1.-d*4.) * uIntensity);
+}
+`
+function Scene4({ st }: { st: React.MutableRefObject<ScrollState> }) {
+  const ref    = useRef<THREE.Points>(null)
+  const COUNT  = 500
+
+  const pData = useMemo(() => {
+    const geo    = new THREE.BufferGeometry()
     const pos    = new Float32Array(COUNT * 3)
-    const colors = new Float32Array(COUNT * 3)
+    const col    = new Float32Array(COUNT * 3)
+    const angles = new Float32Array(COUNT)
+    const radii  = new Float32Array(COUNT)
+    const speeds = new Float32Array(COUNT)
+
     for (let i = 0; i < COUNT; i++) {
-      const arm    = Math.floor(Math.random() * 3)          // 3 spiral arms
-      const r      = 0.5 + Math.random() * 5.5
-      const theta  = (arm * Math.PI * 2 / 3) + r * 0.55 + Math.random() * 0.5
-      const spread = (1 - r / 6) * 0.8
-      pos[i*3]   = Math.cos(theta) * r + (Math.random()-0.5) * spread
-      pos[i*3+1] = (Math.random()-0.5) * (0.4 + r * 0.08)
-      pos[i*3+2] = Math.sin(theta) * r * 0.4 + (Math.random()-0.5) * spread * 0.4
-      const blend = r / 6
-      const col   = Math.random() < 0.55 ? GOLD : (Math.random() < 0.5 ? COPPER : WHITE)
-      colors[i*3] = col.r; colors[i*3+1] = col.g; colors[i*3+2] = col.b
+      const arm   = i % 3
+      const r     = 0.2 + Math.pow(Math.random(), 0.6) * 5.5
+      const base  = arm * (Math.PI * 2 / 3)
+      const wind  = r * 0.65
+      angles[i]   = base + wind + (Math.random() - 0.5) * 0.55
+      radii[i]    = r
+      speeds[i]   = (0.18 + Math.random() * 0.12) * (r < 1.5 ? 2.5 : 1)
+      pos[i*3]    = 0
+      pos[i*3+1]  = (Math.random() - 0.5) * (0.3 + r * 0.06)
+      pos[i*3+2]  = 0
+      const t  = r / 5.5
+      const c  = t < 0.4
+        ? GOLD.clone().lerp(COPPER, t / 0.4)
+        : COPPER.clone().lerp(WHITE, (t - 0.4) / 0.6)
+      col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b
     }
-    return { pos, colors }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    geo.setAttribute('color',    new THREE.BufferAttribute(col, 3))
+    geo.setAttribute('aAngle',   new THREE.BufferAttribute(angles, 1))
+    geo.setAttribute('aRadius',  new THREE.BufferAttribute(radii, 1))
+    geo.setAttribute('aSpeed',   new THREE.BufferAttribute(speeds, 1))
+    return { geo }
   }, [])
+
+  const spinRef = useRef(1)
+  const opRef   = useRef(0)
+  const mat = useMemo(() => new THREE.PointsMaterial({
+    vertexColors: true, size: 0.11, transparent: true, opacity: 0,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
 
   useFrame((state, dt) => {
     if (!ref.current) return
-    const mat = ref.current.material as THREE.PointsMaterial
-    if (st.current.sceneIndex !== 4) { mat.opacity = 0; return }
-    ref.current.rotation.y = state.clock.elapsedTime * 0.09
-    ref.current.rotation.x = Math.PI * 0.18
-    mat.opacity = st.current.inHold ? st.current.alpha * 0.88 : st.current.alpha * 0.28
+    const active = st.current.sceneIndex === 4
+    const vel    = Math.abs(st.current.velocity) * 300
+    const targetOp = active
+      ? (st.current.inHold ? st.current.alpha * 0.95 : st.current.alpha * 0.42)
+      : 0
+    opRef.current = lerp(opRef.current, targetOp, 0.07)
+    mat.opacity   = opRef.current
+
+    // Spin accelerates with scroll
+    spinRef.current = lerp(spinRef.current, 1 + vel * 1.5, 0.1)
+
+    ref.current.rotation.y += dt * 0.08 * spinRef.current
+    ref.current.rotation.x = Math.PI * 0.16 + Math.sin(state.clock.elapsedTime * 0.12) * 0.06
   })
 
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={COUNT} args={[data.pos, 3]} />
-        <bufferAttribute attach="attributes-color"    count={COUNT} args={[data.colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial vertexColors size={0.05} transparent opacity={0} sizeAttenuation depthWrite={false} />
-    </points>
-  )
+  return <points ref={ref} geometry={pData.geo} material={mat} />
 }
 
-// ── Ambient: always-on subtle particle field reacting to velocity ─────────────
-function AmbientField({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const ref  = useRef<THREE.Points>(null)
-  const COUNT = 180
-  const data = useMemo(() => {
+// ═══════════════════════════════════════════════════════════════════════════════
+// AMBIENT — always-on particle field + velocity streaks
+// ═══════════════════════════════════════════════════════════════════════════════
+function Ambient({ st }: { st: React.MutableRefObject<ScrollState> }) {
+  const COUNT = 220
+  const pData = useMemo(() => {
+    const geo = new THREE.BufferGeometry()
     const pos = new Float32Array(COUNT * 3)
     const vel = new Float32Array(COUNT * 2)
     for (let i = 0; i < COUNT; i++) {
-      pos[i*3]   = (Math.random()-0.5) * 20
-      pos[i*3+1] = (Math.random()-0.5) * 12
-      pos[i*3+2] = -1
-      vel[i*2]   = (Math.random()-0.5) * 0.008
-      vel[i*2+1] = (Math.random()-0.5) * 0.005
+      pos[i*3]   = (Math.random() - 0.5) * 20
+      pos[i*3+1] = (Math.random() - 0.5) * 12
+      pos[i*3+2] = -0.5
+      vel[i*2]   = (Math.random() - 0.5) * 0.007
+      vel[i*2+1] = (Math.random() - 0.5) * 0.004
     }
-    return { pos, vel }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    return { geo, vel }
   }, [])
+  const pMat = useMemo(() => new THREE.PointsMaterial({
+    color: WHITE, size: 0.04, transparent: true, opacity: 0.07,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
+
+  // Streaks
+  const SCOUNT = 50
+  const sData = useMemo(() => {
+    const geo = new THREE.BufferGeometry()
+    const pos = new Float32Array(SCOUNT * 6)
+    for (let i = 0; i < SCOUNT; i++) {
+      const y = (Math.random() - 0.5) * 11
+      const z = -0.3
+      pos[i*6]=-.5; pos[i*6+1]=y; pos[i*6+2]=z
+      pos[i*6+3]=.5; pos[i*6+4]=y; pos[i*6+5]=z
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    return { geo }
+  }, [])
+  const sMat = useMemo(() => new THREE.LineBasicMaterial({
+    color: WHITE, transparent: true, opacity: 0,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  }), [])
+  const sRef = useRef<THREE.LineSegments>(null)
 
   useFrame((_, dt) => {
-    if (!ref.current) return
-    const posArr = ref.current.geometry.attributes.position.array as Float32Array
-    const speed  = 1 + Math.abs(st.current.velocity) * 8
+    const vel  = Math.abs(st.current.velocity) * 300
+    const posArr = pData.geo.attributes.position.array as Float32Array
+    const drift  = 1 + vel * 0.25
     for (let i = 0; i < COUNT; i++) {
-      posArr[i*3]   += data.vel[i*2]   * speed
-      posArr[i*3+1] += data.vel[i*2+1] * speed
-      if (posArr[i*3]   > 10)  posArr[i*3]   = -10
-      if (posArr[i*3]   < -10) posArr[i*3]   = 10
-      if (posArr[i*3+1] > 6)   posArr[i*3+1] = -6
-      if (posArr[i*3+1] < -6)  posArr[i*3+1] = 6
+      posArr[i*3]   += pData.vel[i*2]   * drift
+      posArr[i*3+1] += pData.vel[i*2+1]
+      if (posArr[i*3] > 10)   posArr[i*3]   = -10
+      if (posArr[i*3] < -10)  posArr[i*3]   = 10
+      if (posArr[i*3+1] > 6)  posArr[i*3+1] = -6
+      if (posArr[i*3+1] < -6) posArr[i*3+1] = 6
     }
-    ref.current.geometry.attributes.position.needsUpdate = true
-    const mat = ref.current.material as THREE.PointsMaterial
-    const baseOp = st.current.inHold ? 0.04 : 0.08 + Math.abs(st.current.velocity) * 0.6
-    mat.opacity += (Math.min(baseOp, 0.4) - mat.opacity) * 0.08
+    pData.geo.attributes.position.needsUpdate = true
+    pMat.opacity = lerp(pMat.opacity, st.current.inHold ? 0.04 : 0.06 + vel * 0.18, 0.08)
+
+    // Streaks: appear when scrolling fast, scale with velocity
+    const streakOp = Math.min(vel * 0.55, 0.7)
+    sMat.opacity   = lerp(sMat.opacity, streakOp, 0.14)
+    if (sRef.current) {
+      sRef.current.scale.x = lerp(sRef.current.scale.x, 1 + vel * 1.8, 0.14)
+    }
   })
 
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={COUNT} args={[data.pos, 3]} />
-      </bufferGeometry>
-      <pointsMaterial color={WHITE} size={0.028} transparent opacity={0.06} sizeAttenuation depthWrite={false} />
-    </points>
+    <group>
+      <points geometry={pData.geo} material={pMat} />
+      <lineSegments ref={sRef} geometry={sData.geo} material={sMat} />
+    </group>
   )
 }
 
-// ── Velocity streaks: horizontal lines when scrolling fast ────────────────────
-function VelocityStreaks({ st }: { st: React.MutableRefObject<ScrollState> }) {
-  const ref  = useRef<THREE.LineSegments>(null)
-  const COUNT = 40
-  const geo = useMemo(() => {
-    const pos = new Float32Array(COUNT * 6) // 2 verts per line
-    for (let i = 0; i < COUNT; i++) {
-      const y = (Math.random()-0.5) * 11
-      pos[i*6]   = -0.8; pos[i*6+1] = y; pos[i*6+2] = -0.5
-      pos[i*6+3] =  0.8; pos[i*6+4] = y; pos[i*6+5] = -0.5
-    }
-    const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-    return g
-  }, [])
-
-  useFrame((state, dt) => {
-    if (!ref.current) return
-    const mat = ref.current.material as THREE.LineBasicMaterial
-    const v   = Math.abs(st.current.velocity)
-    const targetOp = v > 0.015 ? Math.min(v * 18, 0.65) : 0
-    mat.opacity += (targetOp - mat.opacity) * 0.14
-
-    // scale lines with velocity
-    const scale = 1 + v * 22
-    ref.current.scale.x = scale
-  })
-
-  return (
-    <lineSegments ref={ref} geometry={geo}>
-      <lineBasicMaterial color={WHITE} transparent opacity={0} depthWrite={false} />
-    </lineSegments>
-  )
-}
-
-// ── Inner scene (inside Canvas) ───────────────────────────────────────────────
-function Scene({ stateRef }: { stateRef: React.MutableRefObject<ScrollState> }) {
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROOT SCENE
+// ═══════════════════════════════════════════════════════════════════════════════
+function Scene({ st }: { st: React.MutableRefObject<ScrollState> }) {
   return (
     <>
-      <AmbientField   st={stateRef} />
-      <VelocityStreaks st={stateRef} />
-      <Scene0Burst    st={stateRef} />
-      <Scene1Helix    st={stateRef} />
-      <Scene2Slipstream st={stateRef} />
-      <Scene3Aurora   st={stateRef} />
-      <Scene4Vortex   st={stateRef} />
+      <Ambient   st={st} />
+      <Scene0    st={st} />
+      <Scene1    st={st} />
+      <Scene2    st={st} />
+      <Scene3Aurora st={st} />
+      <Scene4    st={st} />
     </>
   )
 }
 
-// ── Public component ──────────────────────────────────────────────────────────
-export function WebGLOverlay({
-  stateRef,
-}: {
-  stateRef: React.MutableRefObject<ScrollState>
-}) {
+// ── Public component (zIndex:4 — above CSS Aura at z:3, text moves to z:5) ───
+export function WebGLOverlay({ stateRef }: { stateRef: React.MutableRefObject<ScrollState> }) {
   return (
-    <div style={{
-      position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
-    }}>
+    <div style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none' }}>
       <Canvas
-        gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
+        gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
         dpr={[1, 1.5]}
-        camera={{ position: [0, 0, 8], fov: 60, near: 0.1, far: 50 }}
+        camera={{ position: [0, 0, 8], fov: 58, near: 0.1, far: 60 }}
         style={{ position: 'absolute', inset: 0 }}
       >
-        <Scene stateRef={stateRef} />
+        <Scene st={stateRef} />
       </Canvas>
     </div>
   )

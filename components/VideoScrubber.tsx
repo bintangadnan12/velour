@@ -698,7 +698,7 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
         <FreezeAura active={freezeAura} sceneIndex={activeScene} isMobile={isMobile} />
 
         {/* Scene overlay */}
-        <div ref={overlayRef} style={{ position: 'absolute', inset: 0, zIndex: 4, opacity: 0, perspective: '1400px' }}>
+        <div ref={overlayRef} style={{ position: 'absolute', inset: 0, zIndex: 5, opacity: 0, perspective: '1400px' }}>
           <AnimatePresence mode="wait">
             {heroReady && showOverlay && (
               <motion.div key={activeScene} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -710,19 +710,19 @@ export function VideoScrubber({ onLoad, onReady }: Props) {
         </div>
 
         {/* Watermark */}
-        <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, display: 'flex', justifyContent: 'center', padding: '28px 0', pointerEvents: 'none' }}>
+        <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 6, display: 'flex', justifyContent: 'center', padding: '28px 0', pointerEvents: 'none' }}>
           <span style={{ fontSize: 9, letterSpacing: '0.34em', textTransform: 'uppercase', color: 'rgba(248,246,242,0.14)' }}>FORMA · AW26</span>
         </div>
 
         {/* Progress dots */}
-        <div aria-hidden style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', zIndex: 10, display: 'flex', flexDirection: 'column', gap: 8, pointerEvents: 'none' }}>
+        <div aria-hidden style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', zIndex: 6, display: 'flex', flexDirection: 'column', gap: 8, pointerEvents: 'none' }}>
           {SCENE_DATA.map((s, i) => (
             <div key={s.id} style={{ width: i === activeScene ? 2 : 1, height: i === activeScene ? 32 : 14, background: i === activeScene ? 'rgba(248,246,242,0.65)' : 'rgba(248,246,242,0.18)', borderRadius: 1, transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }} />
           ))}
         </div>
 
         {/* Counter */}
-        <div aria-hidden style={{ position: 'absolute', bottom: 28, left: 32, zIndex: 10, fontFamily: 'var(--font-serif)', fontSize: 11, color: 'rgba(248,246,242,0.16)', letterSpacing: '0.1em', pointerEvents: 'none' }}>
+        <div aria-hidden style={{ position: 'absolute', bottom: 28, left: 32, zIndex: 6, fontFamily: 'var(--font-serif)', fontSize: 11, color: 'rgba(248,246,242,0.16)', letterSpacing: '0.1em', pointerEvents: 'none' }}>
           {String(activeScene + 1).padStart(2, '0')} / 05
         </div>
       </div>
